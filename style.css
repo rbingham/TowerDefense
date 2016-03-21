@@ -1,0 +1,76 @@
+body {
+	margin: 0;
+    font-size: 30px;
+	font-family: Arial, sans-serif;
+	font-size: 30px;
+    	color: #CECEF6;
+
+}
+
+
+.screen {
+	position: absolute;
+	
+	height: 900px;
+	display: none;
+	z-index: 10;
+    width:900px;
+}
+
+.screen.active {
+	display: block;
+    background: #414A4C;
+}
+
+
+#PlayGame {
+    padding-top:50px;
+    padding-left:50px;
+    
+  position: relative;
+}
+#PlayGame canvas, #overlay_menu {
+  position: absolute;
+}
+canvas {
+  border: 1px solid black;
+}
+
+#highscore_list,#Title_HS,#CREDIT_INFO{
+    padding-left:285px;
+}
+
+
+
+/*css from gamestate example css*/
+
+ul.menu {
+	text-align: center;
+	padding-left:285px ;
+	padding-right:285px ;
+	padding-top:285px ;
+	margin: 0;
+	list-style: none;
+}
+
+ul.menu li {
+	margin: 0.8em 0;
+	font-family: Arial, sans-serif;
+	font-size: 30px;
+	color: #CECEF6;
+	width: 10em;
+	height: 1.5em;
+	background: #0404B4;
+	border: 0.1em solid rgb(255, 0, 0);
+	border-radius: 0.5em;
+	box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
+}
+
+ul.menu li:hover {
+	background: #2E2EFE;
+}
+
+ul.menu li:active {
+	color: #CECEF6;
+	background: rgb(0, 0, 0);
+}

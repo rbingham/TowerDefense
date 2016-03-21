@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lan="en-US">
+
+<!--Bryant Nielson A01770570
+
+The purpose of the milestone is to help encourage you to work on the Breakout game well before it is due.  The milestone submission is worth up to 10% of the total grade for the game.  I wanted to make it valuable enough to encourage you to complete it, while not making it devastating if you don't.
+
+The following are the requirements for the milestone:
+
+    (2 points) Display of the bricks, including the correct colors.
+    (5 points) Ball movement, bouncing, and ability to destroy bricks.
+    (3 points) Paddle display, movement, and ability to hit the ball.
+
+The following are not required for the milestone:
+
+    Scoring (including display) and High Scores
+    Game over
+    3, 2, 1 countdown
+    Particles
+    You get the idea
+
+
+
+-->
+<head>
+	<meta charset = "UTF-8">
+	<title>Gameloop</title>
+     <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+<body onload="BrickGame.game.initialize()">
+    <div class="screen" id="MainMenu">
+        <ul class="menu">
+            <lh id="Title">BrickGame</lh>
+            <li id="newGameButton">New Game</li>
+            <li id="highScoreButton">High Scores</li>
+            <li id="AboutButton">About</li>
+        </ul>
+    </div>
+    
+    <div class="screen" id="PlayGame">
+        <canvas id="gameWindow" width = "840" height = "840">
+        </canvas>
+        <!--http://stackoverflow.com/questions/26793247/how-to-overlay-a-div-over-a-canvas-css-->
+        <div id="overlay_menu">
+            <ul class="menu">
+                <li id="RetryButtton">Retry</li>
+                <li id="continueButton">Conitnue</li>
+
+                <li id="backButton_PG">Exit</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="screen" id="HighScore">
+        <ul>
+            <h id="Title_HS">HighScores</h>
+            <div id="highscore_list"></div>
+            <ul class="menu">
+                <li id="clearButton_HS">Clear Scores</li>
+                <li id="backButton_HS">Back</li>
+            </ul>
+        </ul>
+    </div>
+        <div class="screen" id="Credits">
+        <ul>
+            <div id="CREDIT_INFO"><h id="Title_CR">Credits</h>
+            <p>Created by Bryant Nielson</p>
+            <p>For Assignment 3 of CS 5410</p>
+            </div>
+            <ul class="menu">
+
+
+                <li id="backButton_CR">Back</li>
+            </ul>
+        </ul>
+    </div>
+    
+        <script src="./scripts/game.js"></script> 
+        <script src="./scripts/particles.js"></script> 
+    <script src="./scripts/input.js"></script> 
+    <script src="./scripts/graphics.js"></script> 
+    <script src="./scripts/playgame.js"></script> 
+    <script src="./scripts/mainmenu.js"></script> 
+    <script src="./scripts/credits.js"></script> 
+    <script src="./scripts/highscores.js"></script> 
+    <script src="./scripts/commonObject.js"></script> 
+</body>
+</html>
+
