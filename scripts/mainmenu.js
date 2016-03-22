@@ -30,25 +30,3 @@ MyGame.screens['MainMenu']=(function(game){
         
     }
 }(MyGame.game));
-
-/*
-MyGame.screens['MainMenu']=(function(){
-    
-    
-    run=function(){
-            
-    };
-    
-    initialize=function(){
-        
-        
-    };
-    
-    
-    return{
-        run:run,
-        initialize:initialize
-        
-    }
-}());
-*/

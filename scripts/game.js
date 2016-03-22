@@ -78,7 +78,6 @@ MyGame.game=(function(screens){
         for(var curr in screens){
             screens[curr].initialize();
         }
-        
         show("MainMenu");
     }
     

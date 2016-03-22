@@ -21,10 +21,12 @@ MyGame.graphics=(function(){
          context.font="30px Arial";
         context.fillText(input, x,y); 
     }
-    function FillBackground(){
+    function FillBackground(color){
+        if(color===undefined)
+            color='#FFFFFF'
         context.save();
         context.setTransform(1, 0, 0, 1, 0, 0);
-        context.fillStyle="#FFFFFF";
+        context.fillStyle=color;
 		context.fillRect(0, 0, canvas.width, canvas.height);
         context.restore();
         
@@ -53,35 +55,64 @@ MyGame.graphics=(function(){
     var unscaleGameBoard=function(){
         context.restore();
     }
-    //takes an object with top,bot, left and right
-    function Texture(stringImagsource){
+    //CHANGE TO SPITE SHEET< AND HAVE IT USE DRAW IMAGE
+    function SpriteSheet(spriteinfo){
         var that={};
         var ready=false;
         var image=new Image();
+        var timeElapsed=0;
         image.onload = function(){
-            ready = true;
-        }
-        image.src=stringImagsource;
-        
-        
-        that.draw = function (BrickLike){
-                    //context.fillRect(BrickLike.right,BrickLike.top,10,10);
-            
-            if(ready){
+           that.draw = function (){
                 context.save();
-                //context.fillRect(BrickLike.left,BrickLike.bot,BrickLike.getLength(),BrickLike.getWidth());
-
+                				
+				context.translate(spriteinfo.center.x, spriteinfo.center.y);
+				context.rotate(spriteinfo.rotation);
+				context.translate(-spriteinfo.center.x, -spriteinfo.center.y);
                 
                 context.drawImage(
                     image,
-                    BrickLike.left,
-                    BrickLike.bot,
-                    BrickLike.getLength(),
-                    BrickLike.getWidth()
+                    spriteinfo.width * sprite, 0,	// Which sprite to pick out
+                    spriteinfo.width, spriteinfo.height,		// The size of the sprite
+                    spriteinfo.center.x - spriteinfo.width/2,	// Where to draw the sprite
+                    spriteinfo.center.y - spriteinfo.height/2,
+                    spriteinfo.width, spriteinfo.height
                 );
                 context.restore();
+                
             }
         }
+        image.src=stringImagsource;
+        that.draw= function(){
+            
+        };
+        
+        that.update = function(elapsedTime, forward) {
+			timeElapsed += elapsedTime;
+			if (spec.elapsedTime >= spec.spriteTime[spec.sprite]) {
+				//
+				// When switching sprites, keep the leftover time because
+				// it needs to be accounted for the next sprite animation frame.
+				timeElapsed -= spec.spriteTime[spec.sprite];
+				//
+				// Depending upon the direction of the animation...
+				if (forward === true) {
+					spec.sprite += 1;
+					//
+					// This provides wrap around from the last back to the first sprite
+					spec.sprite = spec.sprite % spec.spriteCount;
+				} else {
+					spec.sprite -= 1;
+					//
+					// This provides wrap around from the first to the last sprite
+					if (spec.sprite <= 0) {
+						spec.sprite = spec.spriteCount - 1;
+					}
+				}
+			}
+		};
+
+        
+        
     
         return that;
     }
