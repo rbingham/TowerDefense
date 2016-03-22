@@ -63,7 +63,7 @@ var BrickGame={
         }
         function clear(){
             highScores={};
-            localStorage['BrickGame.highScores']=highScores;
+            localStorage['BrickGame.highScores']=JSON.stringify(highScores);
             
         }
         
