@@ -1,4 +1,4 @@
-BrickGame.graphics=(function(){
+MyGame.graphics=(function(){
     
     var canvas=document.getElementById('gameWindow');
     var context=canvas.getContext('2d');

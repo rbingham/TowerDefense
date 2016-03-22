@@ -1,7 +1,7 @@
 
 
 
-BrickGame.screens['MainMenu']=(function(game){
+MyGame.screens['MainMenu']=(function(game){
     
     
     var run=function(){
@@ -29,10 +29,10 @@ BrickGame.screens['MainMenu']=(function(game){
         initialize:initialize
         
     }
-}(BrickGame.game));
+}(MyGame.game));
 
 /*
-BrickGame.screens['MainMenu']=(function(){
+MyGame.screens['MainMenu']=(function(){
     
     
     run=function(){

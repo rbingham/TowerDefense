@@ -1,11 +1,11 @@
 
 
-var BrickGame={
+var MyGame={
     screens:{},
     persitantScore:(function(){
         
         var highScores = {},
-            previousScores = localStorage.getItem('BrickGame.highScores');
+            previousScores = localStorage.getItem('MyGame.highScores');
 		if (previousScores !== null) {
 			highScores = JSON.parse(previousScores);
 		}
@@ -27,13 +27,13 @@ var BrickGame={
                         highhit=true;
                 }
             }
-			localStorage['BrickGame.highScores'] = JSON.stringify(highScores);
+			localStorage['MyGame.highScores'] = JSON.stringify(highScores);
             return highhit;
 		}
 
 		function remove(key) {
 			delete highScores[key];
-			localStorage['BrickGame.highScores'] = JSON.stringify(highScores);
+			localStorage['MyGame.highScores'] = JSON.stringify(highScores);
 		}
 
 		function output(placeID) {
@@ -54,16 +54,10 @@ var BrickGame={
             }
 			htmlNode.scrollTop = htmlNode.scrollHeight;
 		}
-        function numscores(){
-            var num=0;
-            for (var key in highScores) {
-                num++;
-			}
-            return num;
-        }
+        
         function clear(){
             highScores={};
-            localStorage['BrickGame.highScores']=JSON.stringify(highScores);
+            localStorage['MyGame.highScores']=JSON.stringify(highScores);
             
         }
         
@@ -72,7 +66,6 @@ var BrickGame={
             add:add,
             remove:remove,
             output:output,
-            numscores:numscores,
             clear:clear,
             
         }
@@ -80,7 +73,7 @@ var BrickGame={
 };
 
 
-BrickGame.game=(function(screens){
+MyGame.game=(function(screens){
     var initialize=function(){
         for(var curr in screens){
             screens[curr].initialize();
@@ -104,5 +97,5 @@ BrickGame.game=(function(screens){
         initialize:initialize
     };
     
-}(BrickGame.screens));
+}(MyGame.screens));
 

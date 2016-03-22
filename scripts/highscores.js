@@ -1,6 +1,6 @@
 
 
-BrickGame.screens['HighScore']=(function(game,highscores){
+MyGame.screens['HighScore']=(function(game,highscores){
     
     
     var run=function(){
@@ -24,4 +24,4 @@ BrickGame.screens['HighScore']=(function(game,highscores){
         initialize:initialize
         
     }
-}(BrickGame.game,BrickGame.persitantScore));
+}(MyGame.game,MyGame.persitantScore));

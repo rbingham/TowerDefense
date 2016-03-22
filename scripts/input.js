@@ -1,6 +1,6 @@
 
 
-BrickGame.input=(function(){
+MyGame.input=(function(){
     var Keyboard=function (){
         var that={
             keys :{},

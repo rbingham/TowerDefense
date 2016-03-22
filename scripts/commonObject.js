@@ -216,7 +216,7 @@ const BALL_WIDTH=20;
 const BALL_LENGTH=20;
 const PADDLE_SPEED=500;
 
-function GenerateGenericBrickGame(GameSave,textures){
+function GenerateGenericMyGame(GameSave,textures){
     var lines=GameSave.split('\n');
     lines=lines.filter(Boolean)
     var that={

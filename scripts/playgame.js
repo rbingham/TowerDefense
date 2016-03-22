@@ -8,7 +8,7 @@ function Event(interval,timesRemaining,name,func){
     };
 }
 
-BrickGame.screens['PlayGame']=(function(game,graphics,input,scoring){
+MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     var prevTimestamp=performance.now();
     var keyBoard=input.Keyboard();
     var gameObjects={};
@@ -317,7 +317,7 @@ BrickGame.screens['PlayGame']=(function(game,graphics,input,scoring){
             ballText:graphics.Texture('images/ball.png'),
             paddleText:graphics.Texture('images/paddle.png')
         };
-        gameObjects=GenerateGenericBrickGame(gameString,textures);
+        gameObjects=GenerateGenericMyGame(gameString,textures);
         gameObjects.particles= new particleGroup({
             imageSrc:'images/fire.png'
         },graphics);
@@ -472,4 +472,4 @@ BrickGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         initialize:initialize
         
     }
-}(BrickGame.game,BrickGame.graphics,BrickGame.input,BrickGame.persitantScore));
+}(MyGame.game,MyGame.graphics,MyGame.input,MyGame.persitantScore));

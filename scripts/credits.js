@@ -1,4 +1,4 @@
-BrickGame.screens['Credits']=(function(game){
+MyGame.screens['Credits']=(function(game){
     
     
     var run=function(){
@@ -18,4 +18,4 @@ BrickGame.screens['Credits']=(function(game){
         initialize:initialize
         
     }
-}(BrickGame.game));
+}(MyGame.game));
