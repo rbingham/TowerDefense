@@ -56,7 +56,9 @@ MyGame.graphics=(function(){
     var unscaleGameBoard=function(){
         context.restore();
     }
-    //CHANGE TO SPITE SHEET< AND HAVE IT USE DRAW IMAGE
+    /*
+    takes, 
+    */
     function SpriteSheet(spriteinfo){
         var that={};
         var ready=false;

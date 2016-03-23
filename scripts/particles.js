@@ -10,7 +10,7 @@ function vectorfromOrigin(placemnet,origin){
 }
 
 
-function particleGroup(particleStuff,graphics){
+function particleEngine(particleStuff,graphics){
     
     this.image=new Image();
     var ready=false;
@@ -23,7 +23,7 @@ function particleGroup(particleStuff,graphics){
     this.graphics=graphics;
 }
 
-particleGroup.prototype={
+particleEngine.prototype={
     create:function(center,origin){
         this.particles.push({
             image:this.image,
