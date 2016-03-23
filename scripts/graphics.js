@@ -56,6 +56,12 @@ MyGame.graphics=(function(){
     var unscaleGameBoard=function(){
         context.restore();
     }
+    function GenericImage(){
+        
+        
+    }
+    
+    
     /*
     takes, 
     */
