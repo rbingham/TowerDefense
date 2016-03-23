@@ -11,7 +11,6 @@ function Event(interval,timesRemaining,name,func){
 MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     var prevTimestamp=performance.now();
     var keyBoard=input.Keyboard();
-    var gameObjects={};
     var eventList=[];
 
     
@@ -19,6 +18,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         initializeGameObjects();
         //add functions to listen to key listners in here
         prevTimestamp=performance.now();
+        addFlowkeyListeners();
         requestAnimationFrame(gameloop)
     };
     var initialize=function(){
@@ -27,32 +27,22 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     };
 
     function Gameover(){
-        document.getElementById('continueButton').style.display='none';
+        document.getElementById('continueButton').style.display='none';//hides continue from user in case of game over
         document.getElementById('overlay_menu').style.display='block';
         cleanUp();
-        
         addFlowkeyListeners();
     }
     function PauseGame(){
-        countdown=6;
         document.getElementById('continueButton').style.display='inline-block';
         document.getElementById('overlay_menu').style.display='block';
         cleanUp();
         addFlowkeyListeners();
-        incountdown=false;
-        //eventList.length=0;
-        //scoring.add(score);
     }
     
     
-    var hit=false;
     function reset(){
         cleanUp();
         initializeGameObjects();
-        addFlowkeyListeners();
-        
-        BeginCountDown();
-        hit=true;
     }
     
     function exitGame(){
@@ -78,9 +68,6 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     
     function render(elapsed){
         graphics.clear();
-        graphics.scaleGameboard(gameObjects.height,gameObjects.width);
-        gameObjects.particles.render();
-        graphics.unscaleGameBoard();
     }
     
    
@@ -106,12 +93,15 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     }
     
     function update(elapsed){
-        updateEventQueue(elapsed);
-        gameObjects.particles.update(elapsed);
-        
+        updateEventQueue(elapsed);        
     }
     
-    
+    function addFlowkeyListeners(){
+        document.getElementById('backButton_PG').addEventListener(
+            'click',
+			function() {exitGame(); }
+        );
+    }
 
     function initializeGameObjects(){
 
