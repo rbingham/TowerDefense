@@ -27,8 +27,8 @@ var MyGame={
             localStorage['MyGame.highScores'] = JSON.stringify(highScores);
         }
 
-        function report() {
-            var htmlNode = document.getElementById('id-high-scores-list');
+        function report(id) {
+            var htmlNode = document.getElementById(id);
             htmlNode.innerHTML = '';
 
             if(highScores.length==0){

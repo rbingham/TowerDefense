@@ -18,9 +18,6 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     var run=function(){
         initializeGameObjects();
         //add functions to listen to key listners in here
-        addmovementKeylistners();
-        addFlowkeyListeners();
-        BeginCountDown();
         prevTimestamp=performance.now();
         requestAnimationFrame(gameloop)
     };
@@ -33,8 +30,8 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         document.getElementById('continueButton').style.display='none';
         document.getElementById('overlay_menu').style.display='block';
         cleanUp();
+        
         addFlowkeyListeners();
-        scoring.add(score);
     }
     function PauseGame(){
         countdown=6;
@@ -52,8 +49,8 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     function reset(){
         cleanUp();
         initializeGameObjects();
-        addmovementKeylistners();
         addFlowkeyListeners();
+        
         BeginCountDown();
         hit=true;
     }

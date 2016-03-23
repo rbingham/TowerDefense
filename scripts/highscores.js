@@ -4,7 +4,7 @@ MyGame.screens['HighScore']=(function(game,highscores){
     
     
     var run=function(){
-        highscores.output('highscore_list');
+        highscores.report('highscore_list');
     };
     
     var initialize=function(){
