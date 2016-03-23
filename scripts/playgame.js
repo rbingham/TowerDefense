@@ -104,7 +104,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
             }
         }
     }
-    var tobeat=100;
+    
     function update(elapsed){
         updateEventQueue(elapsed);
         gameObjects.particles.update(elapsed);
