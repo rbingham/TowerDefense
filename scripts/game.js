@@ -4,68 +4,45 @@ var MyGame={
     screens:{},
     persitantScore:(function(){
         
-        var highScores = {},
+        var highScores = [],
             previousScores = localStorage.getItem('MyGame.highScores');
 		if (previousScores !== null) {
 			highScores = JSON.parse(previousScores);
 		}
 
-		function add(value) {
-            var temp=numscores();
-            var highhit=false;
-			highScores[temp] = value;
-            if(temp>=5){
-                var sortedHigh=[];
-                for (key in highScores) {
-                     sortedHigh.push(highScores[key]);
-                }
-                sortedHigh.sort(function(a,b){return b-a;});
-                highScores={};
-                for(var i=0;i<5;i++){
-                    highScores[i]=sortedHigh[i];
-                    if(value===sortedHigh[i])
-                        highhit=true;
-                }
-            }
-			localStorage['MyGame.highScores'] = JSON.stringify(highScores);
-            return highhit;
-		}
+        function add(score) {
+            highScores.push(score);
+            highScores.sort();
+            highScores.reverse();
+            localStorage['MyGame.highScores'] = JSON.stringify(highScores);
+        }
 
 		function remove(key) {
 			delete highScores[key];
 			localStorage['MyGame.highScores'] = JSON.stringify(highScores);
 		}
 
-		function output(placeID) {
-			var htmlNode = document.getElementById(placeID),
-				key;
-			
-			htmlNode.innerHTML = '';
-            var sortedHigh=[];
-			for (key in highScores) {
-				sortedHigh.push(highScores[key]);
-			}
-            sortedHigh.sort(function(a,b){return b-a;});
-            for(var i=0;i<sortedHigh.length;i++){
-                htmlNode.innerHTML += ((i+1)+ ' : ' + sortedHigh[i] + '<br/>');
-            }
-            for(var i=sortedHigh.length;i<5;i++){
-                htmlNode.innerHTML += ((i+1)+' : ' + 0+'<br/>');
-            }
-			htmlNode.scrollTop = htmlNode.scrollHeight;
-		}
-        
-        function clear(){
-            highScores={};
-            localStorage['MyGame.highScores']=JSON.stringify(highScores);
-            
+        function clear() {
+            highScores = [];
+            localStorage['MyGame.highScores'] = JSON.stringify(highScores);
         }
-        
+
+        function report() {
+            var htmlNode = document.getElementById('id-high-scores-list');
+            htmlNode.innerHTML = '';
+
+            if(highScores.length==0){
+                htmlNode.innerHTML += '<li>No highscores</li>'
+            }else for(let i=0;i<highScores.length && i<5 ;i++){
+                htmlNode.innerHTML += '<li>' + highScores[i]+ '</li>'
+            }
+        }
+            
         
         return{
             add:add,
             remove:remove,
-            output:output,
+            report:report,
             clear:clear,
             
         }

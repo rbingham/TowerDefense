@@ -16,6 +16,7 @@ MyGame.graphics=(function(){
         context.fillText(input, canvas.width/2, canvas.height/2); 
         
     }
+    //may want to rewrite
     function writeSpecificMessage(input,x,y){
         context.textAlign="center";
          context.font="30px Arial";
@@ -81,7 +82,7 @@ MyGame.graphics=(function(){
                 
             }
         }
-        image.src=stringImagsource;
+        image.src=spriteinfo.src;
         that.draw= function(){
             
         };
@@ -121,7 +122,7 @@ MyGame.graphics=(function(){
         scaleGameboard:scaleGameboard,
         unscaleGameBoard:unscaleGameBoard,
         clear:clear,
-        Texture:Texture,
+        SpriteSheet:SpriteSheet,
         drawImage:drawImage,
         writeMessage:writeMessage,
         writeSpecificMessage:writeSpecificMessage

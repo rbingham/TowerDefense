@@ -1,5 +1,9 @@
 
 
+/*example of use
+        keyBoard.registerCommand(KeyEvent.DOM_VK_LEFT,function(elapsed){gameObjects.paddle.moveLeft(elapsed);});
+*/
+
 MyGame.input=(function(){
     var Keyboard=function (){
         var that={
