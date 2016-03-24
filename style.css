@@ -29,14 +29,14 @@ body {
     
   position: relative;
 }
-#PlayGame canvas, #overlay_menu {
+#PlayGame canvas, #Overlay_Menu {
   position: absolute;
 }
 canvas {
   border: 1px solid black;
 }
 
-#highscore_list,#Title_HS,#CREDIT_INFO{
+#Highscore_List,#Title_HS,#CREDIT_INFO{
     padding-left:285px;
 }
 

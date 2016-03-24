@@ -8,16 +8,16 @@ function Event(interval,timesRemaining,name,func){
     };
 }
 
-MyGame.GameModel=(function(graphics,components,input){
+MyGame.gameModel=(function(graphics,components,input){
     var eventList=[];
     var that={
             continueLoop:true,
             },
         internalRender=function(){},
         internalUpdate=function(){},
-        keyBoard=input.Keyboard();
-    
-    
+        keyboard=input.Keyboard();
+
+
     function removeDoneEvents(){
         for(var i=eventList.length-1; i>=0;i--){
             if(eventList[i].timesRemaining===0){
@@ -25,7 +25,7 @@ MyGame.GameModel=(function(graphics,components,input){
             }
         }
     }
-   
+
     function updateEventQueue(elapsed){
         removeDoneEvents();
         for(var i=0; i<eventList.length;i++){
@@ -34,15 +34,15 @@ MyGame.GameModel=(function(graphics,components,input){
                 eventList[i].timeRemaining=eventList[i].interval;
                 eventList[i].timesRemaining-=1;
                 eventList[i].func(elapsed);
-                                
+
             }
         }
     }
-    
+
     that.keyUpdate=function(elapsed){
-        keyBoard.update(elapsed);
+        keyboard.update(elapsed);
     }
-    
+
     /*
     The concept of the internal update is that if you change states in the game,
         internalUpdate=PauseGameUpdate
@@ -51,20 +51,20 @@ MyGame.GameModel=(function(graphics,components,input){
         Similar in concept to the game screens;
     */
     that.update=function(elapsed){
-        updateEventQueue(elapsed);        
+        updateEventQueue(elapsed);
         internalUpdate(elapsed);
-        
+
     };
-    
+
     that.render=function(elapsed){
         graphics.clear();
         internalRender(elapsed);
-        
-        
+
+
     };
-    
+
     that.initialize=function(){
-        document.getElementById('overlay_menu').style.display='none';
+        document.getElementById('Overlay_Menu').style.display='none';
     };
     return that;
-}(MyGame.graphics,MyGame.Components,MyGame.input));
+}(MyGame.graphics,MyGame.components,MyGame.input));

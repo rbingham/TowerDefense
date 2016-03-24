@@ -4,15 +4,15 @@ MyGame.screens['HighScore']=(function(game,highscores){
     
     
     var run=function(){
-        highscores.report('highscore_list');
+        highscores.report('Highscore_List');
     };
     
     var initialize=function(){
-        document.getElementById('backButton_HS').addEventListener(
+        document.getElementById('BackButton_HS').addEventListener(
             'click',
 			function() {game.show('MainMenu'); }
         );
-        document.getElementById('clearButton_HS').addEventListener(
+        document.getElementById('ClearButton_HS').addEventListener(
             'click',
 			function() {highscores.clear(); run(); }
         );

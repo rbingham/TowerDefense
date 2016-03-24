@@ -2,18 +2,18 @@
 
 
 MyGame.screens['MainMenu']=(function(game){
-    
-    
+
+
     var run=function(){
-            
+
     };
-    
+
     var initialize=function(){
-        document.getElementById('newGameButton').addEventListener(
+        document.getElementById('NewGameButton').addEventListener(
             'click',
 			function() {game.show('PlayGame'); }
         );
-        document.getElementById('highScoreButton').addEventListener(
+        document.getElementById('HighScoreButton').addEventListener(
             'click',
 			function() {game.show('HighScore'); }
         );
@@ -22,11 +22,11 @@ MyGame.screens['MainMenu']=(function(game){
 			function() {game.show('Credits'); }
         );
     };
-    
-    
+
+
     return{
         run:run,
         initialize:initialize
-        
+
     }
 }(MyGame.game));
