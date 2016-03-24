@@ -1,7 +1,7 @@
 
 
 /*example of use
-        keyBoard.registerCommand(KeyEvent.DOM_VK_LEFT,function(elapsed){gameObjects.paddle.moveLeft(elapsed);});
+        keyboard.registerCommand(KeyEvent.DOM_VK_LEFT,function(elapsed){gameObjects.paddle.moveLeft(elapsed);});
 */
 
 MyGame.input=(function(){
@@ -10,18 +10,18 @@ MyGame.input=(function(){
             keys :{},
             handlers:[]
         };
-        
+
         function keydown(e){
             that.keys[e.keyCode]=e.timeStamp;
         }
         function keyup(e){
             delete that.keys[e.keyCode];
         }
-        
+
         that.registerCommand=function(key,handler){
             that.handlers.push({key:key,handler:handler});
         }
-        
+
         that.update=function(elapsed){
             for(var handlerNum=0;handlerNum < that.handlers.length;++handlerNum){
                 //console.log(handlerNum);
@@ -30,19 +30,19 @@ MyGame.input=(function(){
                 }
             }
         };
-        
+
         window.addEventListener('keydown',keydown);
         window.addEventListener('keyup',keyup);
-        
+
         return that;
     }
-    
-    
-    
+
+
+
     return{
         Keyboard:Keyboard
     };
-    
+
 }());
 
 

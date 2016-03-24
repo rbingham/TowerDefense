@@ -2,12 +2,12 @@
 This File holds the structures used to emulate
 the game play, such as enimies, towers
 
-It should be possible to add objects in other files with 
-MyGame.Components.TowerGround=(function(){}());
+It should be possible to add objects in other files with
+MyGame.components.TowerGround=(function(){}());
 For
 */
-MyGame.Components=(function(){
+MyGame.components=(function(){
     var that={};
-    
+
     return that;
 }());
