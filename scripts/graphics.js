@@ -41,8 +41,8 @@ MyGame.graphics=(function(){
 
 		context.drawImage(
 			toDraw.image,
-			toDraw.center.x - toDraw.size/2,
-			toDraw.center.y - toDraw.size/2,
+			toDraw.center.x - toDraw.width/2,
+			toDraw.center.y - toDraw.height/2,
 			toDraw.size, toDraw.size);
 
 		context.restore();
