@@ -15,7 +15,7 @@ function Tower(spec){
     this.image=spec.image;
     this.rotation=0;
     this.height=spec.height;
-    this.length=spec.length;
+    this.width=spec.width;
 }
 //tower funtions go here
 Tower.prototype={
@@ -37,7 +37,7 @@ function Weapon(spec){
     this.image=spec.image;
     this.rotation=0;
     this.height=spec.height;
-    this.length=spec.length;
+    this.width=spec.width;
     this.range=spec.range;
 
 }
@@ -65,11 +65,11 @@ MyGame.components=(function(graphics){
     
     that.arena={
         center:{x:400,y:400},
-        length:200,
-        height:200,
+        width:400,
+        height:400,
         subGrid:10,
-        fillStyle:"rgba(250,150,50,50)",
-        strokeStyle:"rgba(250,255,255,50)",
+		fill : 'rgba(0, 150, 250, 1)', 
+		stroke : 'rgba(255, 0, 0, 1)',
         draw:function(drawGrid){
             if(drawGrid==='undefined'){
                 //Draw the lines for the grid
