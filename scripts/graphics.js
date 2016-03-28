@@ -61,6 +61,25 @@ MyGame.graphics=(function(){
         
     }
     
+    /*
+    Expects an onbject of with top right x, top right y,
+    width, hieght, rotation
+    fill style ="rgba(r,g,b,a)"
+    */
+    function drawRectangle(spec){
+        context.save();
+        context.translate(spec.x + spec.width / 2, spec.y + spec.height / 2);
+        context.rotate(spec.rotation);
+        context.translate(-(spec.x + spec.width / 2), -(spec.y + spec.height / 2));
+        
+        context.fillStyle = spec.fill;
+        context.fillRect(spec.x, spec.y, spec.width, spec.height);
+        
+        context.strokeStyle = spec.stroke;
+        context.strokeRect(spec.x, spec.y, spec.width, spec.height);
+
+        context.restore();
+    };
     
     /*
     takes, 
