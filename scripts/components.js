@@ -22,7 +22,10 @@ Tower.prototype={
     shoot:function(){
         
     },
-    draw:function(){
+    draw:function(drawRange){
+        if(drawRange==='undefined'){
+            //Draw a circle for range.
+        }
         image.draw();
         weapon.draw();//draw the weapon on top the turret
     }
@@ -35,6 +38,8 @@ function Weapon(spec){
     this.rotation=0;
     this.height=spec.height;
     this.length=spec.length;
+    this.range=spec.range;
+
 }
 //Weapon funtions go here
 
