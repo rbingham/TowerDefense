@@ -1,28 +1,28 @@
 MyGame.graphics=(function(){
-    
-    var canvas=document.getElementById('gameWindow');
+
+    var canvas=document.getElementById('GameWindow');
     var context=canvas.getContext('2d');
-    
-    
+
+
     function clear(){
         context.save();
         context.setTransform(1, 0, 0, 1, 0, 0);
 		context.clearRect(0, 0, canvas.width, canvas.height);
         context.restore();
-        FillBackground();
+        fillBackground();
     }
     function writeMessage(input){
         context.textAlign="center";
-        context.fillText(input, canvas.width/2, canvas.height/2); 
-        
+        context.fillText(input, canvas.width/2, canvas.height/2);
+
     }
     //may want to rewrite
     function writeSpecificMessage(input,x,y){
         context.textAlign="center";
          context.font="30px Arial";
-        context.fillText(input, x,y); 
+        context.fillText(input, x,y);
     }
-    function FillBackground(color){
+    function fillBackground(color){
         if(color===undefined)
             color='#FFFFFF'
         context.save();
@@ -30,36 +30,38 @@ MyGame.graphics=(function(){
         context.fillStyle=color;
 		context.fillRect(0, 0, canvas.width, canvas.height);
         context.restore();
-        
+
     }
     function drawImage(toDraw){
         context.save();
-		
+
 		context.translate(toDraw.center.x, toDraw.center.y);
 		context.rotate(toDraw.rotation);
 		context.translate(-toDraw.center.x, -toDraw.center.y);
-		
+
 		context.drawImage(
-			toDraw.image, 
-			toDraw.center.x - toDraw.size/2, 
+			toDraw.image,
+			toDraw.center.x - toDraw.size/2,
 			toDraw.center.y - toDraw.size/2,
 			toDraw.size, toDraw.size);
-		
+
 		context.restore();
     }
-    
-    var scaleGameboard=function (x,y){
+
+    function scaleGameboard(x,y){
         context.save();
         context.scale(canvas.width/y,canvas.height/x);
     }
-    
-    var unscaleGameBoard=function(){
+
+    function unscaleGameBoard(){
         context.restore();
     }
+
     function GenericImage(){
-        
-        
+
+
     }
+<<<<<<< HEAD
     
     /*
     Expects an onbject of with top right x, top right y,
@@ -81,8 +83,12 @@ MyGame.graphics=(function(){
         context.restore();
     };
     
+=======
+
+
+>>>>>>> 709dbfe59be2c5f87b0d1f9a5d23ae039cb93540
     /*
-    takes, 
+    takes,
     */
     function SpriteSheet(spriteinfo){
         var that={};
@@ -92,11 +98,11 @@ MyGame.graphics=(function(){
         image.onload = function(){
            that.draw = function (){
                 context.save();
-                				
+
 				context.translate(spriteinfo.center.x, spriteinfo.center.y);
 				context.rotate(spriteinfo.rotation);
 				context.translate(-spriteinfo.center.x, -spriteinfo.center.y);
-                
+
                 context.drawImage(
                     image,
                     spriteinfo.width * sprite, 0,	// Which sprite to pick out
@@ -106,14 +112,14 @@ MyGame.graphics=(function(){
                     spriteinfo.width, spriteinfo.height
                 );
                 context.restore();
-                
+
             }
         }
         image.src=spriteinfo.src;
         that.draw= function(){
-            
+
         };
-        
+
         that.update = function(elapsedTime, forward) {
 			timeElapsed += elapsedTime;
 			if (spec.elapsedTime >= spec.spriteTime[spec.sprite]) {
@@ -139,20 +145,21 @@ MyGame.graphics=(function(){
 			}
 		};
 
-        
-        
-    
+
+
+
         return that;
     }
-    
+
     return {
         scaleGameboard:scaleGameboard,
         unscaleGameBoard:unscaleGameBoard,
         clear:clear,
+        GenericImage:GenericImage,
         SpriteSheet:SpriteSheet,
         drawImage:drawImage,
         writeMessage:writeMessage,
         writeSpecificMessage:writeSpecificMessage
     };
-    
+
 }());
