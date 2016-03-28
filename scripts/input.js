@@ -8,7 +8,9 @@ MyGame.input=(function(){
     var Keyboard=function (){
         var that={
             keys :{},
-            handlers:[]
+            handlers:[],
+            keyUpHandler:[],
+            upKeys:{}
         };
 
         function keydown(e){
@@ -22,6 +24,10 @@ MyGame.input=(function(){
             that.handlers.push({key:key,handler:handler});
         }
 
+        that.registerKeyUp=function(key,handler){
+            that.keyUpHandler.push({key:key,handler:handler});
+        }
+        
         that.update=function(elapsed){
             for(var handlerNum=0;handlerNum < that.handlers.length;++handlerNum){
                 //console.log(handlerNum);
@@ -29,6 +35,19 @@ MyGame.input=(function(){
                     that.handlers[handlerNum].handler(elapsed);
                 }
             }
+            var toRemove=[];
+            for(var handlerNum=0;handlerNum <that.keyUpHandler.length;++handlerNum){
+                //console.log(handlerNum);
+                if(that.upKeys.hasOwnProperty(that.keyUpHandler[handlerNum].key)){
+                    that.keyUpHandler[handlerNum].handler(elapsed);
+                    toRemove.push(that.keyUpHandler[handlerNum].key);
+                }
+            }
+            
+            for(var i=0;i <toRemove.length;++i){
+                delete that.upKeys[toRemove[i]];
+            }
+            
         };
 
         window.addEventListener('keydown',keydown);
