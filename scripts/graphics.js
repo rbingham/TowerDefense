@@ -61,7 +61,6 @@ MyGame.graphics=(function(){
 
 
     }
-<<<<<<< HEAD
     
     /*
     Expects an onbject of with top right x, top right y,
@@ -82,11 +81,7 @@ MyGame.graphics=(function(){
 
         context.restore();
     };
-    
-=======
 
-
->>>>>>> 709dbfe59be2c5f87b0d1f9a5d23ae039cb93540
     /*
     takes,
     */
