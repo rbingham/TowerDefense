@@ -4,7 +4,7 @@
         keyboard.registerCommand(KeyEvent.DOM_VK_LEFT,function(elapsed){gameObjects.paddle.moveLeft(elapsed);});
 */
 
-MyGame.input=(function(){
+MyGame.input=(function(canvas){
     var Keyboard=function (){
         var that={
             keys :{},
@@ -56,13 +56,82 @@ MyGame.input=(function(){
         return that;
     }
 
+    var Mouse=function (){
+        var that={
+            clicks[],
+            handlers:[],
+        };
+        
+        
+        function getMousePos(evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+        
+        function click(evt){
+            that.clicks.push(evt);
+        }
+        //accepts a rectangle that can be rotated, according to boundingRect.rotate
+        //center, height,width,rotation
+        //theoratically, no matter what happens to the rectangle, it should stay here in the queue;
+        that.registerCommand=function(handler,boundingRect){
+            that.clickHandlers.push({handler:handler,rect:boundingRect});
+        }
+        
+        
+        function checkCollision(point,rect){
+            var x=point.x,
+                y=point.y;
+            x-=rect.center.x;
+            y-=rect.center.y;
+            if(rect.rotatation==='undefined'){
+                rect.rotatation=0;
+            }
+            x=x*Math.cos(rect.rotatation)-y*Math.sin(rect.rotatation);
+            y=x*Math.sin(rect.rotatation)+y*Math.cos(rect.rotatation);
+            y+=rect.height/2;
+            x+=rect.width/2;
+            if(x<0||y<0||y>rect.height||x>rect.width)
+                return false;
+            return true;
+        }
+        
+        function removeUnwanted(toRemove,fromA){
+            toRemove.sort(function(a,b){return b-a;});//garuntee sorted, reverse should work as well
+            for(var i=0;i<toRemove.length;i++){
+                fromA.splice(toRemove[i],1);
+            }
+        }
+        
+        that.update=function(elapsed){
+            toRemove=[];
+            for(var i=0;i<clicks.length;i++){
+                for(var handlerNum=0;handlerNum < that.clickHandlers.length;++handlerNum){
+                    if(checkCollision(getMousePos(clicks[i]),clickHandlers[handlerNum].rect)){
+                        clickHandlers[handlerNum].handler();
+                        if(!(toRemove.indexOf(i) > -1)){
+                            toRemove.push(i);
+                        }
+                    }
+                }
+            }
+            removeUnwanted(toRemove,that.clicks);
+        };
+        canvas.addEventListener('click',click);
+        return that;
+    }
+    
 
 
     return{
-        Keyboard:Keyboard
+        Keyboard:Keyboard,
+        Mouse:Mouse
     };
 
-}());
+}(MyGame.graphics.canvas));
 
 
 

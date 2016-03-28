@@ -156,6 +156,7 @@ MyGame.graphics=(function(){
         writeMessage:writeMessage,
         writeSpecificMessage:writeSpecificMessage,
         drawRectangle:drawRectangle,
+        canvas:canvas
     };
 
 }());
