@@ -30,8 +30,9 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
         for(var i=0;i<4;i++)
             update(elapsed/4);
         render(elapsed);
-        if(model.conitnueLoop)
+        if(model.continueLoop){
             requestAnimationFrame(gameloop);
+        }
     }
 
 

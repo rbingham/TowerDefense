@@ -17,6 +17,33 @@ MyGame.gameModel=(function(graphics,components,input){
         internalUpdate=function(){},
         keyboard=input.Keyboard();
 
+    that.initialize=function(){
+        document.getElementById('Overlay_Menu').style.display='none';
+        internalRender=WatchGame;
+    };
+        
+    function WatchGame(){
+        components.arena.draw();
+    }
+    /*    The concept of the internal update is that if you change states in the game,
+        internalUpdate=PauseGameUpdate
+        internalRender=PauseGameRender
+        to pause the game, and a seperate render/update for each state,whatever the state is.
+        Similar in concept to the game screens;
+    */
+    that.update=function(elapsed){
+        updateEventQueue(elapsed);
+        internalUpdate(elapsed);
+
+    };
+
+    that.render=function(elapsed){
+        graphics.clear();
+        internalRender(elapsed);
+    };
+
+
+        
 
     function removeDoneEvents(){
         for(var i=eventList.length-1; i>=0;i--){
@@ -43,28 +70,7 @@ MyGame.gameModel=(function(graphics,components,input){
         keyboard.update(elapsed);
     }
 
-    /*
-    The concept of the internal update is that if you change states in the game,
-        internalUpdate=PauseGameUpdate
-        internalRender=PauseGameRender
-        to pause the game, and a seperate render/update for each state,whatever the state is.
-        Similar in concept to the game screens;
-    */
-    that.update=function(elapsed){
-        updateEventQueue(elapsed);
-        internalUpdate(elapsed);
+    
 
-    };
-
-    that.render=function(elapsed){
-        graphics.clear();
-        internalRender(elapsed);
-
-
-    };
-
-    that.initialize=function(){
-        document.getElementById('Overlay_Menu').style.display='none';
-    };
     return that;
 }(MyGame.graphics,MyGame.components,MyGame.input));

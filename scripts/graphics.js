@@ -65,16 +65,16 @@ MyGame.graphics=(function(){
     /*
     Expects an onbject of with top right x, top right y,
     width, hieght, rotation
-    fill style ="rgba(r,g,b,a)"
+    fill style ="rgba(r,g,b,a)"\storke style, is the stroke of the outer areana
     */
     function drawRectangle(spec){
         context.save();
-        context.translate(spec.x + spec.width / 2, spec.y + spec.height / 2);
+        context.translate(spec.center.x , spec.center.y);
         context.rotate(spec.rotation);
-        context.translate(-(spec.x + spec.width / 2), -(spec.y + spec.height / 2));
+        context.translate(-(spec.center.x), -(spec.center.y));
         
         context.fillStyle = spec.fill;
-        context.fillRect(spec.x, spec.y, spec.width, spec.height);
+        context.fillRect(spec.x-spec.width/2, spec.y-spec.height/2, spec.width, spec.height);
         
         context.strokeStyle = spec.stroke;
         context.strokeRect(spec.x, spec.y, spec.width, spec.height);
@@ -154,7 +154,8 @@ MyGame.graphics=(function(){
         SpriteSheet:SpriteSheet,
         drawImage:drawImage,
         writeMessage:writeMessage,
-        writeSpecificMessage:writeSpecificMessage
+        writeSpecificMessage:writeSpecificMessage,
+        drawRectangle:drawRectangle,
     };
 
 }());

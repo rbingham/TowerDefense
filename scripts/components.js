@@ -54,7 +54,7 @@ Weapon.prototype={
 
 
 
-MyGame.components=(function(){
+MyGame.components=(function(graphics){
     var that={};
 
     that.towerArray=[];
@@ -63,13 +63,40 @@ MyGame.components=(function(){
         that.towerArray.push(new Tower(spec));
     };
     
-    that.renderTowers(elapsed){
-        for(int i=0;i<toers.length;i++){
+    that.arena={
+        center:{x:400,y:400},
+        length:200,
+        height:200,
+        subGrid:10,
+        fillStyle:"rgba(250,150,50,50)",
+        strokeStyle:"rgba(250,255,255,50)",
+        draw:function(drawGrid){
+            if(drawGrid==='undefined'){
+                //Draw the lines for the grid
+            }
+            graphics.drawRectangle(this);
+            //draw four rectangles for the opening
+        },  
+    };
+    
+    
+    that.renderTowers=function(elapsed){
+        for(var i=0;i<toers.length;i++){
             that.towerArray[i].draw();
         }
-    }
+    };
+    
+    /*
+    function designed to render every part of componets
+    rather user picking
+    */
+    that.renderAll=function(elapsed){
+        that.renderTowers(elapsed);
+        that.arena(false);
+    };
+    
     //may want an update in future
     
     
     return that;
-}());
+}(MyGame.graphics));
