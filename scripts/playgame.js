@@ -9,8 +9,9 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
         //add functions to listen to key listners in here
         prevTimestamp=performance.now();
         model.initialize();
-        if(model.continueLoop)
-            requestAnimationFrame(gameloop)
+        if(model.continueLoop){
+            requestAnimationFrame(gameloop);
+        }
     };
     
     
