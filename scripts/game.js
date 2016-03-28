@@ -12,8 +12,7 @@ var MyGame={
 
         function add(score) {
             highScores.push(score);
-            highScores.sort();
-            highScores.reverse();
+            highScores.highScores.sort(function(a,b){return b-a;});
             localStorage['MyGame.highScores'] = JSON.stringify(highScores);
         }
 
