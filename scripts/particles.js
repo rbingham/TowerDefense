@@ -10,7 +10,7 @@ function vectorfromOrigin(placemnet,origin){
 }
 
 
-function particleEngine(particleStuff,graphics){
+function particleEngine(particleStuff){
     
     this.image=new Image();
     var ready=false;
@@ -20,7 +20,7 @@ function particleEngine(particleStuff,graphics){
     this.getReady=function(){return ready;};
     this.image.src=particleStuff.imageSrc;
     this.particles=[];
-    this.graphics=graphics;
+    this.graphics=MyGame.graphics;
 }
 
 particleEngine.prototype={
