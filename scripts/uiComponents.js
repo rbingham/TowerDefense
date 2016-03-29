@@ -20,7 +20,7 @@ MyGame.uiComponents = (function(graphics){
     }
 
     function CanvasButton(spec){
-        //spec: location{x,y}, drawable, mouseOverDrawable, mouseDownDrawable, redrawQueue
+        //spec: dims{center{x,y}, height, width}, drawable, mouseOverDrawable, mouseDownDrawable, redrawQueue
         var that={};
         var buttonListenerMap = ButtonListenerMap();
         var mouseOver=false;
@@ -81,7 +81,7 @@ MyGame.uiComponents = (function(graphics){
 
             if(mouseOver){
                 if(mouseDown && spec.hasOwnProperty("mouseDownDrawable")){
-                    spec.mouseDownDrawable.draw();
+                    spec.mouseDownDrawable.draw(spec.dims);
                     drawn=true;
                 }else if(spec.hasOwnProperty("mouseOverDrawable")){
                     spec.mouseOverDrawable.draw();
@@ -90,7 +90,7 @@ MyGame.uiComponents = (function(graphics){
             }
 
             if(!drawn){
-                drawable.draw();
+                drawable.draw(spec.dims);
             }
             needsRedrawn = false;
         }

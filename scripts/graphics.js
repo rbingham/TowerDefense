@@ -32,18 +32,18 @@ MyGame.graphics=(function(){
         context.restore();
 
     }
-    function drawImage(toDraw){
+    function drawImage(dims){
         context.save();
 
-		context.translate(toDraw.center.x, toDraw.center.y);
-		context.rotate(toDraw.rotation);
-		context.translate(-toDraw.center.x, -toDraw.center.y);
+		context.translate(dims.center.x, dims.center.y);
+		context.rotate(dims.rotation);
+		context.translate(-dims.center.x, -dims.center.y);
 
 		context.drawImage(
-			toDraw.image,
-			toDraw.center.x - toDraw.width/2,
-			toDraw.center.y - toDraw.height/2,
-			toDraw.size, toDraw.size);
+			dims.image,
+			dims.center.x - dims.width/2,
+			dims.center.y - dims.height/2,
+			dims.width, dims.height);
 
 		context.restore();
     }
@@ -61,23 +61,23 @@ MyGame.graphics=(function(){
 
 
     }
-    
+
     /*
     Expects an onbject of with top right x, top right y,
     width, hieght, rotation
     fill ="rgba(r,g,b,a)"\storke style, is the stroke of the outer areana
     */
-    function drawRectangle(spec){
+    function drawRectangle(dims){
         context.save();
-        context.translate(spec.center.x , spec.center.y);
-        context.rotate(spec.rotation);
-        context.translate(-(spec.center.x), -(spec.center.y));
-        
-        context.fillStyle = spec.fill;
-        context.fillRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
-        
-        context.strokeStyle = spec.stroke;
-        context.strokeRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
+        context.translate(dims.center.x , dims.center.y);
+        context.rotate(dims.rotation);
+        context.translate(-(dims.center.x), -(dims.center.y));
+
+        context.fillStyle = dims.fill;
+        context.fillRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+
+        context.strokeStyle = dims.stroke;
+        context.strokeRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
 
         context.restore();
     };
@@ -140,7 +140,7 @@ MyGame.graphics=(function(){
 			}
 		};
 
-
+        
 
 
         return that;
