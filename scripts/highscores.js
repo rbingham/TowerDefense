@@ -1,12 +1,12 @@
 
 
-MyGame.screens['HighScore']=(function(game,highscores){
-    
-    
+MyGame.screens['HighScore']=(function(game,persistantScores){
+
+
     var run=function(){
-        highscores.report('Highscore_List');
+        persistantScores.report('Highscore_List');
     };
-    
+
     var initialize=function(){
         document.getElementById('BackButton_HS').addEventListener(
             'click',
@@ -14,14 +14,13 @@ MyGame.screens['HighScore']=(function(game,highscores){
         );
         document.getElementById('ClearButton_HS').addEventListener(
             'click',
-			function() {highscores.clear(); run(); }
+			function() {persistantScores.clear(); run(); }
         );
     };
-    
-    
+
     return{
         run:run,
         initialize:initialize
-        
+
     }
-}(MyGame.game,MyGame.persitantScore));
+}(MyGame.game,MyGame.persistantScores));

@@ -56,4 +56,4 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
         initialize:initialize
 
     }
-}(MyGame.game,MyGame.graphics,MyGame.input,MyGame.persitantScore,MyGame.gameModel));
+}(MyGame.game,MyGame.graphics,MyGame.input,MyGame.persistantScores,MyGame.gameModel));
