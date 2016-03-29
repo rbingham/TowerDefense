@@ -58,7 +58,7 @@ MyGame.input=(function(canvas){
 
     var Mouse=function (){
         var that={
-            clicks[],
+            clicks:[],
             handlers:[],
         };
         
