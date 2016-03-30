@@ -21,10 +21,13 @@ MyGame.gameModel=(function(graphics,components,input){
         document.getElementById('Overlay_Menu').style.display='none';
         internalRender=WatchGame;
     };
-        
+
     function WatchGame(){
         components.arena.draw();
     }
+
+
+
     /*    The concept of the internal update is that if you change states in the game,
         internalUpdate=PauseGameUpdate
         internalRender=PauseGameRender
@@ -43,7 +46,7 @@ MyGame.gameModel=(function(graphics,components,input){
     };
 
 
-        
+
 
     function removeDoneEvents(){
         for(var i=eventList.length-1; i>=0;i--){
@@ -70,7 +73,7 @@ MyGame.gameModel=(function(graphics,components,input){
         keyboard.update(elapsed);
     }
 
-    
+
 
     return that;
 }(MyGame.graphics,MyGame.components,MyGame.input));

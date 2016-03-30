@@ -20,7 +20,7 @@ function Tower(spec){
 //tower funtions go here
 Tower.prototype={
     shoot:function(){
-        
+
     },
     draw:function(drawRange){
         if(drawRange==='undefined'){
@@ -45,7 +45,7 @@ function Weapon(spec){
 
 Weapon.prototype={
     shoot:function(){
-        
+
     },
     draw:function(){
         image.draw();
@@ -58,17 +58,17 @@ MyGame.components=(function(graphics){
     var that={};
 
     that.towerArray=[];
-    
+
     that.addTower=function(spec){
         that.towerArray.push(new Tower(spec));
     };
-    
+
     that.arena={
         center:{x:400,y:400},
         width:400,
         height:400,
         subGrid:10,
-		fill : 'rgba(0, 150, 250, 1)', 
+		fill : 'rgba(0, 150, 250, 1)',
 		stroke : 'rgba(255, 0, 0, 1)',
         draw:function(drawGrid){
             if(drawGrid==='undefined'){
@@ -76,16 +76,16 @@ MyGame.components=(function(graphics){
             }
             graphics.drawRectangle(this);
             //draw four rectangles for the opening
-        },  
+        },
     };
-    
-    
+
+
     that.renderTowers=function(elapsed){
         for(var i=0;i<toers.length;i++){
             that.towerArray[i].draw();
         }
     };
-    
+
     /*
     function designed to render every part of componets
     rather user picking
@@ -94,9 +94,9 @@ MyGame.components=(function(graphics){
         that.renderTowers(elapsed);
         that.arena(false);
     };
-    
+
     //may want an update in future
-    
-    
+
+
     return that;
 }(MyGame.graphics));
