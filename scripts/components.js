@@ -12,7 +12,7 @@ Wepons, parts of towers, generate bullets, which componets then handles and mana
 function Tower(spec){
     this.center=spec.center;
     this.weapon=spec.weapon;
-    this.image=spec.image;
+    this.src=spec.src;
     this.rotation=0;
     this.height=spec.height;
     this.width=spec.width;
@@ -26,7 +26,7 @@ Tower.prototype={
         if(drawRange==='undefined'){
             //Draw a circle for range.
         }
-        image.draw();
+        ImageHolder.drawImage(this.src);
         weapon.draw();//draw the weapon on top the turret
     }
 }
@@ -34,7 +34,7 @@ Tower.prototype={
 function Weapon(spec){
     this.center=spec.center;
     this.weapon=spec.weapon;
-    this.image=spec.image;
+    this.srcs=spec.src;
     this.rotation=0;
     this.height=spec.height;
     this.width=spec.width;
@@ -48,7 +48,7 @@ Weapon.prototype={
 
     },
     draw:function(){
-        image.draw();
+        ImageHolder.drawImage(this.src);
     }
 }
 
