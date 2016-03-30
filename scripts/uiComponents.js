@@ -35,6 +35,10 @@ MyGame.uiComponents = (function(graphics){
             }
         }
 
+        that.getDims(){
+            return dims;
+        }
+
         that.addButtonListener = function(key, listener){
             buttonListenerMap.add(key, listener);
         }
@@ -76,6 +80,11 @@ MyGame.uiComponents = (function(graphics){
             buttonListenerMap.onClick();
         }
 
+        that.onMouseClick(){
+            onMouseDown();
+            onMouseUp();
+        }
+
         that.draw(){
             var drawn=false;
 
@@ -98,11 +107,24 @@ MyGame.uiComponents = (function(graphics){
         return that;
     }
 
-    function CanvasButtonGrid(){
+    function CanvasButtonGrid(mouse){
+        var buttons = [];
 
+        function addButton(button){
+            buttons.push(button);
+            mouse.registerClickCommand(button.onMouseClick,button.getDims());
+        }
+
+        function draw(){
+            "use strict"
+            for(let i=0; i<buttons.length; i++){
+                buttons[i].draw();
+            }
+        }
     }
 
     return {
-        CanvasButton:CanvasButton
+        CanvasButton:CanvasButton,
+        CanvasButtonGrid:CanvasButtonGrid
     }
 }(MyGame.graphics));
