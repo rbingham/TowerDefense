@@ -81,7 +81,7 @@ MyGame.input=(function(canvas){
             that.clickHandlers.push({handler:handler,rect:boundingRect});
         }
         that.registerMoveCommand=function(handler,boundingRect){
-            that.clickHandlers.push({handler:handler,rect:boundingRect});
+            that.moveHandlers.push({handler:handler,rect:boundingRect});
         }
         
         function checkCollision(point,rect){
