@@ -20,10 +20,10 @@ MyGame.uiComponents = (function(graphics){
     }
 
     function CanvasButton(spec){
-        //spec: dims{center{x,y}, height, width, rotate}, drawable, mouseOverDrawable, mouseDownDrawable, redrawQueue
+        //spec: dims{center{x,y}, height, width, rotate}, drawable, mouseEnterDrawable, mouseDownDrawable, redrawQueue
         var that={};
         var buttonListenerMap = ButtonListenerMap();
-        var mouseOver=false;
+        var mouseEnter=false;
         var mouseDown=false;
         var drawable = spec.drawable;
         var needsRedrawn = true;
@@ -42,19 +42,19 @@ MyGame.uiComponents = (function(graphics){
             buttonListenerMap.remove(key);
         }
 
-        that.onMouseOver = function(){
-            mouseOver = true;
-            if (spec.hasOwnProperty("mouseOverDrawable")) {
+        that.onMouseEnter = function(){
+            mouseEnter = true;
+            if (spec.hasOwnProperty("mouseEnterDrawable")) {
                 fireNeedsRedrawn();
             }
         }
 
-        that.onMouseAway = function(){
+        that.onMouseExit = function(){
             var oldMouseDown = mouseDown;
             mouseDown=false;
-            mouseOver = false;
-            if ((!oldMouseDown && spec.hasOwnProperty("mouseOverDrawable"))
-                    || (oldMouseDown && (spec.hasOwnProperty("mouseDownDrawable")||spec.hasOwnProperty("mouseOverDrawable")))
+            mouseEnter = false;
+            if ((!oldMouseDown && spec.hasOwnProperty("mouseEnterDrawable"))
+                    || (oldMouseDown && (spec.hasOwnProperty("mouseDownDrawable")||spec.hasOwnProperty("mouseEnterDrawable")))
             ) {
                 fireNeedsRedrawn();
             }
@@ -79,12 +79,12 @@ MyGame.uiComponents = (function(graphics){
         that.draw(){
             var drawn=false;
 
-            if(mouseOver){
+            if(mouseEnter){
                 if(mouseDown && spec.hasOwnProperty("mouseDownDrawable")){
                     spec.mouseDownDrawable.draw(spec.dims);
                     drawn=true;
-                }else if(spec.hasOwnProperty("mouseOverDrawable")){
-                    spec.mouseOverDrawable.draw();
+                }else if(spec.hasOwnProperty("mouseEnterDrawable")){
+                    spec.mouseEnterDrawable.draw();
                     drawn=true;
                 }
             }
@@ -96,6 +96,10 @@ MyGame.uiComponents = (function(graphics){
         }
 
         return that;
+    }
+
+    function CanvasButtonGrid(){
+
     }
 
     return {
