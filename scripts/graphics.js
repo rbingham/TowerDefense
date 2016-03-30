@@ -33,22 +33,6 @@ MyGame.graphics=(function(){
 
     }
 
-    function drawImage(spec){
-        context.save();
-
-		context.translate(spec.center.x, spec.center.y);
-		context.rotate(spec.rotation);
-		context.translate(-spec.center.x, -spec.center.y);
-
-		context.drawImage(
-			spec.image,
-			spec.center.x - spec.width/2,
-			spec.center.y - spec.height/2,
-			spec.width, spec.height);
-
-		context.restore();
-    }
-
     function scaleGameboard(x,y){
         context.save();
         context.scale(canvas.width/y,canvas.height/x);
@@ -58,8 +42,27 @@ MyGame.graphics=(function(){
         context.restore();
     }
 
-    function GenericImage(){
-
+    function genImage(srcFile){
+        var that={},
+            image=new Image();
+        image.onload=function(){
+            that.draw=function(spec){
+                context.save();
+                context.translate(spec.center.x, spec.center.y);
+                context.rotate(spec.rotation);
+                context.translate(-spec.center.x, -spec.center.y);
+                context.drawImage(
+                    image,
+                    spec.center.x - spec.width/2,
+                    spec.center.y - spec.height/2,
+                    spec.width, spec.height);
+                context.restore();
+                
+            }
+        };
+        image.src=srcFile;
+        that.draw=function(spec){};
+        return that;
 
     }
 
@@ -73,10 +76,8 @@ MyGame.graphics=(function(){
         context.translate(spec.center.x , spec.center.y);
         context.rotate(spec.rotation);
         context.translate(-(spec.center.x), -(spec.center.y));
-
         context.fillStyle = spec.fill;
         context.fillRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
-
         context.strokeStyle = spec.stroke;
         context.strokeRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
 
@@ -86,26 +87,24 @@ MyGame.graphics=(function(){
     /*
     takes,
     */
-    function SpriteSheet(spriteinfo){
+    function genSprite(src){
         var that={};
-        var ready=false;
         var image=new Image();
-        var timeElapsed=0;
         image.onload = function(){
-           that.draw = function (){
+           that.draw = function (spec,spriteinfo){
                 context.save();
 
-				context.translate(spriteinfo.center.x, spriteinfo.center.y);
-				context.rotate(spriteinfo.rotation);
-				context.translate(-spriteinfo.center.x, -spriteinfo.center.y);
+				context.translate(spec.center.x, spec.center.y);
+				context.rotate(spec.rotation);
+				context.translate(-spec.center.x, -spec.center.y);
 
                 context.drawImage(
                     image,
-                    spriteinfo.width * sprite, 0,	// Which sprite to pick out
-                    spriteinfo.width, spriteinfo.height,		// The size of the sprite
-                    spriteinfo.center.x - spriteinfo.width/2,	// Where to draw the sprite
-                    spriteinfo.center.y - spriteinfo.height/2,
-                    spriteinfo.width, spriteinfo.height
+                    spec.width * spriteinfo.sprite, 0,	// Which sprite to pick out
+                    spec.width, spec.height,		// The size of the sprite
+                    spec.center.x - spec.width/2,	// Where to draw the sprite
+                    spec.center.y - spec.height/2,
+                    spec.width, spec.height
                 );
                 context.restore();
 
@@ -115,10 +114,14 @@ MyGame.graphics=(function(){
         that.draw= function(){
 
         };
-
-        that.update = function(elapsedTime, forward) {
+        return that;
+    }
+    
+    function genSpriteInfo(spec){
+        var timeElapsed=0;
+        spec.update=function(elapsedTime, forward) {
 			timeElapsed += elapsedTime;
-			if (spec.elapsedTime >= spec.spriteTime[spec.sprite]) {
+			if (timeElapsed >= spec.spriteTime[spec.sprite]) {
 				//
 				// When switching sprites, keep the leftover time because
 				// it needs to be accounted for the next sprite animation frame.
@@ -140,12 +143,11 @@ MyGame.graphics=(function(){
 				}
 			}
 		};
-
-
-
-
-        return that;
+        
+        return spec;
     }
+    
+    
 
 
     function tranRotTran(spec){
@@ -168,7 +170,7 @@ MyGame.graphics=(function(){
 		context.restore();
     }
 
-    function drawRectangleWithDims(spec, spec){
+    function drawRectangleWithDims(spec, dims){
         context.save();
 
         tranRotTran(spec);
@@ -191,7 +193,6 @@ MyGame.graphics=(function(){
         function draw(dims){
             drawImageWithDims(dims);
         }
-
         return {draw:draw};
     }
 
@@ -211,12 +212,12 @@ MyGame.graphics=(function(){
         scaleGameboard:scaleGameboard,
         unscaleGameBoard:unscaleGameBoard,
         clear:clear,
-        GenericImage:GenericImage,
+        genImage:genImage,
         genericDrawables:genericDrawables,
         ImageDrawable:ImageDrawable,
         RectangleDrawable:RectangleDrawable,
-        SpriteSheet:SpriteSheet,
-        drawImage:drawImage,
+        genSpriteInfo:genSpriteInfo,
+        genSprite:genSprite,
         writeMessage:writeMessage,
         writeSpecificMessage:writeSpecificMessage,
         drawRectangle:drawRectangle,

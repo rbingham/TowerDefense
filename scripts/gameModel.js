@@ -25,7 +25,9 @@ MyGame.gameModel=(function(graphics,components,input){
     function WatchGame(){
         components.arena.draw();
     }
-
+    function PlaceTowerRender(){
+        components.arena.draw("foobar");
+    }
 
 
     /*    The concept of the internal update is that if you change states in the game,
