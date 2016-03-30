@@ -71,7 +71,7 @@ MyGame.components=(function(graphics){
 		fill : 'rgba(0, 150, 250, 1)',
 		stroke : 'rgba(255, 0, 0, 1)',
         draw:function(drawGrid){
-            if(drawGrid==='undefined'){
+            if(drawGrid!==undefined){
                 ImageHolder.drawImage("./images/arenaGrid.png",this);
             }else{
                 ImageHolder.drawImage("./images/arena.png",this);
