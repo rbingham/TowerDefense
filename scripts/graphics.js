@@ -212,7 +212,7 @@ MyGame.graphics=(function(){
         unscaleGameBoard:unscaleGameBoard,
         clear:clear,
         GenericImage:GenericImage,
-        genericDrawables:genericDrawables
+        genericDrawables:genericDrawables,
         ImageDrawable:ImageDrawable,
         RectangleDrawable:RectangleDrawable,
         SpriteSheet:SpriteSheet,
