@@ -20,7 +20,7 @@ MyGame.uiComponents = (function(graphics){
     }
 
     function CanvasButton(spec){
-        //spec: dims{center{x,y}, height, width}, drawable, mouseOverDrawable, mouseDownDrawable, redrawQueue
+        //spec: dims{center{x,y}, height, width, rotate}, drawable, mouseOverDrawable, mouseDownDrawable, redrawQueue
         var that={};
         var buttonListenerMap = ButtonListenerMap();
         var mouseOver=false;

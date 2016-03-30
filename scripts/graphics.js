@@ -32,18 +32,19 @@ MyGame.graphics=(function(){
         context.restore();
 
     }
-    function drawImage(dims){
+
+    function drawImage(spec){
         context.save();
 
-		context.translate(dims.center.x, dims.center.y);
-		context.rotate(dims.rotation);
-		context.translate(-dims.center.x, -dims.center.y);
+		context.translate(spec.center.x, spec.center.y);
+		context.rotate(spec.rotation);
+		context.translate(-spec.center.x, -spec.center.y);
 
 		context.drawImage(
-			dims.image,
-			dims.center.x - dims.width/2,
-			dims.center.y - dims.height/2,
-			dims.width, dims.height);
+			spec.image,
+			spec.center.x - spec.width/2,
+			spec.center.y - spec.height/2,
+			spec.width, spec.height);
 
 		context.restore();
     }
@@ -67,17 +68,17 @@ MyGame.graphics=(function(){
     width, hieght, rotation
     fill ="rgba(r,g,b,a)"\storke style, is the stroke of the outer areana
     */
-    function drawRectangle(dims){
+    function drawRectangle(spec){
         context.save();
-        context.translate(dims.center.x , dims.center.y);
-        context.rotate(dims.rotation);
-        context.translate(-(dims.center.x), -(dims.center.y));
+        context.translate(spec.center.x , spec.center.y);
+        context.rotate(spec.rotation);
+        context.translate(-(spec.center.x), -(spec.center.y));
 
-        context.fillStyle = dims.fill;
-        context.fillRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+        context.fillStyle = spec.fill;
+        context.fillRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
 
-        context.strokeStyle = dims.stroke;
-        context.strokeRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+        context.strokeStyle = spec.stroke;
+        context.strokeRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
 
         context.restore();
     };
@@ -140,10 +141,70 @@ MyGame.graphics=(function(){
 			}
 		};
 
-        
+
 
 
         return that;
+    }
+
+
+    function tranRotTran(spec){
+        context.translate(spec.center.x, spec.center.y);
+		context.rotate(spec.rotation);
+		context.translate(-spec.center.x, -spec.center.y);
+    }
+
+    function drawImageWithDims(img, spec){
+        context.save();
+
+        tranRotTran(spec);
+
+		context.drawImage(
+			spec.image,
+			spec.center.x - spec.width/2,
+			spec.center.y - spec.height/2,
+			spec.width, spec.height);
+
+		context.restore();
+    }
+
+    function drawRectangleWithDims(spec, spec){
+        context.save();
+
+        tranRotTran(spec);
+
+        if (spec.hasOwnProperty("fill")) {
+            context.fillStyle = spec.fill;
+            context.fillRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+        }
+
+        if (spec.hasOwnProperty("stroke")) {
+            context.strokeStyle = spec.stroke;
+            context.strokeRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+        }
+
+        context.restore();
+    }
+
+
+    function ImageDrawable(img){
+        function draw(dims){
+            drawImageWithDims(dims);
+        }
+
+        return {draw:draw};
+    }
+
+    function RectangleDrawable(spec){
+        function draw(dims){
+            drawRectangleWithDims(spec, dims);
+        }
+    }
+
+    var genericDrawables={
+        redRect:RectangleDrawable({fill:"red",stroke:"black"}),
+        greenRect:RectangleDrawable({fill:"green",stroke:"black"}),
+        blueRect:RectangleDrawable({fill:"blue",stroke:"black"}),
     }
 
     return {
@@ -151,6 +212,9 @@ MyGame.graphics=(function(){
         unscaleGameBoard:unscaleGameBoard,
         clear:clear,
         GenericImage:GenericImage,
+        genericDrawables:genericDrawables
+        ImageDrawable:ImageDrawable,
+        RectangleDrawable:RectangleDrawable,
         SpriteSheet:SpriteSheet,
         drawImage:drawImage,
         writeMessage:writeMessage,
