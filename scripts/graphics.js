@@ -43,7 +43,7 @@ MyGame.graphics=(function(){
     }
 
     function genImage(srcFile){
-        var that,
+        var that={},
             image=new Image();
         image.onload=function(){
             that.draw=function(spec){
@@ -76,10 +76,8 @@ MyGame.graphics=(function(){
         context.translate(spec.center.x , spec.center.y);
         context.rotate(spec.rotation);
         context.translate(-(spec.center.x), -(spec.center.y));
-
         context.fillStyle = spec.fill;
         context.fillRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
-
         context.strokeStyle = spec.stroke;
         context.strokeRect(spec.center.x-spec.width/2, spec.center.y-spec.height/2, spec.width, spec.height);
 
@@ -218,8 +216,8 @@ MyGame.graphics=(function(){
         genericDrawables:genericDrawables,
         ImageDrawable:ImageDrawable,
         RectangleDrawable:RectangleDrawable,
-        SpriteSheet:SpriteSheet,
-        drawImage:drawImage,
+        genSpriteInfo:genSpriteInfo,
+        genSprite:genSprite,
         writeMessage:writeMessage,
         writeSpecificMessage:writeSpecificMessage,
         drawRectangle:drawRectangle,

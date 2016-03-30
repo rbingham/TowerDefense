@@ -68,16 +68,14 @@ MyGame.components=(function(graphics){
         width:400,
         height:400,
         subGrid:10,
-        areanaImg:,
-        gridImage:,
 		fill : 'rgba(0, 150, 250, 1)',
 		stroke : 'rgba(255, 0, 0, 1)',
         draw:function(drawGrid){
             if(drawGrid==='undefined'){
-                //Draw the lines for the grid
+                ImageHolder.drawImage("./images/arenaGrid.png",this);
+            }else{
+                ImageHolder.drawImage("./images/arena.png",this);
             }
-            graphics.drawRectangle(this);
-            //draw four rectangles for the opening
         },
     };
 
