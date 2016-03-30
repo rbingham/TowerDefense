@@ -20,7 +20,7 @@ function Tower(spec){
 //tower funtions go here
 Tower.prototype={
     shoot:function(){
-
+        
     },
     draw:function(drawRange){
         if(drawRange==='undefined'){
