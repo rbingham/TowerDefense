@@ -25,7 +25,7 @@ MyGame.gameModel=(function(graphics,components,input){
     function WatchGame(){
         components.arena.draw();
     }
-    function PlaceTower(){
+    function PlaceTowerRender(){
         components.arena.draw("foobar");
     }
 
