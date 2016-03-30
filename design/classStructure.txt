@@ -1,8 +1,8 @@
 MyGame
     -playGame
         -state
-            -updateFunction(regular, onPause)
-            -renderFunction(regular, onPause, placingTower)
+            -updateFunction->examples of(regular, onPause)
+            -renderFunction->examples of(regular, onPause, placingTower)
 
         -model
             -arenaModel(dataStructure)
@@ -21,7 +21,7 @@ MyGame
             -wave display
             -buttons
 
-    -components(Constructors)
+    -components(Constructors)//yes
         -Tower
         -Weapons
         -Creep
@@ -34,3 +34,11 @@ MyGame
     -input
         -keyboard
         -mouse
+        
+    -Collision System
+        We need at least a structure to house the algorithms, create Bounding Heircal stucture as follwoing, then we can abstract it for buttons/creeeps etc...
+        --Parent
+            --has Bounding Box
+            --has Array of children that have function checkCollsion(Box)
+            --has function checkCollsion(Box)
+    
