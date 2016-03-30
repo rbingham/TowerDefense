@@ -59,7 +59,9 @@ MyGame.input=(function(canvas){
     var Mouse=function (){
         var that={
             clicks:[],
-            handlers:[],
+            clickHandlers:[],
+            moveHandlers:[],
+            mouseMove:[],
         };
         
         
@@ -77,10 +79,12 @@ MyGame.input=(function(canvas){
         //accepts a rectangle that can be rotated, according to boundingRect.rotate
         //center, height,width,rotation
         //theoratically, no matter what happens to the rectangle, it should stay here in the queue;
-        that.registerCommand=function(handler,boundingRect){
+        that.registerClickCommand=function(handler,boundingRect){
             that.clickHandlers.push({handler:handler,rect:boundingRect});
         }
-        
+        that.registerMoveCommand=function(handler,boundingRect){
+            that.clickHandlers.push({handler:handler,rect:boundingRect});
+        }
         
         function checkCollision(point,rect){
             var x=point.x,
@@ -108,17 +112,29 @@ MyGame.input=(function(canvas){
         
         that.update=function(elapsed){
             toRemove=[];
-            for(var i=0;i<clicks.length;i++){
+            for(var i=0;i<that.clicks.length;i++){
                 for(var handlerNum=0;handlerNum < that.clickHandlers.length;++handlerNum){
-                    if(checkCollision(getMousePos(clicks[i]),clickHandlers[handlerNum].rect)){
+                    if(checkCollision(getMousePos(that.clicks[i]),clickHandlers[handlerNum].rect)){
                         clickHandlers[handlerNum].handler();
-                        if(!(toRemove.indexOf(i) > -1)){
+/*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);
-                        }
+                        } */
                     }
                 }
             }
-            removeUnwanted(toRemove,that.clicks);
+            for(var i=0;i<that.mouseMove.length;i++){
+                for(var handlerNum=0;handlerNum < that.moveHandlers.length;++handlerNum){
+                    if(checkCollision(getMousePos(that.mouseMove[i]),moveHandlers[handlerNum].rect)){
+                        moveHandlers[handlerNum].handler();
+/*                         if(!(toRemove.indexOf(i) > -1)){
+                            toRemove.push(i);
+                        } */
+                    }
+                }
+            }
+            
+            that.clicks.length=0;
+            that.mouseMove.length=0;
         };
         canvas.addEventListener('click',click);
         return that;
