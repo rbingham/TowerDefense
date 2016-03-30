@@ -1,0 +1,8 @@
+-input
+    -mouse
+        -uiMouseListener
+            -buttonArea
+                -button
+            -arenaUI
+    -keyboard
+        -uiKeyboardListener

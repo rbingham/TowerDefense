@@ -1,0 +1,36 @@
+MyGame
+    -playGame
+        -state
+            -updateFunction(regular, onPause)
+            -renderFunction(regular, onPause, placingTower)
+
+        -model
+            -arenaModel(dataStructure)
+                -creepsModel
+                -towersModel
+            -score/wave/values
+
+        -controller(takes model, takes state)
+            -initiatePlaceTower
+            -pauseGame
+            -other state changes
+
+        -view "ui"(takes model and controller)
+            -arenaView(takes mouse input, draws model)
+            -score display
+            -wave display
+            -buttons
+
+    -components(Constructors)
+        -Tower
+        -Weapons
+        -Creep
+
+    -uiComponents(Constructors)
+        -ButtonArea
+        -Button
+        -WaveIndicator
+
+    -input
+        -keyboard
+        -mouse
