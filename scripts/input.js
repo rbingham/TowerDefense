@@ -114,8 +114,8 @@ MyGame.input=(function(canvas){
             toRemove=[];
             for(var i=0;i<that.clicks.length;i++){
                 for(var handlerNum=0;handlerNum < that.clickHandlers.length;++handlerNum){
-                    if(checkCollision(getMousePos(that.clicks[i]),clickHandlers[handlerNum].rect)){
-                        clickHandlers[handlerNum].handler();
+                    if(checkCollision(getMousePos(that.clicks[i]),that.clickHandlers[handlerNum].rect)){
+                        that.clickHandlers[handlerNum].handler();
 /*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);
                         } */
@@ -124,7 +124,7 @@ MyGame.input=(function(canvas){
             }
             for(var i=0;i<that.mouseMove.length;i++){
                 for(var handlerNum=0;handlerNum < that.moveHandlers.length;++handlerNum){
-                    if(checkCollision(getMousePos(that.mouseMove[i]),moveHandlers[handlerNum].rect)){
+                    if(checkCollision(getMousePos(that.mouseMove[i]),that.moveHandlers[handlerNum].rect)){
                         that.moveHandlers[handlerNum].handler();
 /*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);

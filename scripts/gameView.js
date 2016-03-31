@@ -12,12 +12,12 @@ MyGame.GameView = function(model, input){
 
     //initialize each button
     var theButton = MyGame.uiComponents.CanvasButton({
-        dims:{center:{x:300,y:300}, height:100, width:100, rotate:0},
+        dims:{center:{x:700,y:100}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"yellow"})
     });
 
     //for each button register event using model
-    theButton.addButtonListener("logStuff", {onclick:function(evt){
+    theButton.addButtonListener("logStuff", {onClick:function(evt){
         console.log("the button has been clicked")
     }});
     buttonGrid.addButton(theButton);

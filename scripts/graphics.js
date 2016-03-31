@@ -57,7 +57,7 @@ MyGame.graphics=(function(){
                     spec.center.y - spec.height/2,
                     spec.width, spec.height);
                 context.restore();
-                
+
             }
         };
         image.src=srcFile;
@@ -116,7 +116,7 @@ MyGame.graphics=(function(){
         };
         return that;
     }
-    
+
     function genSpriteInfo(spec){
         var timeElapsed=0;
         spec.update=function(elapsedTime, forward) {
@@ -143,29 +143,29 @@ MyGame.graphics=(function(){
 				}
 			}
 		};
-        
+
         return spec;
     }
-    
-    
 
 
-    function tranRotTran(spec){
-        context.translate(spec.center.x, spec.center.y);
-		context.rotate(spec.rotation);
-		context.translate(-spec.center.x, -spec.center.y);
+
+
+    function tranRotTran(dims){
+        context.translate(dims.center.x, dims.center.y);
+		context.rotate(dims.rotation);
+		context.translate(-dims.center.x, -dims.center.y);
     }
 
     function drawImageWithDims(img, spec){
         context.save();
 
-        tranRotTran(spec);
+        tranRotTran(dims);
 
 		context.drawImage(
-			spec.image,
-			spec.center.x - spec.width/2,
-			spec.center.y - spec.height/2,
-			spec.width, spec.height);
+			img,
+			dims.center.x - dims.width/2,
+			dims.center.y - dims.height/2,
+			dims.width, dims.height);
 
 		context.restore();
     }
@@ -173,7 +173,7 @@ MyGame.graphics=(function(){
     function drawRectangleWithDims(spec, dims){
         context.save();
 
-        tranRotTran(spec);
+        tranRotTran(dims);
 
         if (spec.hasOwnProperty("fill")) {
             context.fillStyle = spec.fill;
@@ -200,6 +200,7 @@ MyGame.graphics=(function(){
         function draw(dims){
             drawRectangleWithDims(spec, dims);
         }
+        return {draw:draw};
     }
 
     var genericDrawables={

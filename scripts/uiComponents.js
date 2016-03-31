@@ -81,8 +81,8 @@ MyGame.uiComponents = (function(graphics){
         }
 
         that.onMouseClick = function(){
-            onMouseDown();
-            onMouseUp();
+            that.onMouseDown();
+            that.onMouseUp();
         }
 
         that.draw = function(){
@@ -99,7 +99,7 @@ MyGame.uiComponents = (function(graphics){
             }
 
             if(!drawn){
-                drawable.draw(spec.dims);
+                spec.drawable.draw(spec.dims);
             }
             needsRedrawn = false;
         }

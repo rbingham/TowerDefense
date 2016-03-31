@@ -43,7 +43,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
     function render(elapsed){
         model.render(elapsed);
-        gameView.render(elapsed);
+        gameView.draw(elapsed);
     }
 
 
