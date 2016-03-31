@@ -3,7 +3,7 @@
 MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
     var prevTimestamp=performance.now();
     var eventList=[];
-
+    var gameView;
 
     var run=function(){
         //add functions to listen to key listners in here
@@ -16,7 +16,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
 
     var initialize=function(){
-
+        gameView = MyGame.GameView(model, input);
     };
 
     /*
@@ -38,10 +38,12 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
     function processInput(elapsed){
         model.keyUpdate(elapsed);
+        gameView.update(elapsed);
     }
 
     function render(elapsed){
         model.render(elapsed);
+        gameView.render(elapsed);
     }
 
 

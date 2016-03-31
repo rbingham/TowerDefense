@@ -27,7 +27,7 @@ MyGame.input=(function(canvas){
         that.registerKeyUp=function(key,handler){
             that.keyUpHandler.push({key:key,handler:handler});
         }
-        
+
         that.update=function(elapsed){
             for(var handlerNum=0;handlerNum < that.handlers.length;++handlerNum){
                 //console.log(handlerNum);
@@ -43,11 +43,11 @@ MyGame.input=(function(canvas){
                     toRemove.push(that.keyUpHandler[handlerNum].key);
                 }
             }
-            
+
             for(var i=0;i <toRemove.length;++i){
                 delete that.upKeys[toRemove[i]];
             }
-            
+
         };
 
         window.addEventListener('keydown',keydown);
@@ -59,10 +59,12 @@ MyGame.input=(function(canvas){
     var Mouse=function (){
         var that={
             clicks:[],
-            handlers:[],
+            mouseMove:[],
+            clickHandlers:[],
+            moveHandlers:[],
         };
-        
-        
+
+
         function getMousePos(evt) {
             var rect = canvas.getBoundingClientRect();
             return {
@@ -70,7 +72,7 @@ MyGame.input=(function(canvas){
                 y: evt.clientY - rect.top
             };
         }
-        
+
         function click(evt){
             that.clicks.push(evt);
         }
@@ -83,7 +85,7 @@ MyGame.input=(function(canvas){
         that.registerMoveCommand=function(handler,boundingRect){
             that.moveHandlers.push({handler:handler,rect:boundingRect});
         }
-        
+
         function checkCollision(point,rect){
             var x=point.x,
                 y=point.y;
@@ -100,14 +102,14 @@ MyGame.input=(function(canvas){
                 return false;
             return true;
         }
-        
+
         function removeUnwanted(toRemove,fromA){
             toRemove.sort(function(a,b){return b-a;});//garuntee sorted, reverse should work as well
             for(var i=0;i<toRemove.length;i++){
                 fromA.splice(toRemove[i],1);
             }
         }
-        
+
         that.update=function(elapsed){
             toRemove=[];
             for(var i=0;i<that.clicks.length;i++){
@@ -123,21 +125,21 @@ MyGame.input=(function(canvas){
             for(var i=0;i<that.mouseMove.length;i++){
                 for(var handlerNum=0;handlerNum < that.moveHandlers.length;++handlerNum){
                     if(checkCollision(getMousePos(that.mouseMove[i]),moveHandlers[handlerNum].rect)){
-                        moveHandlers[handlerNum].handler();
+                        that.moveHandlers[handlerNum].handler();
 /*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);
                         } */
                     }
                 }
             }
-            
+
             that.clicks.length=0;
             that.mouseMove.length=0;
         };
         canvas.addEventListener('click',click);
         return that;
     }
-    
+
 
 
     return{

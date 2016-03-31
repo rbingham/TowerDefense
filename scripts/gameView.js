@@ -1,16 +1,19 @@
-MyGame.GameView = function(model, keyboard, mouse){
+MyGame.GameView = function(model, input){
     //var waveIndicator;
     //initialize waveIndicator
     //add waveIndicator MouseListener
 
     //initialize buttonGrid
+    var mouse = input.Mouse();
+    var keyboard = input.Keyboard();
+
     var buttonGrid = MyGame.uiComponents.CanvasButtonGrid(mouse);
 
 
     //initialize each button
     var theButton = MyGame.uiComponents.CanvasButton({
-        dims:{center:{x:300,y:300}, height:100, width:100, rotate:0}},
-        drawable:{MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"yellow"})}
+        dims:{center:{x:300,y:300}, height:100, width:100, rotate:0},
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"yellow"})
     });
 
     //for each button register event using model
@@ -21,6 +24,8 @@ MyGame.GameView = function(model, keyboard, mouse){
 
 
     function update(elapsedTime){
+        mouse.update(elapsedTime);
+        keyboard.update(elapsedTime);
         // buttonGrid.update(update);
         // waveIndicator.update(update);
     }

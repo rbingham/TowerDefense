@@ -35,15 +35,15 @@ MyGame.uiComponents = (function(graphics){
             }
         }
 
-        that.getDims(){
-            return dims;
+        that.getDims = function(){
+            return spec.dims;
         }
 
         that.addButtonListener = function(key, listener){
-            buttonListenerMap.add(key, listener);
+            buttonListenerMap.addListener(key, listener);
         }
         that.removeButtonListener = function(key){
-            buttonListenerMap.remove(key);
+            buttonListenerMap.removeListener(key);
         }
 
         that.onMouseEnter = function(){
@@ -65,14 +65,14 @@ MyGame.uiComponents = (function(graphics){
             mouseDown = false;
         }
 
-        that.onMouseDown(){
+        that.onMouseDown = function(){
             mouseDown = true;
             if (spec.hasOwnProperty("mouseDownDrawable")) {
                 fireNeedsRedrawn();
             }
         }
 
-        that.onMouseUp(){
+        that.onMouseUp = function(){
             mouseDown = false
             if (spec.hasOwnProperty("mouseDownDrawable")) {
                 fireNeedsRedrawn();
@@ -80,12 +80,12 @@ MyGame.uiComponents = (function(graphics){
             buttonListenerMap.onClick();
         }
 
-        that.onMouseClick(){
+        that.onMouseClick = function(){
             onMouseDown();
             onMouseUp();
         }
 
-        that.draw(){
+        that.draw = function(){
             var drawn=false;
 
             if(mouseEnter){
@@ -120,6 +120,11 @@ MyGame.uiComponents = (function(graphics){
             for(let i=0; i<buttons.length; i++){
                 buttons[i].draw();
             }
+        }
+
+        return {
+            addButton:addButton,
+            draw:draw
         }
     }
 
