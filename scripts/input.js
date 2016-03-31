@@ -125,7 +125,7 @@ MyGame.input=(function(canvas){
             for(var i=0;i<that.mouseMove.length;i++){
                 for(var handlerNum=0;handlerNum < that.moveHandlers.length;++handlerNum){
                     if(checkCollision(getMousePos(that.mouseMove[i]),that.moveHandlers[handlerNum].rect)){
-                        that.moveHandlers[handlerNum].handler();
+                        that.moveHandlers[handlerNum].handler(getMousePos(that.clicks[i]));
 /*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);
                         } */
