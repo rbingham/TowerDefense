@@ -15,7 +15,8 @@ MyGame.gameModel=(function(graphics,components,input){
             },
         internalRender=function(){},
         internalUpdate=function(){},
-        keyboard=input.Keyboard();
+        keyboard=input.Keyboard(),
+        mouse=input.Mouse();
 
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
@@ -47,7 +48,7 @@ MyGame.gameModel=(function(graphics,components,input){
         internalRender(elapsed);
     };
 
-
+    
 
 
     function removeDoneEvents(){
@@ -70,12 +71,16 @@ MyGame.gameModel=(function(graphics,components,input){
             }
         }
     }
+    
+    
+    that.placeButtonPressed(towerSpecs){
+            
+    }
+    
 
     that.keyUpdate=function(elapsed){
         keyboard.update(elapsed);
     }
-
-
 
     return that;
 }(MyGame.graphics,MyGame.components,MyGame.input));

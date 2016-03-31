@@ -23,21 +23,21 @@ Tower.prototype={
         
     },
     draw:function(drawRange){
-        if(drawRange==='undefined'){
+        if(drawRange===undefined){
             //Draw a circle for range.
         }
         ImageHolder.drawImage(this.src,this);
-        weapon.draw();//draw the weapon on top the turret
+        var tempR=this.rotation;
+        this.rotation=this.weapon.rotation;
+        ImageHolder.drawImage(this.weapon.src,this);
+        this.rotation=tempR;
     }
 }
 
 function Weapon(spec){
-    this.center=spec.center;
     this.weapon=spec.weapon;
     this.srcs=spec.src;
     this.rotation=0;
-    this.height=spec.height;
-    this.width=spec.width;
     this.range=spec.range;
 
 }
@@ -46,9 +46,6 @@ function Weapon(spec){
 Weapon.prototype={
     shoot:function(){
 
-    },
-    draw:function(){
-        ImageHolder.drawImage(this.src,this);
     }
 }
 
@@ -93,27 +90,32 @@ MyGame.components=(function(graphics){
             }else{
                 ImageHolder.drawImage("./images/arena.png",this);
             }
-        },
-        renderTowers:function(aot){
-            for(var i=0;i<aot.length;i++){
-                aot[i].draw();
-            }
-            if(this.placingTower!==undefined){
-               this.placingTower.draw(true); 
-            }
-        },
-        renderTempTower:function(toRender){
-            toRender.draw(true);
-        },
-        placingOver:function(i, j,kind){
-            this.placingTower=new Tower({})
         }
     };
-
-
+    var tempTower;
+    function roundXY(x,y){
+        return {
+            x:x-x%that.arena.subGrid,
+            y:y-y%that.arena.subGrid
+        }
+    }
+    
+    that.placingOver(x,y,params){
+        params.center=roundXY(x,y);
+        tempTower=new Tower(params);
+    }
+    
+    that.mousePlacingExitFrame=function(){
+        
+    }
+    
+    
     that.renderTowers=function(elapsed){
         for(var i=0;i<toers.length;i++){
             that.towerArray[i].draw();
+        }
+        if(tempTower!==undefined){
+            tempTower.draw(true);
         }
     };
 
