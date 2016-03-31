@@ -19,7 +19,7 @@ MyGame.gameModel=(function(graphics,components,input){
 
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
-        internalRender=WatchGame;
+        internalRender=PlaceTowerRender;
     };
 
     function WatchGame(){
