@@ -36,7 +36,7 @@ Tower.prototype={
 
 function Weapon(spec){
     this.weapon=spec.weapon;
-    this.srcs=spec.src;
+    this.src=spec.src;
     this.rotation=0;
     this.range=spec.range;
 
@@ -93,15 +93,15 @@ MyGame.components=(function(graphics){
         }
     };
     var tempTower;
-    function roundXY(x,y){
+    function roundXY(at){
         return {
-            x:x-x%that.arena.subGrid,
-            y:y-y%that.arena.subGrid
+            x:at.x-at.x%that.arena.subGrid,
+            y:at.y-at.y%that.arena.subGrid
         }
     }
     
-    that.placingOver(x,y,params){
-        params.center=roundXY(x,y);
+    that.placingOver(at,params){
+        params.center=roundXY(at);
         tempTower=new Tower(params);
     }
     
