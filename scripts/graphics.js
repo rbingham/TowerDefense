@@ -71,6 +71,15 @@ MyGame.graphics=(function(){
     width, hieght, rotation
     fill ="rgba(r,g,b,a)"\storke style, is the stroke of the outer areana
     */
+    function drawCircle(spec){
+        context.save();
+        context.strokeStyle = spec.stroke;
+        context.beginPath();
+        context.arc(spec.center.x, spec.center.y,spec.radius,0,2*Math.PI);
+        context.stroke();
+        context.restore();
+    };
+
     function drawRectangle(spec){
         context.save();
         context.translate(spec.center.x , spec.center.y);
@@ -83,7 +92,8 @@ MyGame.graphics=(function(){
 
         context.restore();
     };
-
+    
+    
     /*
     takes,
     */
@@ -222,6 +232,7 @@ MyGame.graphics=(function(){
         writeMessage:writeMessage,
         writeSpecificMessage:writeSpecificMessage,
         drawRectangle:drawRectangle,
+        drawCircle:drawCircle,
         canvas:canvas
     };
 

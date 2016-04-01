@@ -32,6 +32,7 @@ MyGame.gameModel=(function(graphics,components,input){
         components.renderTowers();
     }
     function PlaceTowerUpdate(elapsed){
+        components.updateTowers(elapsed);
         mouse.update(elapsed);
     }
 

@@ -23,19 +23,26 @@ Tower.prototype={
 
     },
     draw:function(drawRange){
-        if(drawRange===undefined){
-            //Draw a circle for range.
+        if(drawRange!==undefined){
+            MyGame.graphics.drawCircle({
+                center:this.center,
+                radius:this.weapon.range
+            })
         }
         ImageHolder.drawImage(this.src,this);
         var tempR=this.rotation;
         this.rotation=this.weapon.rotation;
         ImageHolder.drawImage(this.weapon.src,this);
         this.rotation=tempR;
+    },
+    update(elapsed){
+        this.weapon.rotation+=elapsed/10000;
+        this.weapon.rotation%=2*Math.PI;
     }
 }
 
 function Weapon(spec){
-    this.srcs=spec.src;
+    this.src=spec.src;
     this.rotation=0;
     this.range=spec.range;
 
@@ -52,12 +59,12 @@ Weapon.prototype={
 
 MyGame.components=(function(graphics){
     var that={};
-
     that.towerArray=[];
 
     that.addTower=function(at,params){
         params.center=roundXY(at);
         that.towerArray.push(new Tower(params));
+        tempTower=undefined;
     };
 
 
@@ -108,6 +115,11 @@ MyGame.components=(function(graphics){
     that.mousePlacingExitFrame=function(){
 
     }
+    that.updateTowers=function(elapsed){
+        for(var i=0;i<that.towerArray.length;i++){
+            that.towerArray[i].update(elapsed);
+        }
+    }
 
 
     that.renderTowers=function(elapsed){
@@ -131,7 +143,7 @@ MyGame.components=(function(graphics){
     //may want an update in future
 
     that.sampleWeaponSpec={
-        src:"./favicon.png",
+        src:"./images/weapon.png",
         rotation:0,
         range:40,
     }
