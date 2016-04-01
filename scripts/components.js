@@ -20,14 +20,17 @@ function Tower(spec){
 //tower funtions go here
 Tower.prototype={
     shoot:function(){
-
+        
     },
     draw:function(drawRange){
-        if(drawRange==='undefined'){
+        if(drawRange===undefined){
             //Draw a circle for range.
         }
         ImageHolder.drawImage(this.src,this);
-        weapon.draw();//draw the weapon on top the turret
+        var tempR=this.rotation;
+        this.rotation=this.weapon.rotation;
+        ImageHolder.drawImage(this.weapon.src,this);
+        this.rotation=tempR;
     }
 }
 
@@ -42,9 +45,6 @@ function Weapon(spec){
 Weapon.prototype={
     shoot:function(){
 
-    },
-    draw:function(){
-        ImageHolder.drawImage(this.src,this);
     }
 }
 
@@ -58,7 +58,7 @@ MyGame.components=(function(graphics){
     that.addTower=function(spec){
         that.towerArray.push(new Tower(spec));
     };
-
+    
 
     that.arena={
         center:{x:400,y:400},
@@ -89,27 +89,32 @@ MyGame.components=(function(graphics){
             }else{
                 ImageHolder.drawImage("./images/arena.png",this);
             }
-        },
-        renderTowers:function(aot){
-            for(var i=0;i<aot.length;i++){
-                aot[i].draw();
-            }
-            if(this.placingTower!==undefined){
-               this.placingTower.draw(true);
-            }
-        },
-        renderTempTower:function(toRender){
-            toRender.draw(true);
-        },
-        placingOver:function(i, j,kind){
-            this.placingTower=new Tower({})
         }
     };
-
-
+    var tempTower;
+    function roundXY(at){
+        return {
+            x:at.x-at.x%that.arena.subGrid,
+            y:at.y-at.y%that.arena.subGrid
+        };
+    }
+    
+    that.placingOver=function(at,params){
+        params.center=roundXY(at);
+        tempTower=new Tower(params);
+    }
+    
+    that.mousePlacingExitFrame=function(){
+        
+    }
+    
+    
     that.renderTowers=function(elapsed){
         for(var i=0;i<toers.length;i++){
             that.towerArray[i].draw();
+        }
+        if(tempTower!==undefined){
+            tempTower.draw(true);
         }
     };
 
