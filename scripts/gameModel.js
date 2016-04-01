@@ -84,8 +84,9 @@ MyGame.gameModel=(function(graphics,components,input){
             components.placingOver(at,towerSpecs);
         },components.arena);
         mouse.registerClickCommand(function(at){
-            components.addTower(at,towerSpecs);
-            mouse=input.Mouse();
+            if(components.addTower(at,towerSpecs)){
+                mouse=input.Mouse();
+            }
         },components.arena);
     }
     

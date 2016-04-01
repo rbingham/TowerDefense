@@ -60,11 +60,37 @@ Weapon.prototype={
 MyGame.components=(function(graphics){
     var that={};
     that.towerArray=[];
-
+    
+    function doesTowerFit(i,j,params){
+        for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
+            for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
+                if(that.takenGrid[icheck][jcheck]){
+                    return false;
+                }
+            }   
+        }
+        return true;
+    }
+    function takeSpots(i,j,params){
+        for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
+            for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
+                that.takenGrid[icheck][jcheck]=true;
+            }   
+        }        
+    }
+    
     that.addTower=function(at,params){
         params.center=roundXY(at);
+        coords=roundXY(at)
+        lowerRighti=(coords.x-that.arena.center.x+that.arena.width/2)/(that.arena.subGrid);
+        lowerRightj=(coords.y-that.arena.center.y+that.arena.height/2)/(that.arena.subGrid);
+        if(!doesTowerFit(lowerRighti,lowerRightj,params)){
+            return false;
+        }
+        takeSpots(lowerRighti,lowerRightj,params);
         that.towerArray.push(new Tower(params));
         tempTower=undefined;
+        return true;
     };
 
 
@@ -99,6 +125,16 @@ MyGame.components=(function(graphics){
             }
         }
     };
+    
+    that.takenGrid=[];
+    for(var i=0;i<that.arena.width/that.arena.subGrid;i++){
+        that.takenGrid[i]=[];
+        for(var j=0;j<that.arena.height/that.arena.subGrid;j++){
+            that.takenGrid[i][j]=false;
+        }
+    }
+
+    
     var tempTower;
     function roundXY(at){
         return {
@@ -106,6 +142,13 @@ MyGame.components=(function(graphics){
             y:at.y-at.y%that.arena.subGrid
         };
     }
+    function xyToGridSpace(at){
+        return {
+            x:at.x-at.x%that.arena.subGrid,
+            y:at.y-at.y%that.arena.subGrid
+        };
+    }
+    
 
     that.placingOver=function(at,params){
         params.center=roundXY(at);
