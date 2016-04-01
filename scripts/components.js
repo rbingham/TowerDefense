@@ -11,7 +11,7 @@ Wepons, parts of towers, generate bullets, which componets then handles and mana
 */
 function Tower(spec){
     this.center=spec.center;
-    this.weapon=spec.weapon;
+    this.weapon=new Weapon(spec.weaponSpec);
     this.src=spec.src;
     this.rotation=0;
     this.height=spec.height;
@@ -20,7 +20,7 @@ function Tower(spec){
 //tower funtions go here
 Tower.prototype={
     shoot:function(){
-        
+
     },
     draw:function(drawRange){
         if(drawRange==='undefined'){
@@ -32,12 +32,8 @@ Tower.prototype={
 }
 
 function Weapon(spec){
-    this.center=spec.center;
-    this.weapon=spec.weapon;
     this.srcs=spec.src;
     this.rotation=0;
-    this.height=spec.height;
-    this.width=spec.width;
     this.range=spec.range;
 
 }
@@ -62,7 +58,7 @@ MyGame.components=(function(graphics){
     that.addTower=function(spec){
         that.towerArray.push(new Tower(spec));
     };
-    
+
 
     that.arena={
         center:{x:400,y:400},
@@ -99,7 +95,7 @@ MyGame.components=(function(graphics){
                 aot[i].draw();
             }
             if(this.placingTower!==undefined){
-               this.placingTower.draw(true); 
+               this.placingTower.draw(true);
             }
         },
         renderTempTower:function(toRender){
@@ -128,6 +124,20 @@ MyGame.components=(function(graphics){
 
     //may want an update in future
 
+    that.sampleWeaponSpec={
+        src:"./favicon.png",
+        rotation:0,
+        range:40,
+    }
+
+    that.sampleTowerSpec={
+        center:{x:0,y:0},
+        this.weapon=that.sampleWeaponSpec,
+        src:"./images/tower.png",
+        rotation:0,
+        height:40,
+        width:40,
+    }
 
     return that;
 }(MyGame.graphics));

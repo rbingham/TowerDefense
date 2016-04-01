@@ -110,6 +110,12 @@ MyGame.uiComponents = (function(graphics){
     function CanvasButtonGrid(mouse){
         var buttons = [];
 
+        //add self to mouse as mouse listener
+
+        function onMouseClick(evt){
+
+        }
+
         function addButton(button){
             buttons.push(button);
             mouse.registerClickCommand(button.onMouseClick,button.getDims());
