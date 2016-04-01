@@ -20,7 +20,7 @@ function Tower(spec){
 //tower funtions go here
 Tower.prototype={
     shoot:function(){
-        
+
     },
     draw:function(drawRange){
         if(drawRange===undefined){
@@ -58,7 +58,7 @@ MyGame.components=(function(graphics){
     that.addTower=function(spec){
         that.towerArray.push(new Tower(spec));
     };
-    
+
 
     that.arena={
         center:{x:400,y:400},
@@ -98,17 +98,17 @@ MyGame.components=(function(graphics){
             y:at.y-at.y%that.arena.subGrid
         };
     }
-    
+
     that.placingOver=function(at,params){
         params.center=roundXY(at);
         tempTower=new Tower(params);
     }
-    
+
     that.mousePlacingExitFrame=function(){
-        
+
     }
-    
-    
+
+
     that.renderTowers=function(elapsed){
         for(var i=0;i<toers.length;i++){
             that.towerArray[i].draw();
@@ -137,7 +137,7 @@ MyGame.components=(function(graphics){
 
     that.sampleTowerSpec={
         center:{x:0,y:0},
-        this.weapon=that.sampleWeaponSpec,
+        weaponSpec:that.sampleWeaponSpec,
         src:"./images/tower.png",
         rotation:0,
         height:40,
