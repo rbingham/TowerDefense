@@ -55,8 +55,9 @@ MyGame.components=(function(graphics){
 
     that.towerArray=[];
 
-    that.addTower=function(spec){
-        that.towerArray.push(new Tower(spec));
+    that.addTower=function(at,params){
+        params.center=roundXY(at);
+        that.towerArray.push(new Tower(params));
     };
 
 
@@ -110,7 +111,7 @@ MyGame.components=(function(graphics){
 
 
     that.renderTowers=function(elapsed){
-        for(var i=0;i<toers.length;i++){
+        for(var i=0;i<that.towerArray.length;i++){
             that.towerArray[i].draw();
         }
         if(tempTower!==undefined){

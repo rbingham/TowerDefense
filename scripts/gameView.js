@@ -17,9 +17,9 @@ MyGame.GameView = function(model, input){
     });
 
     //for each button register event using model
-    theButton.addButtonListener("logStuff", {onClick:function(evt){
-        console.log("the button has been clicked")
-    }});
+    theButton.addButtonListener("logStuff", {onClick:function(){
+        model.placeButtonPressed(MyGame.components.sampleTowerSpec);
+        }});
     buttonGrid.addButton(theButton);
 
 

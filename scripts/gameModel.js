@@ -21,6 +21,7 @@ MyGame.gameModel=(function(graphics,components,input){
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
         internalRender=PlaceTowerRender;
+        internalUpdate=PlaceTowerUpdate;
     };
 
     function WatchGame(){
@@ -28,6 +29,10 @@ MyGame.gameModel=(function(graphics,components,input){
     }
     function PlaceTowerRender(){
         components.arena.draw("foobar");
+        components.renderTowers();
+    }
+    function PlaceTowerUpdate(elapsed){
+        mouse.update(elapsed);
     }
 
 
@@ -76,6 +81,10 @@ MyGame.gameModel=(function(graphics,components,input){
     that.placeButtonPressed=function(towerSpecs){
         mouse.registerMoveCommand(function(at){
             components.placingOver(at,towerSpecs);
+        },components.arena);
+        mouse.registerClickCommand(function(at){
+            components.addTower(at,towerSpecs);
+            mouse=input.Mouse();
         },components.arena);
     }
     
