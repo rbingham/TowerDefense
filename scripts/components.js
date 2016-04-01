@@ -97,10 +97,10 @@ MyGame.components=(function(graphics){
         return {
             x:at.x-at.x%that.arena.subGrid,
             y:at.y-at.y%that.arena.subGrid
-        }
+        };
     }
     
-    that.placingOver(at,params){
+    that.placingOver=function(at,params){
         params.center=roundXY(at);
         tempTower=new Tower(params);
     }

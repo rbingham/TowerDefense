@@ -73,7 +73,7 @@ MyGame.gameModel=(function(graphics,components,input){
     }
     
     
-    that.placeButtonPressed(towerSpecs){
+    that.placeButtonPressed=function(towerSpecs){
         mouse.registerMoveCommand(function(at){
             components.placingOver(at,towerSpecs);
         },components.arena);
