@@ -147,11 +147,25 @@ MyGame.components=(function(graphics){
         rotation:0,
         range:40,
     }
+    that.otherSampleWeaponSpec={
+        src:"./images/weapon2.png",
+        rotation:0,
+        range:40,
+    }
 
     that.sampleTowerSpec={
         center:{x:0,y:0},
         weaponSpec:that.sampleWeaponSpec,
         src:"./images/tower.png",
+        rotation:0,
+        height:40,
+        width:40,
+    }
+
+    that.otherSampleTowerSpec={
+        center:{x:0,y:0},
+        weaponSpec:that.otherSampleWeaponSpec,
+        src:"./images/tower2.png",
         rotation:0,
         height:40,
         width:40,

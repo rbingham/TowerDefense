@@ -15,12 +15,21 @@ MyGame.GameView = function(model, input){
         dims:{center:{x:700,y:100}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"yellow"})
     });
+    var theOtherButton = MyGame.uiComponents.CanvasButton({
+        dims:{center:{x:700,y:200}, height:100, width:100, rotate:0},
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"yellow",fill:"blue"})
+    });
 
     //for each button register event using model
     theButton.addButtonListener("logStuff", {onClick:function(){
         model.placeButtonPressed(MyGame.components.sampleTowerSpec);
-        }});
+    }});
+    theOtherButton.addButtonListener("logStuff", {onClick:function(){
+        model.placeButtonPressed(MyGame.components.otherSampleTowerSpec);
+    }});
+
     buttonGrid.addButton(theButton);
+    buttonGrid.addButton(theOtherButton);
 
 
     function update(elapsedTime){
