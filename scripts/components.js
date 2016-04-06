@@ -57,6 +57,18 @@ Weapon.prototype={
 
 
 
+
+validPathExists(grid,start,exits){
+    var queue=[];
+    var queue.push(start);
+    while(!queue.empty()){
+        var i=queue.shift();
+        for()
+        
+    }
+    
+}
+
 MyGame.components=(function(graphics){
     var that={};
     that.towerArray=[];
@@ -64,7 +76,7 @@ MyGame.components=(function(graphics){
     function doesTowerFit(i,j,params){
         for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
             for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
-                if(that.takenGrid[icheck][jcheck]){
+                if(that.takenGrid[icheck][jcheck].taken){
                     return false;
                 }
             }   
@@ -74,7 +86,7 @@ MyGame.components=(function(graphics){
     function takeSpots(i,j,params){
         for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
             for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
-                that.takenGrid[icheck][jcheck]=true;
+                that.takenGrid[icheck][jcheck].taken=true;
             }   
         }        
     }
@@ -127,10 +139,23 @@ MyGame.components=(function(graphics){
     };
     
     that.takenGrid=[];
+    //should allow us to add diagnals in the future
     for(var i=0;i<that.arena.width/that.arena.subGrid;i++){
         that.takenGrid[i]=[];
         for(var j=0;j<that.arena.height/that.arena.subGrid;j++){
-            that.takenGrid[i][j]=false;
+            that.takenGrid[i][j]={taken:false,hit:false,adjacent:[]};
+            if(i-1>=0){
+                that.takenGrid[i][j].adjacent.append({x:i-1,y:j});
+            }
+            if(i+1<that.takenGrid.length){
+                that.takenGrid[i][j].adjacent.append({x:i+1,y:j});
+            }
+            if(j-1>=0){
+                that.takenGrid[i][j].adjacent.append({x:i,y:j-1});
+            }
+            if(j+1<that.takenGrid[i].length){
+                that.takenGrid[i][j].adjacent.append({x:i,y:j+1});
+            }
         }
     }
 
