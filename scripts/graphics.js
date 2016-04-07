@@ -92,8 +92,8 @@ MyGame.graphics=(function(){
 
         context.restore();
     };
-    
-    
+
+
     /*
     takes,
     */
@@ -184,6 +184,10 @@ MyGame.graphics=(function(){
         context.save();
 
         tranRotTran(dims);
+
+        if(dims.hasOwnProperty("alpha")){
+            context.globalAlpha = dims.alpha;
+        }
 
         if (spec.hasOwnProperty("fill")) {
             context.fillStyle = spec.fill;

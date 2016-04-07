@@ -3,11 +3,13 @@ MyGame.particleSystems = (function(){
 	/**********************************************************
 		The ParticleSystem
 		spec:{
-				drawable,
+				drawables[],
 				center:{x, y},
 				speed:{mean, stdev},
+				rotationalSpeed:{mean, stdev},
 				lifetime:{mean, stdev},
-				size:{mean, stdev}
+				size:{mean, stdev},
+				particlesFade
 			}
 
 		implements drawable
@@ -16,7 +18,8 @@ MyGame.particleSystems = (function(){
 		'use strict';
 		var that = {},
 			nextName = 1,	// unique identifier for the next particle
-			particles = {};	// Set of all active particles
+			particles = {},
+			renderKeys;	// Set of all active particles
 
 
 		//------------------------------------------------------------------
@@ -27,13 +30,15 @@ MyGame.particleSystems = (function(){
 		that.create = function() {
 			var p = {
 					//image: spec.image,
-					size: Math.abs(MyGame.random.nextGaussian(spec.size.mean, spec.size.stdev)),
+					drawableIndex: MyGame.random.nextRange(0, spec.drawables.length-1),
+					size: MyGame.random.nextGaussian(spec.size.mean, spec.size.stdev),
 					//center: {x: spec.center.x, y: spec.center.y},
 					center: {x: 0, y: 0},
 					direction: MyGame.random.nextCircleVector(),
 					speed: MyGame.random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
+					rotationalSpeed: MyGame.random.nextGaussian(spec.rotationalSpeed.mean, spec.rotationalSpeed.stdev), // pixels per second
 					rotation: 0,
-					lifetime: Math.abs(MyGame.random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev)),	// How long the particle should live, in seconds
+					lifetime: MyGame.random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev),	// How long the particle should live, in seconds
 					alive: 0	// How long the particle has been alive, in seconds
 				};
 
@@ -59,6 +64,8 @@ MyGame.particleSystems = (function(){
 				value,
 				particle;
 
+			renderKeys = [];
+
 			//
 			// We work with time in seconds, elapsedTime comes in as milliseconds
 			elapsedTime = elapsedTime / 1000;
@@ -77,12 +84,14 @@ MyGame.particleSystems = (function(){
 
 					//
 					// Rotate proportional to its speed
-					particle.rotation += particle.speed / 500;
+					particle.rotation += particle.rotationalSpeed / 500;
 
 					//
 					// If the lifetime has expired, identify it for removal
 					if (particle.alive > particle.lifetime) {
 						removeMe.push(value);
+					}else{
+						renderKeys.push(value);
 					}
 				}
 			}
@@ -101,19 +110,21 @@ MyGame.particleSystems = (function(){
 			dims.width		= particle.size,
 			dims.height 	= particle.size,
 			dims.rotation 	= particle.rotation
+
+			if(spec.particlesFade){
+				dims.alpha 	= 1-particle.alive/particle.lifetime;
+			}
 		}
 
 		that.draw = function() {
 			var value,
 				particle,
-				dims;
+				dims={center:{}};
 
-			for (value in particles) {
-				if (particles.hasOwnProperty(value)) {
-					particle = particles[value];
-					setParticleDims(particle, dims)
-					spec.drawable.draw(dims);
-				}
+			for (let i = renderKeys.length-1; 0<=i; i--) {
+				particle = particles[renderKeys[i]];
+				setParticleDims(particle, dims)
+				spec.drawables[particle.drawableIndex].draw(dims);
 			}
 		};
 
@@ -126,9 +137,11 @@ MyGame.particleSystems = (function(){
 	***********************************************************/
 	var DefaultParticleSpec = function(){
 		return {
+			drawables:[],
 			center: {x: 300, y: 300},
 			size: {mean: 10, stdev: 40},
-			speed: {mean: 50, stdev: 25},
+			speed: {mean: 75, stdev: 25},
+			rotationalSpeed: {mean: 0, stdev: 30},
 			lifetime: {mean: 4, stdev: 1}
 		}
 	}
