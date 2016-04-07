@@ -58,14 +58,48 @@ Weapon.prototype={
 
 
 
-validPathExists(grid,start,exits){
+function validPathExists(grid,start,exits){
     var queue=[];
-    var queue.push(start);
-    while(!queue.empty()){
+    var by=[];
+    var toReset=[];
+    queue.push(start);
+    by.push('foobar');
+    var found=false;
+    while(!found&&queue.length!==0){
         var i=queue.shift();
-        for()
+        if(grid[i.x][i.y].hit||grid[i.x][i.y].taken){
+            continue;
+        }
+        grid[i.x][i.y].hit=true;
+        toReset.push(i);
         
+        //set found to true if any match, thats what the or is for
+        for(var j=0;j<exits.length;j++){
+            if((exits[j].x===i.x&&exits[j].y===i.y)){
+                found=true;
+            }
+        }
+        
+        
+        for(var j=0;j<grid[i.x][i.y].adjacent.length;j++){
+            queue.push(grid[i.x][i.y].adjacent[j]);
+        }
     }
+    console.log(start);
+    var t="";
+    for(var j=0;j<grid.length;j++){
+        for(var k=0;k<grid[j].length;k++){
+            t+=grid[j][k].hit?"X":"_";
+        }
+        t+='\n'
+    }
+    console.log(t);
+
+    
+    for(var j=0;j<toReset.length;j++){
+        grid[toReset[j].x][toReset[j].y].hit=false;
+    }
+    return found;
     
 }
 
@@ -74,18 +108,34 @@ MyGame.components=(function(graphics){
     that.towerArray=[];
     
     function doesTowerFit(i,j,params){
-        for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
-            for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
+        var toReset=[];
+        for(var icheck=i;(i-icheck)*that.arena.subGrid<params.width;icheck--){
+            for(var jcheck=j;(j-jcheck)*that.arena.subGrid<params.height;jcheck--){
                 if(that.takenGrid[icheck][jcheck].taken){
+                    for(var j=0;j<toReset.length;j++){
+                        that.takenGrid[toReset[j].x][toReset[j].y].hit=false;
+                    }
                     return false;
                 }
+                that.takenGrid[icheck][jcheck].hit=true;
+                toReset.push({x:icheck,y:jcheck});
             }   
         }
-        return true;
+
+        //check if any exits are impossible
+        var hit=true;
+        for(var i=0;i<4;i++){
+            hit=hit&&validPathExists(that.takenGrid,that.entrances[(i+2)%4][0],that.entrances[i]);
+        }
+        for(var j=0;j<toReset.length;j++){
+            that.takenGrid[toReset[j].x][toReset[j].y].hit=false;
+        }
+        
+        return hit;
     }
     function takeSpots(i,j,params){
-        for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
-            for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
+        for(var icheck=i;(i-icheck)*that.arena.subGrid<params.width;icheck--){
+            for(var jcheck=j;(j-jcheck)*that.arena.subGrid<params.height;jcheck--){
                 that.takenGrid[icheck][jcheck].taken=true;
             }   
         }        
@@ -138,26 +188,43 @@ MyGame.components=(function(graphics){
         }
     };
     
+    
     that.takenGrid=[];
     //should allow us to add diagnals in the future
     for(var i=0;i<that.arena.width/that.arena.subGrid;i++){
         that.takenGrid[i]=[];
         for(var j=0;j<that.arena.height/that.arena.subGrid;j++){
             that.takenGrid[i][j]={taken:false,hit:false,adjacent:[]};
-            if(i-1>=0){
-                that.takenGrid[i][j].adjacent.append({x:i-1,y:j});
-            }
-            if(i+1<that.takenGrid.length){
-                that.takenGrid[i][j].adjacent.append({x:i+1,y:j});
-            }
-            if(j-1>=0){
-                that.takenGrid[i][j].adjacent.append({x:i,y:j-1});
-            }
-            if(j+1<that.takenGrid[i].length){
-                that.takenGrid[i][j].adjacent.append({x:i,y:j+1});
-            }
         }
     }
+    for(var i=0;i<that.takenGrid.length;i++){
+        for(var j=0;j<that.takenGrid[i].length;j++){
+            if(i-1>=0){
+                that.takenGrid[i][j].adjacent.push({x:i-1,y:j});
+            }
+            if(i+1<that.takenGrid.length){
+                that.takenGrid[i][j].adjacent.push({x:i+1,y:j});
+            }
+            if(j-1>=0){
+                that.takenGrid[i][j].adjacent.push({x:i,y:j-1});
+            }
+            if(j+1<that.takenGrid[i].length){
+                that.takenGrid[i][j].adjacent.push({x:i,y:j+1});
+            }
+        }
+    } 
+
+    
+    
+    that.entrances=[[],[],[],[]]
+    for(var i=0;i<4;i++){
+        that.entrances[0].push({x:that.takenGrid.length-1,y:(that.takenGrid.length/2-2)+i});
+        that.entrances[2].push({x:0,y:(that.takenGrid.length/2-2)+i});
+        that.entrances[1].push({x:(that.takenGrid.length/2-2)+i,y:0});
+        that.entrances[3].push({x:(that.takenGrid.length/2-2)+i,y:that.takenGrid[0].length-1});
+    }
+    
+    
 
     
     var tempTower;
