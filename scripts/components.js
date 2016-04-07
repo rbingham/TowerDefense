@@ -108,6 +108,10 @@ MyGame.components=(function(graphics){
     that.towerArray=[];
     
     function doesTowerFit(i,j,params){
+        if(i<=0||j<=0||i>=that.arena.subGrid||j>=that.arena.subGrid){
+            return false
+        }
+        
         var toReset=[];
         for(var icheck=i;(i-icheck)*that.arena.subGrid<params.width;icheck--){
             for(var jcheck=j;(j-jcheck)*that.arena.subGrid<params.height;jcheck--){
@@ -154,6 +158,17 @@ MyGame.components=(function(graphics){
         tempTower=undefined;
         return true;
     };
+    that.checkTowerPlacement=function(at,params){
+        params.center=roundXY(at);
+        coords=roundXY(at)
+        lowerRighti=(coords.x-that.arena.center.x+that.arena.width/2)/(that.arena.subGrid);
+        lowerRightj=(coords.y-that.arena.center.y+that.arena.height/2)/(that.arena.subGrid);
+        if(!doesTowerFit(lowerRighti,lowerRightj,params)){
+            return false;
+        }
+        return true;
+    };
+    
 
 
     that.arena={
