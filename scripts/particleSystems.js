@@ -27,13 +27,13 @@ MyGame.particleSystems = (function(){
 		that.create = function() {
 			var p = {
 					//image: spec.image,
-					size: Math.abs(Random.nextGaussian(spec.size.mean, spec.size.stdev)),
+					size: Math.abs(MyGame.random.nextGaussian(spec.size.mean, spec.size.stdev)),
 					//center: {x: spec.center.x, y: spec.center.y},
 					center: {x: 0, y: 0},
-					direction: Random.nextCircleVector(),
-					speed: Random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
+					direction: MyGame.random.nextCircleVector(),
+					speed: MyGame.random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
 					rotation: 0,
-					lifetime: Math.abs(Random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev)),	// How long the particle should live, in seconds
+					lifetime: Math.abs(MyGame.random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev)),	// How long the particle should live, in seconds
 					alive: 0	// How long the particle has been alive, in seconds
 				};
 

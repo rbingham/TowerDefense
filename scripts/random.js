@@ -1,6 +1,6 @@
 //need to namespace
 
-var Random = (function() {
+MyGame.random = (function() {
 	'use strict';
 
 	function nextDouble() {
