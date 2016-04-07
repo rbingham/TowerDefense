@@ -63,7 +63,6 @@ MyGame.graphics=(function(){
         image.src=srcFile;
         that.draw=function(spec){};
         return that;
-
     }
 
     /*
@@ -164,6 +163,10 @@ MyGame.graphics=(function(){
         context.translate(dims.center.x, dims.center.y);
 		context.rotate(dims.rotation);
 		context.translate(-dims.center.x, -dims.center.y);
+
+        if(dims.hasOwnProperty("alpha")){
+            context.globalAlpha = dims.alpha;
+        }
     }
 
     function drawImageWithDims(img, spec){
@@ -185,10 +188,6 @@ MyGame.graphics=(function(){
 
         tranRotTran(dims);
 
-        if(dims.hasOwnProperty("alpha")){
-            context.globalAlpha = dims.alpha;
-        }
-
         if (spec.hasOwnProperty("fill")) {
             context.fillStyle = spec.fill;
             context.fillRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
@@ -203,11 +202,17 @@ MyGame.graphics=(function(){
     }
 
 
-    function ImageDrawable(img){
-        function draw(dims){
-            drawImageWithDims(dims);
-        }
-        return {draw:draw};
+    function ImageDrawable(srcFile){
+        var that={},
+            image=new Image();
+        image.onload=function(){
+            that.draw=function(spec){
+                drawImageWithDims(image ,spec);
+            }
+        };
+        image.src=srcFile;
+        that.draw=function(spec){};
+        return that;
     }
 
     function RectangleDrawable(spec){
