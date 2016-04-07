@@ -89,22 +89,7 @@ MyGame.input=(function(canvas){
             that.moveHandlers.push({handler:handler,rect:boundingRect});
         }
 
-        function checkCollision(point,rect){
-            var x=point.x,
-                y=point.y;
-            x-=rect.center.x;
-            y-=rect.center.y;
-            if(rect.rotatation==='undefined'){
-                rect.rotatation=0;
-            }
-            //x=x*Math.cos(rect.rotatation)-y*Math.sin(rect.rotatation);
-            //y=x*Math.sin(rect.rotatation)+y*Math.cos(rect.rotatation);
-            y+=rect.height/2;
-            x+=rect.width/2;
-            if(x<0||y<0||y>rect.height||x>rect.width)
-                return false;
-            return true;
-        }
+
 
         function removeUnwanted(toRemove,fromA){
             toRemove.sort(function(a,b){return b-a;});//garuntee sorted, reverse should work as well
@@ -117,7 +102,7 @@ MyGame.input=(function(canvas){
             toRemove=[];
             for(var i=0;i<that.clicks.length;i++){
                 for(var handlerNum=0;handlerNum < that.clickHandlers.length;++handlerNum){
-                    if(checkCollision(getMousePos(that.clicks[i]),that.clickHandlers[handlerNum].rect)){
+                    if(Collision.pointRect(getMousePos(that.clicks[i]),that.clickHandlers[handlerNum].rect)){
                         that.clickHandlers[handlerNum].handler(getMousePos(that.clicks[i]));
 /*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);
@@ -127,7 +112,7 @@ MyGame.input=(function(canvas){
             }
             for(var i=that.mouseMove.length-1;i<that.mouseMove.length&&i>0;i++){
                 for(var handlerNum=0;handlerNum < that.moveHandlers.length;++handlerNum){
-                    if(checkCollision(getMousePos(that.mouseMove[i]),that.moveHandlers[handlerNum].rect)){
+                    if(Collision.pointRect(getMousePos(that.mouseMove[i]),that.moveHandlers[handlerNum].rect)){
                         that.moveHandlers[handlerNum].handler(getMousePos(that.mouseMove[i]));
 /*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);
