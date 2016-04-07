@@ -15,15 +15,21 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
     };
 
     var particleSystem;
+    var outerParticleSystem;
     var initialize=function(){
         gameView = MyGame.GameView(model, input);
-        var particleSpec = MyGame.particleSystems.DefaultParticleSpec();
+
+        var particleSpec = MyGame.particleSystems.TinyDefaultParticleSpec();
         particleSpec.particlesFade = true;
         particleSpec.drawables.push(graphics.genericDrawables.greenRect);
         particleSpec.drawables.push(graphics.genericDrawables.redRect);
         particleSpec.drawables.push(graphics.genericDrawables.blueRect);
-
         particleSystem = MyGame.particleSystems.ParticleSystem(particleSpec);
+
+        var outerParticleSpec = MyGame.particleSystems.DefaultParticleSpec();
+        outerParticleSpec.particlesFade = true;
+        outerParticleSpec.drawables.push(particleSystem);
+        outerParticleSystem = MyGame.particleSystems.ParticleSystem(outerParticleSpec);
     };
 
     /*
@@ -40,12 +46,14 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
         particleSystem.create();
         particleSystem.create();
-        particleSystem.create();
+        outerParticleSystem.create();
         particleSystem.update(elapsed);
+        outerParticleSystem.update(elapsed);
 
         render(elapsed);
 
-        particleSystem.draw();
+        //particleSystem.draw();
+        outerParticleSystem.draw();
 
         if(model.continueLoop){
             requestAnimationFrame(gameloop);

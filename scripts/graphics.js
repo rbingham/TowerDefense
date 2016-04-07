@@ -42,6 +42,14 @@ MyGame.graphics=(function(){
         context.restore();
     }
 
+    function pushContext(){
+        context.save();
+    }
+
+    function popContext(){
+        context.restore();
+    }
+
     function genImage(srcFile){
         var that={},
             image=new Image();
@@ -159,25 +167,30 @@ MyGame.graphics=(function(){
 
 
 
-    function tranRotTran(dims){
-        context.translate(dims.center.x, dims.center.y);
-		context.rotate(dims.rotation);
-		context.translate(-dims.center.x, -dims.center.y);
+    function applyDims(dims){
+
+        if(dims.hasOwnProperty("center")){
+            context.translate(dims.center.x, dims.center.y);
+        }
+
+        if(dims.hasOwnProperty("rotation")){
+            context.rotate(dims.rotation);
+        }
 
         if(dims.hasOwnProperty("alpha")){
-            context.globalAlpha = dims.alpha;
+            context.globalAlpha -= 1-dims.alpha;
         }
     }
 
     function drawImageWithDims(img, spec){
         context.save();
 
-        tranRotTran(dims);
+        applyDims(dims);
 
 		context.drawImage(
 			img,
-			dims.center.x - dims.width/2,
-			dims.center.y - dims.height/2,
+			0 - dims.width/2,
+			0 - dims.height/2,
 			dims.width, dims.height);
 
 		context.restore();
@@ -186,16 +199,16 @@ MyGame.graphics=(function(){
     function drawRectangleWithDims(spec, dims){
         context.save();
 
-        tranRotTran(dims);
+        applyDims(dims);
 
         if (spec.hasOwnProperty("fill")) {
             context.fillStyle = spec.fill;
-            context.fillRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+            context.fillRect(0-dims.width/2, 0-dims.height/2, dims.width, dims.height);
         }
 
         if (spec.hasOwnProperty("stroke")) {
             context.strokeStyle = spec.stroke;
-            context.strokeRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+            context.strokeRect(0-dims.width/2, 0-dims.height/2, dims.width, dims.height);
         }
 
         context.restore();
@@ -242,7 +255,10 @@ MyGame.graphics=(function(){
         writeSpecificMessage:writeSpecificMessage,
         drawRectangle:drawRectangle,
         drawCircle:drawCircle,
-        canvas:canvas
+        canvas:canvas,
+        pushContext:pushContext,
+        popContext:popContext,
+        applyDims:applyDims
     };
 
 }());

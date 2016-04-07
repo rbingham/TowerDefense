@@ -1,4 +1,4 @@
-MyGame.particleSystems = (function(){
+MyGame.particleSystems = (function(graphics){
 
 	/**********************************************************
 		The ParticleSystem
@@ -105,8 +105,8 @@ MyGame.particleSystems = (function(){
 		};
 
 		function setParticleDims(particle, dims){
-			dims.center.x 	= spec.center.x+particle.center.x;
-			dims.center.y 	= spec.center.y+particle.center.y;
+			dims.center.x 	= particle.center.x;
+			dims.center.y 	= particle.center.y;
 			dims.width		= particle.size,
 			dims.height 	= particle.size,
 			dims.rotation 	= particle.rotation
@@ -116,7 +116,15 @@ MyGame.particleSystems = (function(){
 			}
 		}
 
-		that.draw = function() {
+		that.draw = function(systemDims) {
+			graphics.pushContext();
+
+			if(systemDims){
+				graphics.applyDims(systemDims);
+			}else{
+				graphics.applyDims(spec);
+			}
+
 			var value,
 				particle,
 				dims={center:{}};
@@ -126,6 +134,8 @@ MyGame.particleSystems = (function(){
 				setParticleDims(particle, dims)
 				spec.drawables[particle.drawableIndex].draw(dims);
 			}
+
+			graphics.popContext();
 		};
 
 		return that;
@@ -146,8 +156,20 @@ MyGame.particleSystems = (function(){
 		}
 	}
 
+	var TinyDefaultParticleSpec = function(){
+		return {
+			drawables:[],
+			center: {x: 300, y: 300},
+			size: {mean: 1, stdev: 4},
+			speed: {mean: 7.0, stdev: 2.5},
+			rotationalSpeed: {mean: 0, stdev: 30},
+			lifetime: {mean: 4, stdev: 1}
+		}
+	}
+
 	return {
 		ParticleSystem:ParticleSystem,
-		DefaultParticleSpec:DefaultParticleSpec
+		DefaultParticleSpec:DefaultParticleSpec,
+		TinyDefaultParticleSpec:TinyDefaultParticleSpec
 	};
-}());
+}(MyGame.graphics));
