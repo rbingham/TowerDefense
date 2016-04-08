@@ -17,8 +17,9 @@ MyGame.particleSystems = (function(graphics){
 	function ParticleSystem(spec) {
 		'use strict';
 		var that = {},
-			nextName = 1,	// unique identifier for the next particle
-			particles = {},
+			nextName = 0,	// unique identifier for the next particle
+			startIndex=0,
+			particles = [],
 			renderKeys;	// Set of all active particles
 
 
@@ -27,30 +28,83 @@ MyGame.particleSystems = (function(graphics){
 		// This creates one new particle
 		//
 		//------------------------------------------------------------------
-		that.create = function() {
-			var p = {
-					//image: spec.image,
-					drawableIndex: MyGame.random.nextRange(0, spec.drawables.length-1),
-					size: MyGame.random.nextGaussian(spec.size.mean, spec.size.stdev),
-					//center: {x: spec.center.x, y: spec.center.y},
-					center: {x: 0, y: 0},
-					direction: MyGame.random.nextCircleVector(),
-					speed: MyGame.random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
-					rotationalSpeed: MyGame.random.nextGaussian(spec.rotationalSpeed.mean, spec.rotationalSpeed.stdev), // pixels per second
-					rotation: 0,
-					lifetime: MyGame.random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev),	// How long the particle should live, in seconds
-					alive: 0	// How long the particle has been alive, in seconds
-				};
+		that.create = function(pSpec) {
+			var p = (function(){
+				var that = {}
+				var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
+				that.size = MyGame.random.nextGaussian(spec.size.mean, spec.size.stdev);
+				that.center = {x: 0, y: 0};
+				var direction = MyGame.random.nextCircleVector();
+				var speed = MyGame.random.nextGaussian(spec.speed.mean, spec.speed.stdev); // pixels per second
+				var rotationalSpeed = MyGame.random.nextGaussian(spec.rotationalSpeed.mean, spec.rotationalSpeed.stdev); // pixels per second
+				that.rotation = 0;
+				var lifetime = MyGame.random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev)*1000;	// How long the particle should live, in seconds
+				var alive = 0;	// How long the particle has been alive, in seconds
 
-			//
-			// Ensure we have a valid size - gaussian numbers can be negative
-			p.size = Math.max(1, p.size);
-			//
-			// Same thing with lifetime
-			p.lifetime = Math.max(0.01, p.lifetime);
+				//
+				// Ensure we have a valid size - gaussian numbers can be negative
+				that.size = Math.max(1, that.size);
+				that.width = that.size;
+				that.height = that.size;
+
+				//
+				// Same thing with lifetime
+				lifetime = Math.max(0.01, lifetime);
+
+				that.isAlive = function(){
+					return alive<lifetime;
+				}
+
+				that.update = function(elapsedTime){
+					var seconds = elapsedTime/1000;
+					//
+					// Update how long it has been alive
+					alive += elapsedTime;
+
+					//
+					// Update its position
+					that.center.x += (seconds * speed * direction.x);
+					that.center.y += (seconds * speed * direction.y);
+
+					//
+					// Rotate proportional to its speed
+					that.rotation += rotationalSpeed / 500;
+
+					//
+					// alpha proportional to its life
+					if(spec.particlesFade){
+						that.alpha = 1-alive/lifetime;
+					}
+
+					if(pSpec && pSpec.hasOwnProperty("update")){
+						pSpec.update(elapsedTime)
+					}
+				}
+
+				that.draw = function(){
+					if(pSpec && pSpec.hasOwnProperty("draw")){
+						pSpec.draw(that);
+					}else{
+						spec.drawables[drawableIndex].draw(that);
+					}
+				}
+
+				return that;
+			}());
+
+			// //
+			// // Ensure we have a valid size - gaussian numbers can be negative
+			// p.size = Math.max(1, p.size);
+			// p.width = p.size;
+			// p.height = p.size;
+			// //
+			// // Same thing with lifetime
+			// p.lifetime = Math.max(0.01, p.lifetime);
+			// p.alive = 0;
 			//
 			// Assign a unique name to each particle
-			particles[nextName++] = p;
+			particles[nextName] = p;
+			nextName++;
 		};
 
 		//------------------------------------------------------------------
@@ -64,57 +118,46 @@ MyGame.particleSystems = (function(graphics){
 				value,
 				particle;
 
-			renderKeys = [];
+			//renderKeys = [];
 
 			//
 			// We work with time in seconds, elapsedTime comes in as milliseconds
-			elapsedTime = elapsedTime / 1000;
+			//elapsedTime = elapsedTime / 1000;
 
-			for (value in particles) {
-				if (particles.hasOwnProperty(value)) {
-					particle = particles[value];
-					//
-					// Update how long it has been alive
-					particle.alive += elapsedTime;
+			for(let i=startIndex; i<nextName; i++){
+				particle = particles[i];
 
-					//
-					// Update its position
-					particle.center.x += (elapsedTime * particle.speed * particle.direction.x);
-					particle.center.y += (elapsedTime * particle.speed * particle.direction.y);
+				if (particle.isAlive()) {
+					particle.update(elapsedTime);
 
+					// //
+					// // Update how long it has been alive
+					// particle.alive += elapsedTime;
 					//
-					// Rotate proportional to its speed
-					particle.rotation += particle.rotationalSpeed / 500;
-
+					// //
+					// // Update its position
+					// particle.center.x += (elapsedTime * particle.speed * particle.direction.x);
+					// particle.center.y += (elapsedTime * particle.speed * particle.direction.y);
 					//
-					// If the lifetime has expired, identify it for removal
-					if (particle.alive > particle.lifetime) {
-						removeMe.push(value);
-					}else{
-						renderKeys.push(value);
-					}
+					// //
+					// // Rotate proportional to its speed
+					// particle.rotation += particle.rotationalSpeed / 500;
+					//
+					// //
+					// // alpha proportional to its life
+					// if(spec.particlesFade){
+					// 	particle.alpha 	= 1-particle.alive/particle.lifetime;
+					// }
 				}
 			}
 
 			//
-			// Remove all of the expired particles
-			for (particle = 0; particle < removeMe.length; particle++) {
-				delete particles[removeMe[particle]];
+			// Remove all of the expired particles from front of array
+			for (let i = startIndex; i<nextName && !particles[i].isAlive; i++) {
+				startIndex++;
+				delete particles[i];
 			}
-			removeMe.length = 0;
 		};
-
-		function setParticleDims(particle, dims){
-			dims.center.x 	= particle.center.x;
-			dims.center.y 	= particle.center.y;
-			dims.width		= particle.size,
-			dims.height 	= particle.size,
-			dims.rotation 	= particle.rotation
-
-			if(spec.particlesFade){
-				dims.alpha 	= 1-particle.alive/particle.lifetime;
-			}
-		}
 
 		that.draw = function(systemDims) {
 			graphics.pushContext();
@@ -125,14 +168,12 @@ MyGame.particleSystems = (function(graphics){
 				graphics.applyDims(spec);
 			}
 
-			var value,
-				particle,
-				dims={center:{}};
-
-			for (let i = renderKeys.length-1; 0<=i; i--) {
-				particle = particles[renderKeys[i]];
-				setParticleDims(particle, dims)
-				spec.drawables[particle.drawableIndex].draw(dims);
+			var particle;
+			for (let i = nextName-1; startIndex<=i; i--) {
+				particle = particles[i];
+				if (particle.isAlive()) {
+					particle.draw();
+				}
 			}
 
 			graphics.popContext();
@@ -161,7 +202,7 @@ MyGame.particleSystems = (function(graphics){
 			drawables:[],
 			center: {x: 300, y: 300},
 			size: {mean: 1, stdev: 4},
-			speed: {mean: 7.0, stdev: 2.5},
+			speed: {mean: 14, stdev: 12},
 			rotationalSpeed: {mean: 0, stdev: 30},
 			lifetime: {mean: 4, stdev: 1}
 		}

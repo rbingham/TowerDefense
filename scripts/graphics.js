@@ -178,7 +178,7 @@ MyGame.graphics=(function(){
         }
 
         if(dims.hasOwnProperty("alpha")){
-            context.globalAlpha -= 1-dims.alpha;
+            context.globalAlpha *= dims.alpha;
         }
     }
 
@@ -189,8 +189,8 @@ MyGame.graphics=(function(){
 
 		context.drawImage(
 			img,
-			0 - dims.width/2,
-			0 - dims.height/2,
+			-dims.width/2,
+			-dims.height/2,
 			dims.width, dims.height);
 
 		context.restore();
@@ -203,12 +203,12 @@ MyGame.graphics=(function(){
 
         if (spec.hasOwnProperty("fill")) {
             context.fillStyle = spec.fill;
-            context.fillRect(0-dims.width/2, 0-dims.height/2, dims.width, dims.height);
+            context.fillRect(-dims.width/2, -dims.height/2, dims.width, dims.height);
         }
 
         if (spec.hasOwnProperty("stroke")) {
             context.strokeStyle = spec.stroke;
-            context.strokeRect(0-dims.width/2, 0-dims.height/2, dims.width, dims.height);
+            context.strokeRect(-dims.width/2, -dims.height/2, dims.width, dims.height);
         }
 
         context.restore();
@@ -236,9 +236,12 @@ MyGame.graphics=(function(){
     }
 
     var genericDrawables={
-        redRect:RectangleDrawable({fill:"red",stroke:"black"}),
-        greenRect:RectangleDrawable({fill:"green",stroke:"black"}),
-        blueRect:RectangleDrawable({fill:"blue",stroke:"black"}),
+        // redRect:RectangleDrawable({fill:"red",stroke:"black"}),
+        // greenRect:RectangleDrawable({fill:"green",stroke:"black"}),
+        // blueRect:RectangleDrawable({fill:"blue",stroke:"black"}),
+        redRect:RectangleDrawable({fill:"red"}),
+        greenRect:RectangleDrawable({fill:"green"}),
+        blueRect:RectangleDrawable({fill:"blue"}),
     }
 
     return {

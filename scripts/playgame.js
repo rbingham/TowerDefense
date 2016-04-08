@@ -14,23 +14,67 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
         }
     };
 
-    var particleSystem;
+    // var particleSystem;
     var outerParticleSystem;
     var initialize=function(){
         gameView = MyGame.GameView(model, input);
 
+        // var particleSpec = MyGame.particleSystems.TinyDefaultParticleSpec();
+        // // var particleSpec = MyGame.particleSystems.DefaultParticleSpec();
+        // particleSpec.particlesFade = true;
+        // particleSpec.drawables.push(graphics.genericDrawables.greenRect);
+        // particleSpec.drawables.push(graphics.genericDrawables.redRect);
+        // particleSpec.drawables.push(graphics.genericDrawables.blueRect);
+        // particleSystem = MyGame.particleSystems.ParticleSystem(particleSpec);
+
+        var outerParticleSpec = MyGame.particleSystems.DefaultParticleSpec();
+        outerParticleSpec.particlesFade = true;
+        // outerParticleSpec.drawables.push(particleSystem);
+        outerParticleSystem = MyGame.particleSystems.ParticleSystem(outerParticleSpec);
+    };
+
+    function buildParticleSystem(){
         var particleSpec = MyGame.particleSystems.TinyDefaultParticleSpec();
+        // var particleSpec = MyGame.particleSystems.DefaultParticleSpec();
         particleSpec.particlesFade = true;
         particleSpec.drawables.push(graphics.genericDrawables.greenRect);
         particleSpec.drawables.push(graphics.genericDrawables.redRect);
         particleSpec.drawables.push(graphics.genericDrawables.blueRect);
-        particleSystem = MyGame.particleSystems.ParticleSystem(particleSpec);
+        var particleSystem = MyGame.particleSystems.ParticleSystem(particleSpec);
 
-        var outerParticleSpec = MyGame.particleSystems.DefaultParticleSpec();
-        outerParticleSpec.particlesFade = true;
-        outerParticleSpec.drawables.push(particleSystem);
-        outerParticleSystem = MyGame.particleSystems.ParticleSystem(outerParticleSpec);
-    };
+        // for(let i=0; i<5; i++){
+        //     particleSystem.create();
+        // }
+
+        var realUpdate = particleSystem.update;
+
+        particleSystem.update = function(elapsedTime){
+            particleSystem.create();
+            realUpdate(elapsedTime);
+        }
+
+        return particleSystem;
+    }
+
+    function buildParticleSystem2(){
+        var particleSpec = MyGame.particleSystems.TinyDefaultParticleSpec();
+        // var particleSpec = MyGame.particleSystems.DefaultParticleSpec();
+        particleSpec.particlesFade = true;
+        var particleSystem = MyGame.particleSystems.ParticleSystem(particleSpec);
+
+        // for(let i=0; i<5; i++){
+        //     particleSystem.create();
+        // }
+
+        var realUpdate = particleSystem.update;
+
+        particleSystem.update = function(elapsedTime){
+            particleSystem.create(buildParticleSystem());
+            realUpdate(elapsedTime);
+        }
+
+        return particleSystem;
+    }
 
     /*
     * Game Loop Section
@@ -44,15 +88,17 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
             update(elapsed/4);
         }
 
-        particleSystem.create();
-        particleSystem.create();
-        outerParticleSystem.create();
-        particleSystem.update(elapsed);
+        // particleSystem.create();
+        // particleSystem.create();
+        outerParticleSystem.create(buildParticleSystem2());
+        // outerParticleSystem.create();
+        // outerParticleSystem.create();
+        // particleSystem.update(elapsed);
         outerParticleSystem.update(elapsed);
 
         render(elapsed);
 
-        //particleSystem.draw();
+        // particleSystem.draw();
         outerParticleSystem.draw();
 
         if(model.continueLoop){
