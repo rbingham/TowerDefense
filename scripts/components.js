@@ -41,12 +41,13 @@ Tower.prototype={
         ImageHolder.drawImage(this.src,this);
         var tempR=this.rotation;
         this.rotation=this.weapon.rotation;
-        ImageHolder.drawImage(this.weapon.src,this);
+        ImageHolder.drawSprite(this.weapon.src,this,this.weapon.spriteinfo);
         this.rotation=tempR;
     },
     update(elapsed){
         this.weapon.rotation+=elapsed/10000;
         this.weapon.rotation%=2*Math.PI;
+        this.weapon.spriteinfo.update(elapsed,true);
     }
 }
 
@@ -54,7 +55,13 @@ function Weapon(spec){
     this.src=spec.src;
     this.rotation=0;
     this.range=spec.range;
-
+    this.spriteinfo=MyGame.graphics.genSpriteInfo({
+        sprite:0,
+        spriteCount:3,
+        spriteTime:[1000,200,100],
+        height:40,
+        width:40,
+    });
 }
 //Weapon funtions go here
 
@@ -94,7 +101,7 @@ function validPathExists(grid,start,exits){
             queue.push(grid[i.x][i.y].adjacent[j]);
         }
     }
-    console.log(start);
+    /*console.log(start);
     var t="";
     for(var j=0;j<grid.length;j++){
         for(var k=0;k<grid[j].length;k++){
@@ -102,7 +109,7 @@ function validPathExists(grid,start,exits){
         }
         t+='\n'
     }
-    console.log(t);
+    console.log(t);*/
 
     
     for(var j=0;j<toReset.length;j++){
@@ -306,12 +313,12 @@ MyGame.components=(function(graphics){
     //may want an update in future
 
     that.sampleWeaponSpec={
-        src:"./images/weapon.png",
+        src:"./images/weaponsprite.png",
         rotation:0,
         range:40,
     }
     that.otherSampleWeaponSpec={
-        src:"./images/weapon2.png",
+        src:"./images/weaponsprite.png",
         rotation:0,
         range:40,
     }
