@@ -11,25 +11,41 @@ MyGame.GameView = function(model, input){
 
 
     //initialize each button
-    var theButton = MyGame.uiComponents.CanvasButton({
+    var GroundBomb = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:100}, height:100, width:100, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"yellow"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"})
     });
-    var theOtherButton = MyGame.uiComponents.CanvasButton({
+    
+    
+    var GroundFreeze = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:200}, height:100, width:100, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"yellow",fill:"blue"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"aqua",fill:"blue"})
+    });
+    
+    var MixedProjectile = MyGame.uiComponents.CanvasButton({
+        dims:{center:{x:700,y:300}, height:100, width:100, rotate:0},
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"Chocolate",fill:"BlueViolet "})
+    });
+    var AirMissile = MyGame.uiComponents.CanvasButton({
+        dims:{center:{x:700,y:400}, height:100, width:100, rotate:0},
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
     });
 
     //for each button register event using model
-    theButton.addButtonListener("logStuff", {onClick:function(){
-        model.placeButtonPressed(MyGame.components.sampleTowerSpec);
+    GroundBomb.addButtonListener("logStuff", {onClick:function(){
+        model.placeButtonPressed(TowerTemplate.GroundBomb);
     }});
-    theOtherButton.addButtonListener("logStuff", {onClick:function(){
-        model.placeButtonPressed(MyGame.components.otherSampleTowerSpec);
+    GroundFreeze.addButtonListener("logStuff", {onClick:function(){
+        model.placeButtonPressed(TowerTemplate.GroundFreeze);
     }});
-
-    buttonGrid.addButton(theButton);
-    buttonGrid.addButton(theOtherButton);
+    MixedProjectile.addButtonListener("logStuff", {onClick:function(){
+        model.placeButtonPressed(TowerTemplate.GroundFreeze);
+    }});
+    
+    
+    buttonGrid.addButton(GroundBomb);
+    buttonGrid.addButton(GroundFreeze);
+    buttonGrid.addButton(MixedProjectile);
 
 
     function update(elapsedTime){

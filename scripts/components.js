@@ -312,34 +312,7 @@ MyGame.components=(function(graphics){
 
     //may want an update in future
 
-    that.sampleWeaponSpec={
-        src:"./images/weaponsprite.png",
-        rotation:0,
-        range:40,
-    }
-    that.otherSampleWeaponSpec={
-        src:"./images/weaponsprite.png",
-        rotation:0,
-        range:40,
-    }
 
-    that.sampleTowerSpec={
-        center:{x:0,y:0},
-        weaponSpec:that.sampleWeaponSpec,
-        src:"./images/tower.png",
-        rotation:0,
-        height:40,
-        width:40,
-    }
-
-    that.otherSampleTowerSpec={
-        center:{x:0,y:0},
-        weaponSpec:that.otherSampleWeaponSpec,
-        src:"./images/tower2.png",
-        rotation:0,
-        height:40,
-        width:40,
-    }
 
     return that;
 }(MyGame.graphics));
