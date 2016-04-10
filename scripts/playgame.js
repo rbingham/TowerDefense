@@ -28,7 +28,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
         // particleSystem = MyGame.particleSystems.ParticleSystem(particleSpec);
 
         var outerParticleSpec = MyGame.particleSystems.DefaultParticleSpec();
-        outerParticleSpec.particlesFade = true;
+        // outerParticleSpec.particlesFade = true;
         // outerParticleSpec.drawables.push(particleSystem);
         outerParticleSystem = MyGame.particleSystems.ParticleSystem(outerParticleSpec);
     };
@@ -59,7 +59,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
     function buildParticleSystem2(){
         var particleSpec = MyGame.particleSystems.TinyDefaultParticleSpec();
         // var particleSpec = MyGame.particleSystems.DefaultParticleSpec();
-        particleSpec.particlesFade = true;
+        // particleSpec.particlesFade = true;
         var particleSystem = MyGame.particleSystems.ParticleSystem(particleSpec);
 
         // for(let i=0; i<5; i++){
@@ -90,7 +90,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
         // particleSystem.create();
         // particleSystem.create();
-        outerParticleSystem.create(buildParticleSystem2());
+        outerParticleSystem.create(buildParticleSystem());
         // outerParticleSystem.create();
         // outerParticleSystem.create();
         // particleSystem.update(elapsed);

@@ -192,7 +192,7 @@ MyGame.particleSystems = (function(graphics){
 			center: {x: 300, y: 300},
 			size: {mean: 10, stdev: 40},
 			speed: {mean: 75, stdev: 25},
-			rotationalSpeed: {mean: 0, stdev: 30},
+			rotationalSpeed: {mean: 10, stdev: 30},
 			lifetime: {mean: 4, stdev: 1}
 		}
 	}
@@ -203,7 +203,7 @@ MyGame.particleSystems = (function(graphics){
 			center: {x: 300, y: 300},
 			size: {mean: 1, stdev: 4},
 			speed: {mean: 14, stdev: 12},
-			rotationalSpeed: {mean: 0, stdev: 30},
+			rotationalSpeed: {mean: 10, stdev: 30},
 			lifetime: {mean: 4, stdev: 1}
 		}
 	}
