@@ -26,7 +26,9 @@ Tower.prototype={
         if(drawRange!==undefined){
             MyGame.graphics.drawCircle({
                 center:this.center,
-                radius:this.weapon.range
+                radius:this.weapon.range,
+                fill: "rgba(0,0,0,1)",
+                stroke: "rgba(0,0,0,1)"
             })
         }
         ImageHolder.drawImage(this.src,this);
@@ -186,7 +188,9 @@ MyGame.components=(function(graphics){
                         center:{x:centerx,y:this.center.y},
                         width:1,
                         height:this.height,
-                        rotation:0
+                        rotation:0,
+                        fill: "rgba(0,0,0,1)",
+                        stroke: "rgba(0,0,0,1)"
                     });
                 }
                 for(var centery=this.center.y-this.height/2;centery<=this.center.y+this.height/2;centery+=this.subGrid){
@@ -194,7 +198,9 @@ MyGame.components=(function(graphics){
                         center:{x:this.center.x,y:centery},
                         width:this.width,
                         height:1,
-                        rotation:0
+                        rotation:0,
+                        fill: "rgba(0,0,0,1)",
+                        stroke: "rgba(0,0,0,1)"
                     });
                 }
             }else{
