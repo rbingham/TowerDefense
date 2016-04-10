@@ -9,6 +9,13 @@ Wepons, parts of towers, generate bullets, which componets then handles and mana
 
 
 */
+
+
+
+/*
+Knows what it's weapon is,
+Knows where it is, and where it's image source file is
+*/
 function Tower(spec){
     this.center=spec.center;
     this.weapon=new Weapon(spec.weaponSpec);
