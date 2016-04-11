@@ -209,6 +209,7 @@ MyGame.components.creeps = (function(){
 		function updateVelocity(){
 			var unitDistance = {x:distanceToGoal.x/distanceToGoal.total, y:distanceToGoal.y/distanceToGoal.total};
 			velocity = {x:unitDistance.x*spec.creepSpeed, y:unitDistance.y*spec.creepSpeed};
+			velocity.rotation = Math.atan2(unitDistance.x, unitDistance.y);
 		}
 		updateVelocity();
 
@@ -296,7 +297,7 @@ MyGame.components.creeps = (function(){
 		dims.width = dims.height;
 		that.draw = function(elapsedTime){
 			dims.center = currentLocation;
-			dims.rotation = 0;//get rotation from direction
+			dims.rotation = velocity.rotation;//get rotation from direction
 
 			//update sprite
 			if(spec.drawable.hasOwnProperty("update")){
