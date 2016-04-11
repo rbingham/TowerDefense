@@ -39,7 +39,7 @@ MyGame.components.creeps = (function(){
 
 			for(let i=startCreepId; i<nextCreepId; i++){
 				if(creeps[i] !== undefined){
-					creeps[i].shortestPath = shortestPaths[creep[i].locationGoalIndex];
+					creeps[i].shortestPath = shortestPaths[creeps[i].locationGoalIndex];
 				}
 			}
 		}
@@ -315,7 +315,7 @@ MyGame.components.creeps = (function(){
 			(all points shortest path?)
 			(some form of breadth first, perhaps with an optimization)
 
-		spec:{goals}
+		spec:{goals, potentialTowerLocations[][]}
 	**********************************************************/
 	var ShortestPath = function(spec){
 		//[][] {location,distance}
@@ -337,13 +337,14 @@ MyGame.components.creeps = (function(){
 			var endIndex=0;
 			var workQueue = [];
 			for(let workIndex=0; workIndex<spec.goals.length; workIndex++){
-				workQueue.push({location:spec.goals[workIndex], distance:0});
+				workQueue.push({location:{i:spec.goals[workIndex].i, j:spec.goals[workIndex].j}, distance:0});
 				endIndex++;
 			}
 
 			function arenaLocationIsValidAndUnoccupied(i,j){
 				//needs to check for towers, should take into account towers being placed
-				return MyGame.components.isValidIJ({i:i,j:j});
+				return MyGame.components.isValidIJ({i:i,j:j})
+						&& !MyGame.components.isTaken({i:i,j:j});
 			}
 
 			//use workQueue to perform a breadth first search
