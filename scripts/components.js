@@ -304,6 +304,10 @@ MyGame.components=(function(graphics){
         return startX<xy.x && xy.x<endX && startY<xy.y && xy.y < endY;
     }
 
+    that.getArenaColumnCount(){
+        return (that.arena.width+that.arena.subGrid)/that.arena.subGrid - 1;
+    }
+
     that.placingOver=function(at,params){
         params.center=roundXY(at);
         tempTower=new Tower(params);

@@ -18,7 +18,10 @@ MyGame.components.creeps = (function(){
 		var nextCreepId = 0;
 		var creeps = [];
 
-		var occupationCountMatrix =
+		var creepCountMatrix = (function(){
+			//initialize all matrix values at 0
+			return [];
+		}());
 
 
 		function buildShortestPaths(){
@@ -41,6 +44,17 @@ MyGame.components.creeps = (function(){
 			}
 		}
 
+
+
+		that.getCreepCountIJ = function(ij){
+			return creepCountMatrix[ij.i, ij.j];
+		}
+
+		that.getCreepCountXY = function(xy){
+			var ij = MyGame.components.xy2ij(xy);
+			return getCreepCountIJ(ij);
+		}
+
 		that.isArenaStateGood = function(){
 			var potentialShortestPaths = buildShortestPaths();
 			var potentialShortestPath;
@@ -53,7 +67,6 @@ MyGame.components.creeps = (function(){
 					if(typeof distanceFromEndGoal === undefined) return false;
 				}
 			}
-
 			return true;
 		}
 
@@ -72,6 +85,7 @@ MyGame.components.creeps = (function(){
 			var creep = Creep(creepSpec);
 
 			creeps[creepSpec.id] = creep;
+			//increment creepCountMatrix
 		}
 
 		function cleenUpCreeps(){
@@ -108,6 +122,9 @@ MyGame.components.creeps = (function(){
 			if(typeof spec.creepListener !== undefined){
 				spec.creepListener.creepKilled(creep);
 			}
+
+			//decrement creepCountMatrix
+
 			delete creeps[creep.id];
 		}
 
@@ -115,7 +132,14 @@ MyGame.components.creeps = (function(){
 			if(typeof spec.creepListener !== undefined){
 				spec.creepListener.creepReachedGoal(creep);
 			}
+
+			//decrement creepCountMatrix
+
 			delete creeps[creep.id];
+		}
+
+		that.creepMoved = function(creep, oldLocation, newLocation){
+			//update creepCountMatrix
 		}
 
 		return that;
@@ -144,16 +168,25 @@ MyGame.components.creeps = (function(){
 
 		var shortestPath = spec.shortestPath;
 		var currentLocation = spec.initialLocation;
+		var currentGoal;
+		var distanceToGoal;
+		var velocity;
+
 		function updateCurrentLocationIJ(){
+			var oldLocation = {i:currentLocation.i, j:currentLocation.j};
+
 			//convert currentLocation x,y to i,j
 			var ij = MyGame.components.xy2ij(currentLocation);
 			//and add to currentLocation
 			currentLocation.i=ij.i;
 			currentLocation.j=ij.j;
+
+			if(oldLocation.i!==currentLocation.i || oldLocation.j!==currentLocation.j){
+				creepListener.creepMoved(that, oldLocation);
+			}
 		}
 		updateCurrentLocationIJ();
 
-		var currentGoal;
 		function updateCurrentGoal(){
 			currentGoal = spec.shortestPath.getNextGoal(currentLocation);
 			var xy = MyGame.components.ij2xy(currentGoal);
@@ -161,6 +194,19 @@ MyGame.components.creeps = (function(){
 			currentGoal.y=xy.y;
 		}
 		updateCurrentGoal();
+
+		function updateDistanceToGoal(){
+			distanceToGoal = {x:(currentGoal.x-currentLocation.x), y:(currentGoal.y-currentLocation.y)};
+			distanceToGoal.total = Math.sqrt(Math.pow(currentGoal.distance.x,2)+Math.pow(currentGoal.distance.y,2));
+			distanceToGoal.time = current.distance.total/spec.creepSpeed;
+		}
+		updateDistanceToGoal();
+
+		function updateVelocity(){
+			var unitDistance = {x:distanceToGoal.x/distanceToGoal.total, y:distanceToGoal.y/distanceToGoal.total};
+			currentLocation.velocity = {x:unitDistance.x*spec.creepSpeed, y:unitDistance.y*spec.creepSpeed};
+		}
+		updateVelocity();
 
 		that.getLocationGoalIndex(){
 			return spec.locationGoalIndex;
@@ -206,21 +252,40 @@ MyGame.components.creeps = (function(){
 		* update creep
 		**********************************************************/
 		that.update = function(elapsedTime){
+
 			//while there is elapsedTime left
-				//given current location and next goal
-				//move as close to it as elapsedTime will allow
-				//update currentPosition xy & ij
-				//if goal reached
-					//update currentGoal xy & ij
-				//decrement elapsedTime
+			while(0<elapsedTime){
+				//if there is time to reach the next goal, reach it and decrement elapsedTime
+				if(elapsedTime<=distanceFromGoal.time){
+					currentLocation.x = currentGoal.x;
+					currentLocation.y = currentGoal.y;
+					elapsedTime-=distanceFromGoal.time;
+					updateCurrentLocationIJ();
 
+					if(getDistanceFromEndGoal()===0){
+						creepListener.creepReachedGoal(creep);
+						return;
+					}
 
-			//if final goal is reached call creepListener.creepReachedGoal(spec.id)
+					updateCurrentGoal();
+					updateDistanceToGoal();
+					updateVelocity();
+				}else{
+					currentLocation.x += velocity.x*elapsedTime;
+					currentLocation.y += velocity.y*elapsedTime;
+					elapsedTime=0;
+					updateCurrentLocationIJ();
+					updateDistanceToGoal();
+				}
+			}
 		}
 
 		/**********************************************************
 		* render creep
 		**********************************************************/
+		var dims = {};
+		dims.height = MyGames.components.arena.subGrid;
+		dims.width = height;
 		that.draw = function(elapsedTime){
 			var dims = {};
 			dims.center = location;
@@ -242,7 +307,7 @@ MyGame.components.creeps = (function(){
 			(all points shortest path?)
 			(some form of breadth first, perhaps with an optimization)
 
-		spec:{arena, goals}
+		spec:{goals}
 	**********************************************************/
 	var ShortestPath = function(spec){
 		//[][] {location,distance}
@@ -253,7 +318,8 @@ MyGame.components.creeps = (function(){
 
 			//initialize the matrix
 			var matrix = [];
-			for(i=0; i<spec.arena.rowCount; i++){//FixMe!!!
+			var columnCount = MyGame.components.getArenaColumnCount();
+			for(i=0; i<columnCount; i++){
 				arena[i]=[];
 			}
 
@@ -266,7 +332,8 @@ MyGame.components.creeps = (function(){
 			}
 
 			function arenaLocationIsValidAndUnoccupied(i,j){
-				return false;
+				//needs to check for towers, should take into account towers being placed
+				return return MyGame.components.isValidIJ({i:i,j:j});
 			}
 
 			//use workQueue to perform a breadth first search
