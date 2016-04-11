@@ -203,9 +203,11 @@ MyGame.components.creeps = (function(){
 			return matrix;
 		}());
 
-		/**********************************************************
-			given a location return the location of an unobstructed goal
-		**********************************************************/
+		function getNextGoal(location){
+			var goals = getNextGoals(location);
+			
+		}
+
 		function getNextGoals(location){
 			//lookup all adjacent and diagonal location in the matrix
 			//return all locations that have the lowest distance from endGoal
