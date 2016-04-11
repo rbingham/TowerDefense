@@ -18,6 +18,9 @@ MyGame.components.creeps = (function(){
 		var nextCreepId = 0;
 		var creeps = [];
 
+		var occupationCountMatrix =
+
+
 		function buildShortestPaths(){
 			var shortestPaths = [];
 			for(let i=0; i<spec.endGoals.length; i++){
@@ -140,17 +143,24 @@ MyGame.components.creeps = (function(){
 		var hp = spec.initialHP;
 
 		var shortestPath = spec.shortestPath;
-		var currentGoal;
 		var currentLocation = spec.initialLocation;
-
-		(function(){
+		function updateCurrentLocationIJ(){
 			//convert currentLocation x,y to i,j
+			var ij = MyGame.components.xy2ij(currentLocation);
 			//and add to currentLocation
+			currentLocation.i=ij.i;
+			currentLocation.j=ij.j;
+		}
+		updateCurrentLocationIJ();
 
+		var currentGoal;
+		function updateCurrentGoal(){
 			currentGoal = spec.shortestPath.getNextGoal(currentLocation);
-		}());
-
-
+			var xy = MyGame.components.ij2xy(currentGoal);
+			currentGoal.x=xy.x;
+			currentGoal.y=xy.y;
+		}
+		updateCurrentGoal();
 
 		that.getLocationGoalIndex(){
 			return spec.locationGoalIndex;
@@ -243,7 +253,7 @@ MyGame.components.creeps = (function(){
 
 			//initialize the matrix
 			var matrix = [];
-			for(i=0; i<spec.arena.rowCount; i++){
+			for(i=0; i<spec.arena.rowCount; i++){//FixMe!!!
 				arena[i]=[];
 			}
 
@@ -253,6 +263,10 @@ MyGame.components.creeps = (function(){
 			for(let workIndex=0; i<spec.goals.length; workIndex++){
 				workQueue.push({location:spec.goals[workIndex], distance:0});
 				endIndex++;
+			}
+
+			function arenaLocationIsValidAndUnoccupied(i,j){
+				return false;
 			}
 
 			//use workQueue to perform a breadth first search
@@ -266,7 +280,7 @@ MyGame.components.creeps = (function(){
 
 				//if location is valid and better than any current option
 				if(
-					//arena @ i,j is valid and not occupied
+					arenaLocationIsValidAndUnoccupied(i,j)
 					&& (
 						typeof matrix[i][j] === undefined
 						|| work.distance < matrix[i][j].distance
