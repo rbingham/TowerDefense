@@ -304,7 +304,7 @@ MyGame.components=(function(graphics){
         return startX<xy.x && xy.x<endX && startY<xy.y && xy.y < endY;
     }
 
-    that.getArenaColumnCount(){
+    that.getArenaColumnCount = function(){
         return (that.arena.width+that.arena.subGrid)/that.arena.subGrid - 1;
     }
 

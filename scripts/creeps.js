@@ -208,11 +208,11 @@ MyGame.components.creeps = (function(){
 		}
 		updateVelocity();
 
-		that.getLocationGoalIndex(){
+		that.getLocationGoalIndex = function(){
 			return spec.locationGoalIndex;
 		}
 
-		that.getHP(){
+		that.getHP = function(){
 			return hp;
 		}
 
@@ -333,7 +333,7 @@ MyGame.components.creeps = (function(){
 
 			function arenaLocationIsValidAndUnoccupied(i,j){
 				//needs to check for towers, should take into account towers being placed
-				return return MyGame.components.isValidIJ({i:i,j:j});
+				return MyGame.components.isValidIJ({i:i,j:j});
 			}
 
 			//use workQueue to perform a breadth first search
@@ -358,17 +358,17 @@ MyGame.components.creeps = (function(){
 
 					//add all adjacent matrix locations to workQueue
 					nextDistance = work.distance+1;
-					workQueue.push({location:{i:i+1,j:j}}, distance:nextDistance});
-					workQueue.push({location:{i:i,j:j+1}}, distance:nextDistance});
-					workQueue.push({location:{i:i-1,j:j}}, distance:nextDistance});
-					workQueue.push({location:{i:i,j:j-1}}, distance:nextDistance});
+					workQueue.push({location:{i:i+1,j:j}, distance:nextDistance});
+					workQueue.push({location:{i:i,j:j+1}, distance:nextDistance});
+					workQueue.push({location:{i:i-1,j:j}, distance:nextDistance});
+					workQueue.push({location:{i:i,j:j-1}, distance:nextDistance});
 
 					//add all diagonal matrix locations to workQueue
 					nextDistance = work.distance+Math.sqrt(2);
-					workQueue.push({location:{i:i+1,j:j+1}}, distance:nextDistance});
-					workQueue.push({location:{i:i-1,j:j+1}}, distance:nextDistance});
-					workQueue.push({location:{i:i+1,j:j-1}}, distance:nextDistance});
-					workQueue.push({location:{i:i-1,j:j-1}}, distance:nextDistance});
+					workQueue.push({location:{i:i+1,j:j+1}, distance:nextDistance});
+					workQueue.push({location:{i:i-1,j:j+1}, distance:nextDistance});
+					workQueue.push({location:{i:i+1,j:j-1}, distance:nextDistance});
+					workQueue.push({location:{i:i-1,j:j-1}, distance:nextDistance});
 
 					//take note that 8 new locations have been added
 					endIndex+=8;
@@ -435,4 +435,4 @@ MyGame.components.creeps = (function(){
 	return {
 		Creep:Creep
 	};
-}(););
+}());
