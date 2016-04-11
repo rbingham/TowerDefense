@@ -10,7 +10,7 @@ MyGame.components.creeps = (function(){
 			Knows about all the creeps
 			Creates creeps
 
-		spec:{arena, initialLocations[][], goals[][], creepListener}
+		spec:{initialLocations[][], goals[][], creepListener}
 	**********************************************************/
 	var CreepManager = function(spec){
 		var that = {};
@@ -27,7 +27,7 @@ MyGame.components.creeps = (function(){
 		function buildShortestPaths(){
 			var shortestPaths = [];
 			for(let i=0; i<spec.endGoals.length; i++){
-				shortestPaths[i] = SortestPath({arena:arena, goals:spec.goals[i]});
+				shortestPaths[i] = ShortestPath({goals:spec.endGoals[i]});
 			}
 			return shortestPaths;
 		}
@@ -38,7 +38,7 @@ MyGame.components.creeps = (function(){
 			shortestPaths = buildShortestPaths();
 
 			for(let i=startCreepId; i<nextCreepId; i++){
-				if(typeof creeps[i] !== undefined){
+				if(creeps[i] !== undefined){
 					creeps[i].shortestPath = shortestPaths[creep[i].locationGoalIndex];
 				}
 			}
@@ -58,13 +58,13 @@ MyGame.components.creeps = (function(){
 		that.isArenaStateGood = function(){
 			var potentialShortestPaths = buildShortestPaths();
 			var potentialShortestPath;
-			var distanceFromEndGoal;
+			var distanceToEndGoal;
 
 			for(let i=startCreepId; i<nextCreepId; i++){
-				if(typeof creeps[i] !== undefined){
+				if(creeps[i] !== undefined){
 					potentialShortestPath = potentialShortestPaths[creep[i].locationGoalIndex];
-					distanceFromEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
-					if(typeof distanceFromEndGoal === undefined) return false;
+					distanceToEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
+					if(distanceToEndGoal === undefined) return false;
 				}
 			}
 			return true;
@@ -72,7 +72,6 @@ MyGame.components.creeps = (function(){
 
 		/**********************************************************
 			Creep Creator
-			spec:{creepSpec[], counts[], intervals[]}
 			creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
 		**********************************************************/
 		that.create = function(creepSpec){
@@ -91,7 +90,7 @@ MyGame.components.creeps = (function(){
 		function cleenUpCreeps(){
 			let done = false;
 			for(let i=startCreepId; i<nextCreepId && !done; i++){
-				if(typeof creeps[i] === undefined){
+				if(creeps[i] === undefined){
 					startCreepId = i+1;
 				}else{
 					done = true;
@@ -101,7 +100,7 @@ MyGame.components.creeps = (function(){
 
 		that.update = function(elapsedTime){
 			for(let i=startCreepId; i<nextCreepId; i++){
-				if(typeof creeps[i] !== undefined){
+				if(creeps[i] !== undefined){
 					creeps[i].update(elapsedTime);
 				}
 			}
@@ -111,31 +110,31 @@ MyGame.components.creeps = (function(){
 
 		that.render = function(elapsedTime){
 			for(let i=startCreepId; i<nextCreepId; i++){
-				if(typeof creeps[i] !== undefined){
-					creeps[i].render(elapsedTime);
+				if(creeps[i] !== undefined){
+					creeps[i].draw(elapsedTime);
 				}
 			}
 		}
 
 		//creep listener functions
 		that.creepKilled = function(creep){
-			if(typeof spec.creepListener !== undefined){
+			if(spec.creepListener !== undefined){
 				spec.creepListener.creepKilled(creep);
 			}
 
 			//decrement creepCountMatrix
 
-			delete creeps[creep.id];
+			delete creeps[creep.getID()];
 		}
 
 		that.creepReachedGoal = function(creep){
-			if(typeof spec.creepListener !== undefined){
+			if(spec.creepListener !== undefined){
 				spec.creepListener.creepReachedGoal(creep);
 			}
 
 			//decrement creepCountMatrix
 
-			delete creeps[creep.id];
+			delete creeps[creep.getID()];
 		}
 
 		that.creepMoved = function(creep, oldLocation, newLocation){
@@ -167,7 +166,12 @@ MyGame.components.creeps = (function(){
 		var hp = spec.initialHP;
 
 		var shortestPath = spec.shortestPath;
-		var currentLocation = spec.initialLocation;
+		var currentLocation = (function(){
+			var xy = MyGame.components.ij2xy(spec.initialLocation);
+			return {
+				x:xy.x, y:xy.y, i:spec.initialLocation.i, j:spec.initialLocation.j
+			}
+		}());
 		var currentGoal;
 		var distanceToGoal;
 		var velocity;
@@ -182,31 +186,35 @@ MyGame.components.creeps = (function(){
 			currentLocation.j=ij.j;
 
 			if(oldLocation.i!==currentLocation.i || oldLocation.j!==currentLocation.j){
-				creepListener.creepMoved(that, oldLocation);
+				spec.creepListener.creepMoved(that, oldLocation);
 			}
 		}
 		updateCurrentLocationIJ();
 
 		function updateCurrentGoal(){
 			currentGoal = spec.shortestPath.getNextGoal(currentLocation);
-			var xy = MyGame.components.ij2xy(currentGoal);
-			currentGoal.x=xy.x;
-			currentGoal.y=xy.y;
+			var xy = MyGame.components.ij2xy(currentGoal.location);
+			currentGoal.location.x=xy.x;
+			currentGoal.location.y=xy.y;
 		}
 		updateCurrentGoal();
 
 		function updateDistanceToGoal(){
-			distanceToGoal = {x:(currentGoal.x-currentLocation.x), y:(currentGoal.y-currentLocation.y)};
-			distanceToGoal.total = Math.sqrt(Math.pow(currentGoal.distance.x,2)+Math.pow(currentGoal.distance.y,2));
-			distanceToGoal.time = current.distance.total/spec.creepSpeed;
+			distanceToGoal = {x:(currentGoal.location.x-currentLocation.x), y:(currentGoal.location.y-currentLocation.y)};
+			distanceToGoal.total = Math.sqrt(Math.pow(distanceToGoal.x,2)+Math.pow(distanceToGoal.y,2));
+			distanceToGoal.time = distanceToGoal.total/spec.creepSpeed;
 		}
 		updateDistanceToGoal();
 
 		function updateVelocity(){
 			var unitDistance = {x:distanceToGoal.x/distanceToGoal.total, y:distanceToGoal.y/distanceToGoal.total};
-			currentLocation.velocity = {x:unitDistance.x*spec.creepSpeed, y:unitDistance.y*spec.creepSpeed};
+			velocity = {x:unitDistance.x*spec.creepSpeed, y:unitDistance.y*spec.creepSpeed};
 		}
 		updateVelocity();
+
+		that.getID = function(){
+			return spec.id;
+		}
 
 		that.getLocationGoalIndex = function(){
 			return spec.locationGoalIndex;
@@ -222,8 +230,8 @@ MyGame.components.creeps = (function(){
 		}
 
 		that.isShortestPathValid = function(potentialShortestPath){
-			var distanceFromGoal = that.getDistanceFromGoal(potentialShortestPath);
-			return typeof distanceFromGoal !== undefined;
+			var distanceToEndGoal = that.getDistanceFromGoal(potentialShortestPath);
+			return distanceToEndGoal !== undefined;
 		}
 
 		that.setShortestPath = function(newShortestPath){
@@ -243,7 +251,7 @@ MyGame.components.creeps = (function(){
 				shortestPathToTest = spec.shortestPath;
 			}
 
-			return shortestPathToTest.getDistanceFromEndGoal(location);
+			return shortestPathToTest.getDistanceFromEndGoal(currentLocation);
 		}
 
 
@@ -252,18 +260,18 @@ MyGame.components.creeps = (function(){
 		* update creep
 		**********************************************************/
 		that.update = function(elapsedTime){
-
+			var localElapsedTime = elapsedTime/1000;
 			//while there is elapsedTime left
-			while(0<elapsedTime){
+			while(0<localElapsedTime){
 				//if there is time to reach the next goal, reach it and decrement elapsedTime
-				if(elapsedTime<=distanceFromGoal.time){
-					currentLocation.x = currentGoal.x;
-					currentLocation.y = currentGoal.y;
-					elapsedTime-=distanceFromGoal.time;
+				if(distanceToGoal.time<=localElapsedTime){
+					currentLocation.x = currentGoal.location.x;
+					currentLocation.y = currentGoal.location.y;
+					localElapsedTime-=distanceToGoal.time;
 					updateCurrentLocationIJ();
 
-					if(getDistanceFromEndGoal()===0){
-						creepListener.creepReachedGoal(creep);
+					if(that.getDistanceFromEndGoal()===0){
+						spec.creepListener.creepReachedGoal(that);
 						return;
 					}
 
@@ -271,9 +279,9 @@ MyGame.components.creeps = (function(){
 					updateDistanceToGoal();
 					updateVelocity();
 				}else{
-					currentLocation.x += velocity.x*elapsedTime;
-					currentLocation.y += velocity.y*elapsedTime;
-					elapsedTime=0;
+					currentLocation.x += velocity.x*localElapsedTime;
+					currentLocation.y += velocity.y*localElapsedTime;
+					localElapsedTime=0;
 					updateCurrentLocationIJ();
 					updateDistanceToGoal();
 				}
@@ -284,11 +292,10 @@ MyGame.components.creeps = (function(){
 		* render creep
 		**********************************************************/
 		var dims = {};
-		dims.height = MyGames.components.arena.subGrid;
-		dims.width = height;
+		dims.height = MyGame.components.arena.subGrid;
+		dims.width = dims.height;
 		that.draw = function(elapsedTime){
-			var dims = {};
-			dims.center = location;
+			dims.center = currentLocation;
 			dims.rotation = 0;//get rotation from direction
 
 			//update sprite
@@ -296,7 +303,7 @@ MyGame.components.creeps = (function(){
 				drawable.update(elapsedTime);
 			}
 
-			drawable.draw(dims);
+			spec.drawable.draw(dims);
 		}
 
 		return that;
@@ -312,21 +319,23 @@ MyGame.components.creeps = (function(){
 	var ShortestPath = function(spec){
 		//[][] {location,distance}
 		var that = {};
+		var adjacentDistance = 1;
+		var diagonalDistance = Math.sqrt(2);
 
-		var distanceFromEndGoalMatrix = (function(){
+		var distanceToEndGoalMatrix = (function(){
 			var i,j;
 
 			//initialize the matrix
 			var matrix = [];
 			var columnCount = MyGame.components.getArenaColumnCount();
 			for(i=0; i<columnCount; i++){
-				arena[i]=[];
+				matrix[i]=[];
 			}
 
 			//add all final goals to work array with a distance of zero
 			var endIndex=0;
 			var workQueue = [];
-			for(let workIndex=0; i<spec.goals.length; workIndex++){
+			for(let workIndex=0; workIndex<spec.goals.length; workIndex++){
 				workQueue.push({location:spec.goals[workIndex], distance:0});
 				endIndex++;
 			}
@@ -340,7 +349,7 @@ MyGame.components.creeps = (function(){
 			//the goal is to update every location of the matrix with a distance from goal
 			var work;
 			var nextDistance;
-			for(let workIndex=0; workIndex<endIndex; i++){
+			for(let workIndex=0; workIndex<endIndex; workIndex++){
 				work = workQueue[workIndex];
 				i=work.location.i;
 				j=work.location.j;
@@ -349,7 +358,7 @@ MyGame.components.creeps = (function(){
 				if(
 					arenaLocationIsValidAndUnoccupied(i,j)
 					&& (
-						typeof matrix[i][j] === undefined
+						matrix[i][j] === undefined
 						|| work.distance < matrix[i][j].distance
 					)
 				){
@@ -357,14 +366,14 @@ MyGame.components.creeps = (function(){
 					matrix[i][j] = work;
 
 					//add all adjacent matrix locations to workQueue
-					nextDistance = work.distance+1;
+					nextDistance = work.distance+adjacentDistance;
 					workQueue.push({location:{i:i+1,j:j}, distance:nextDistance});
 					workQueue.push({location:{i:i,j:j+1}, distance:nextDistance});
 					workQueue.push({location:{i:i-1,j:j}, distance:nextDistance});
 					workQueue.push({location:{i:i,j:j-1}, distance:nextDistance});
 
 					//add all diagonal matrix locations to workQueue
-					nextDistance = work.distance+Math.sqrt(2);
+					nextDistance = work.distance+diagonalDistance;
 					workQueue.push({location:{i:i+1,j:j+1}, distance:nextDistance});
 					workQueue.push({location:{i:i-1,j:j+1}, distance:nextDistance});
 					workQueue.push({location:{i:i+1,j:j-1}, distance:nextDistance});
@@ -380,11 +389,12 @@ MyGame.components.creeps = (function(){
 		}());
 
 		that.getDistanceFromEndGoal = function(location){
-			if(typeof distanceFromEndGoalMatrix[location.i]===undefined){
+			if(distanceToEndGoalMatrix[location.i]===undefined
+					|| distanceToEndGoalMatrix[location.i][location.j] === undefined){
 				return undefined;
 			}
 
-			return distanceFromEndGoalMatrix[location.i][location.j]
+			return distanceToEndGoalMatrix[location.i][location.j].distance;
 		}
 
 		that.getNextGoal = function(location){
@@ -396,13 +406,23 @@ MyGame.components.creeps = (function(){
 			return goals[index];
 		}
 
-		function addGoalToBestGoals(i, j, goals){
-			if(typeof matrix[i]!==undefined && typeof matrix[i][j]!==undefined){
-				if(goals.length===0 || goal.distance===goals[0].distance){
-					goals.push(goal);
-				}else if(goal.distance<goals[0].distance){
+		function addGoalToBestGoals(i, j, goals, distance){
+			if(
+				distanceToEndGoalMatrix[i]!==undefined
+				&& distanceToEndGoalMatrix[i][j]!==undefined
+			){
+				var goal = distanceToEndGoalMatrix[i][j];
+				var goalDistance = goal.distance+distance;
+				var push = false;
+				if(goals.length===0 || goalDistance===goals[0].distance){
+					push = true;
+				}else if(goalDistance<goals[0].distance){
 					goals = [];
-					goals.push(goal);
+					push=true;
+				}
+
+				if(push){
+					goals.push({distance:goalDistance,location:goal.location});
 				}
 			}
 
@@ -412,19 +432,23 @@ MyGame.components.creeps = (function(){
 		function getNextGoals(location){
 			var goals = [];
 			var i = location.i;
-			var y = location.j;
+			var j = location.j;
+			var addedDistance;
 
 			//add adjacents
-			goals = addGoalToBestGoals(i+1, j,   goals);
-			goals = addGoalToBestGoals(i,   j+1, goals);
-			goals = addGoalToBestGoals(i-1, j,   goals);
-			goals = addGoalToBestGoals(i,   j-1, goals);
+			addedDistance = adjacentDistance;
+			goals = addGoalToBestGoals(i+1, j,   goals, addedDistance);
+			goals = addGoalToBestGoals(i,   j+1, goals, addedDistance);
+			goals = addGoalToBestGoals(i-1, j,   goals, addedDistance);
+			goals = addGoalToBestGoals(i,   j-1, goals, addedDistance);
 
 			//addDiagonals
-			goals = addGoalToBestGoals(i+1, j+1, goals);
-			goals = addGoalToBestGoals(i-1, j+1, goals);
-			goals = addGoalToBestGoals(i+1, j-1, goals);
-			goals = addGoalToBestGoals(i-1, j-1, goals);
+			addedDistance = diagonalDistance;
+			// addedDistance = adjacentDistance;
+			goals = addGoalToBestGoals(i+1, j+1, goals, addedDistance);
+			goals = addGoalToBestGoals(i-1, j+1, goals, addedDistance);
+			goals = addGoalToBestGoals(i+1, j-1, goals, addedDistance);
+			goals = addGoalToBestGoals(i-1, j-1, goals, addedDistance);
 
 			return goals;
 		}
@@ -433,6 +457,6 @@ MyGame.components.creeps = (function(){
 	}
 
 	return {
-		Creep:Creep
+		CreepManager:CreepManager
 	};
 }());

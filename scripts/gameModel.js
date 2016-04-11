@@ -18,6 +18,21 @@ MyGame.gameModel=(function(graphics,components,input){
         keyboard=input.Keyboard(),
         mouse=input.Mouse();
 
+    var creepManager = (function(){
+        var entrances = MyGame.components.entrances;
+
+        var initialLocations = [entrances[2],entrances[3],entrances[0],entrances[1]];
+        var endGoals = [entrances[0],entrances[1],entrances[2],entrances[3]];
+
+        return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals});
+    }());
+
+    that.addCreep = function(){
+        //creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
+        var creepSpec = {locationGoalIndex:0, drawable:MyGame.graphics.genericDrawables.greenRect, initialHP:0, creepSpeed:100};
+        creepManager.create(creepSpec);
+    }
+
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
         internalRender=WatchGame;
@@ -48,15 +63,17 @@ MyGame.gameModel=(function(graphics,components,input){
     that.update=function(elapsed){
         updateEventQueue(elapsed);
         internalUpdate(elapsed);
+        creepManager.update(elapsed);
 
     };
 
     that.render=function(elapsed){
         graphics.clear();
         internalRender(elapsed);
+        creepManager.render(elapsed);
     };
 
-    
+
 
 
     function removeDoneEvents(){
@@ -79,8 +96,8 @@ MyGame.gameModel=(function(graphics,components,input){
             }
         }
     }
-    
-    
+
+
     that.placeButtonPressed=function(towerSpecs){
         internalRender=PlaceTowerRender;
         mouse.registerMoveCommand(function(at){
@@ -93,7 +110,7 @@ MyGame.gameModel=(function(graphics,components,input){
             }
         },components.arena);
     }
-    
+
 
     that.keyUpdate=function(elapsed){
         keyboard.update(elapsed);

@@ -15,19 +15,24 @@ MyGame.GameView = function(model, input){
         dims:{center:{x:700,y:100}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"})
     });
-    
-    
+
+
     var GroundFreeze = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:200}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"aqua",fill:"blue"})
     });
-    
+
     var MixedProjectile = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:300}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"Chocolate",fill:"BlueViolet "})
     });
     var AirMissile = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:400}, height:100, width:100, rotate:0},
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
+    });
+
+    var creep = MyGame.uiComponents.CanvasButton({
+        dims:{center:{x:700,y:600}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
     });
 
@@ -44,12 +49,15 @@ MyGame.GameView = function(model, input){
     AirMissile.addButtonListener("logStuff", {onClick:function(){
         model.placeButtonPressed(TowerTemplate.AirMissile);
     }});
-    
+    creep.addButtonListener("logStuff", {onClick:function(){
+        model.addCreep();
+    }});
+
     buttonGrid.addButton(GroundBomb);
     buttonGrid.addButton(GroundFreeze);
     buttonGrid.addButton(MixedProjectile);
     buttonGrid.addButton(AirMissile);
-
+    buttonGrid.addButton(creep);
 
     function update(elapsedTime){
         mouse.update(elapsedTime);

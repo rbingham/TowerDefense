@@ -249,20 +249,6 @@ MyGame.components=(function(graphics){
         }
     }
 
-
-
-    that.entrances=[[],[],[],[]]
-    for(var i=0;i<4;i++){
-        that.entrances[0].push({x:that.takenGrid.length-1,y:(that.takenGrid.length/2-2)+i});
-        that.entrances[2].push({x:0,y:(that.takenGrid.length/2-2)+i});
-        that.entrances[1].push({x:(that.takenGrid.length/2-2)+i,y:0});
-        that.entrances[3].push({x:(that.takenGrid.length/2-2)+i,y:that.takenGrid[0].length-1});
-    }
-
-
-
-
-    var tempTower;
     function roundXY(at){
         return {
             x:at.x-at.x%that.arena.subGrid,
@@ -281,7 +267,7 @@ MyGame.components=(function(graphics){
         var lowerRighti=(xy.x-that.arena.center.x+that.arena.width/2)/(that.arena.subGrid);
         var lowerRightj=(xy.y-that.arena.center.y+that.arena.height/2)/(that.arena.subGrid);
         return {
-            i:lowerRightj,
+            i:lowerRighti,
             j:lowerRightj
         }
     }
@@ -300,7 +286,7 @@ MyGame.components=(function(graphics){
         var endX = startX + that.arena.width;
         var startY = that.arena.center.y-that.arena.height/2;
         var endY = startX + that.arena.height;
-        var xy = ij2xy(ij);
+        var xy = that.ij2xy(ij);
         return startX<xy.x && xy.x<endX && startY<xy.y && xy.y < endY;
     }
 
@@ -308,6 +294,26 @@ MyGame.components=(function(graphics){
         return (that.arena.width+that.arena.subGrid)/that.arena.subGrid - 1;
     }
 
+
+    //0:east 1:north?, 2:west, 3:south?
+    that.entrances=[[],[],[],[]]
+    for(var i=0;i<4;i++){
+        that.entrances[0].push({x:that.takenGrid.length-1,y:(that.takenGrid.length/2-2)+i});
+        that.entrances[2].push({x:0,y:(that.takenGrid.length/2-2)+i});
+        that.entrances[1].push({x:(that.takenGrid.length/2-2)+i,y:0});
+        that.entrances[3].push({x:(that.takenGrid.length/2-2)+i,y:that.takenGrid[0].length-1});
+    }
+    for(let i=0;i<4;i++){
+        for(let j=0;j<4;j++){
+            // let ij = that.xy2ij(xythat.entrances[i][j]);
+            // that.entrances[i][j].i=ij.i;
+            // that.entrances[i][j].j=ij.j;
+            that.entrances[i][j].i=that.entrances[i][j].x;
+            that.entrances[i][j].j=that.entrances[i][j].y;
+        }
+    }
+
+    var tempTower;
     that.placingOver=function(at,params){
         params.center=roundXY(at);
         tempTower=new Tower(params);

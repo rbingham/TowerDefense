@@ -16,6 +16,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
 
     var initialize=function(){
+
         gameView = MyGame.GameView(model, input);
     };
 
