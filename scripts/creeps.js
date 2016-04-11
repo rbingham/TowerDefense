@@ -301,7 +301,7 @@ MyGame.components.creeps = (function(){
 
 			//update sprite
 			if(spec.drawable.hasOwnProperty("update")){
-				drawable.update(elapsedTime);
+				spec.drawable.update(elapsedTime);
 			}
 
 			spec.drawable.draw(dims);
@@ -444,8 +444,8 @@ MyGame.components.creeps = (function(){
 			goals = addGoalToBestGoals(i,   j-1, goals, addedDistance);
 
 			//addDiagonals
-			addedDistance = diagonalDistance;
-			// addedDistance = adjacentDistance;
+			// addedDistance = diagonalDistance;
+			addedDistance = adjacentDistance;
 			goals = addGoalToBestGoals(i+1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i-1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i+1, j-1, goals, addedDistance);
