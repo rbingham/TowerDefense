@@ -92,8 +92,8 @@ MyGame.graphics=(function(){
 
         context.restore();
     };
-    
-    
+
+
     /*
     takes,
     */
@@ -108,9 +108,13 @@ MyGame.graphics=(function(){
 				context.rotate(spec.rotation);
 				context.translate(-spec.center.x, -spec.center.y);
 
+                // if(spriteinfo.row === undefined){
+                //     spriteinfo.row=0;
+                // }
+
                 context.drawImage(
                     image,
-                    spriteinfo.width * spriteinfo.sprite, 0,	// Which sprite to pick out
+                    spriteinfo.width * spriteinfo.sprite, spriteinfo.height*spriteinfo.row,	// Which sprite to pick out
                     spriteinfo.width, spriteinfo.height,		// The size of the sprite
                     spec.center.x - spec.width/2,	// Where to draw the sprite
                     spec.center.y - spec.height/2,
@@ -126,20 +130,20 @@ MyGame.graphics=(function(){
         };
         return that;
     }
-    
+
     /******
-        Expects 
+        Expects
         spec.spriteTime[], an array of timings for each frame.
         spec.sprite, the current sprite, default to 0,
         spec.spriteCount, numbers of sprites,
         spec. width and spec.height,size of the sprite,
-        
+
         use given to image holder, with a sprite sheet source, and rectangular object, will draw the image at the desired location
-        
+
         if(spec.movementSprite is defiend and is true), will generate a new update function
             different update function will take a third parameter, bool is Moving, if false, will not update
     *****/
-    
+
     function genSpriteInfo(spec){
         var timeElapsed=0;
         if(spec.movementSprite!==undefined&&spec.movementSprite===true){
@@ -194,9 +198,9 @@ MyGame.graphics=(function(){
                         }
                     }
                 }
-            };    
+            };
         }
-        
+
 
         return spec;
     }
