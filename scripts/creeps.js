@@ -153,7 +153,6 @@ MyGame.components.creeps = (function(){
 		var distanceFromEndGoalMatrix = (function(){
 			var i;
 
-
 			var matrix = [];
 			for(i=0; i<spec.arena.rowCount; i++){
 				arena[i]=[];
