@@ -47,7 +47,7 @@ Tower.prototype={
     update(elapsed){
         this.weapon.rotation+=elapsed/10000;
         this.weapon.rotation%=2*Math.PI;
-        this.weapon.spriteinfo.update(elapsed,true);
+        //this.weapon.spriteinfo.update(elapsed,true);
     }
 }
 
@@ -124,7 +124,7 @@ MyGame.components=(function(graphics){
     that.towerArray=[];
     
     function doesTowerFit(i,j,params){
-        if(i<=0||j<=0||i>=that.arena.subGrid||j>=that.arena.subGrid){
+        if(i<=0||j<=0||i>=that.arena.width/that.arena.subGrid||j>=that.arena.height/that.arena.subGrid){
             return false
         }
         
@@ -188,9 +188,9 @@ MyGame.components=(function(graphics){
 
 
     that.arena={
-        center:{x:400,y:400},
-        width:400,
-        height:400,
+        center:{x:300,y:300},
+        width:600,
+        height:600,
         subGrid:20,
 		fill : 'rgba(0, 150, 250, 1)',
 		stroke : 'rgba(255, 0, 0, 1)',

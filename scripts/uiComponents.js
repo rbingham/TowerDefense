@@ -119,6 +119,7 @@ MyGame.uiComponents = (function(graphics){
         function addButton(button){
             buttons.push(button);
             mouse.registerClickCommand(button.onMouseClick,button.getDims());
+            mouse.registerMoveCommand(function(){},button.getDims(),button.onMouseEnter,button.onMouseExit);
         }
 
         function draw(){

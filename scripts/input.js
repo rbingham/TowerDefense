@@ -85,8 +85,14 @@ MyGame.input=(function(canvas){
         that.registerClickCommand=function(handler,boundingRect){
             that.clickHandlers.push({handler:handler,rect:boundingRect});
         }
-        that.registerMoveCommand=function(handler,boundingRect){
-            that.moveHandlers.push({handler:handler,rect:boundingRect});
+        that.registerMoveCommand=function(handler,boundingRect,onEnter,onExit){
+            if(onExit===undefined){
+                onExit=function(){};
+            }
+            if(onEnter===undefined){
+                onEnter=function(){};
+            }
+            that.moveHandlers.push({handler:handler,rect:boundingRect,enter:onEnter,exit:onExit,lastupdate:2});
         }
 
 
@@ -113,10 +119,19 @@ MyGame.input=(function(canvas){
             for(var i=that.mouseMove.length-1;i<that.mouseMove.length&&i>0;i++){
                 for(var handlerNum=0;handlerNum < that.moveHandlers.length;++handlerNum){
                     if(Collision.pointRect(getMousePos(that.mouseMove[i]),that.moveHandlers[handlerNum].rect)){
+                        if(that.moveHandlers[handlerNum].lastupdate===0){
+                            that.moveHandlers[handlerNum].enter();
+                        }
                         that.moveHandlers[handlerNum].handler(getMousePos(that.mouseMove[i]));
 /*                         if(!(toRemove.indexOf(i) > -1)){
                             toRemove.push(i);
                         } */
+                        that.moveHandlers[handlerNum].lastupdate=1;
+                    }else{
+                        if(that.moveHandlers[handlerNum].lastupdate===1){
+                            that.moveHandlers[handlerNum].exit();
+                        }
+                        that.moveHandlers[handlerNum].lastupdate=0;
                     }
                 }
             }
