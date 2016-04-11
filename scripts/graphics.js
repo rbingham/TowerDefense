@@ -110,8 +110,8 @@ MyGame.graphics=(function(){
 
                 context.drawImage(
                     image,
-                    spec.width * spriteinfo.sprite, 0,	// Which sprite to pick out
-                    spec.width, spec.height,		// The size of the sprite
+                    spriteinfo.width * spriteinfo.sprite, 0,	// Which sprite to pick out
+                    spriteinfo.width, spriteinfo.height,		// The size of the sprite
                     spec.center.x - spec.width/2,	// Where to draw the sprite
                     spec.center.y - spec.height/2,
                     spec.width, spec.height
@@ -120,39 +120,83 @@ MyGame.graphics=(function(){
 
             }
         }
-        image.src=spriteinfo.src;
+        image.src=src;
         that.draw= function(){
 
         };
         return that;
     }
-
+    
+    /******
+        Expects 
+        spec.spriteTime[], an array of timings for each frame.
+        spec.sprite, the current sprite, default to 0,
+        spec.spriteCount, numbers of sprites,
+        spec. width and spec.height,size of the sprite,
+        
+        use given to image holder, with a sprite sheet source, and rectangular object, will draw the image at the desired location
+        
+        if(spec.movementSprite is defiend and is true), will generate a new update function
+            different update function will take a third parameter, bool is Moving, if false, will not update
+    *****/
+    
     function genSpriteInfo(spec){
         var timeElapsed=0;
-        spec.update=function(elapsedTime, forward) {
-			timeElapsed += elapsedTime;
-			if (timeElapsed >= spec.spriteTime[spec.sprite]) {
-				//
-				// When switching sprites, keep the leftover time because
-				// it needs to be accounted for the next sprite animation frame.
-				timeElapsed -= spec.spriteTime[spec.sprite];
-				//
-				// Depending upon the direction of the animation...
-				if (forward === true) {
-					spec.sprite += 1;
-					//
-					// This provides wrap around from the last back to the first sprite
-					spec.sprite = spec.sprite % spec.spriteCount;
-				} else {
-					spec.sprite -= 1;
-					//
-					// This provides wrap around from the first to the last sprite
-					if (spec.sprite <= 0) {
-						spec.sprite = spec.spriteCount - 1;
-					}
-				}
-			}
-		};
+        if(spec.movementSprite!==undefined&&spec.movementSprite===true){
+            spec.update=function(elapsedTime, forward,isMoving) {
+                if(!isMoving){
+                    return;
+                }
+                timeElapsed += elapsedTime;
+                if (timeElapsed >= spec.spriteTime[spec.sprite]) {
+                    //
+                    // When switching sprites, keep the leftover time because
+                    // it needs to be accounted for the next sprite animation frame.
+                    timeElapsed -= spec.spriteTime[spec.sprite];
+                    //
+                    // Depending upon the direction of the animation...
+                    if (forward === true) {
+                        spec.sprite += 1;
+                        //
+                        // This provides wrap around from the last back to the first sprite
+                        spec.sprite = spec.sprite % spec.spriteCount;
+                    } else {
+                        spec.sprite -= 1;
+                        //
+                        // This provides wrap around from the first to the last sprite
+                        if (spec.sprite < 0) {
+                            spec.sprite = spec.spriteCount - 1;
+                        }
+                    }
+                }
+            };
+        }else{
+            spec.update=function(elapsedTime, forward) {
+                timeElapsed += elapsedTime;
+                if (timeElapsed >= spec.spriteTime[spec.sprite]) {
+                    //
+                    // When switching sprites, keep the leftover time because
+                    // it needs to be accounted for the next sprite animation frame.
+                    timeElapsed -= spec.spriteTime[spec.sprite];
+                    //
+                    // Depending upon the direction of the animation...
+                    if (forward === true) {
+                        spec.sprite += 1;
+                        //
+                        // This provides wrap around from the last back to the first sprite
+                        spec.sprite = spec.sprite % spec.spriteCount;
+                    } else {
+                        spec.sprite -= 1;
+                        //
+                        // This provides wrap around from the first to the last sprite
+                        if (spec.sprite < 0) {
+                            spec.sprite = spec.spriteCount - 1;
+                        }
+                    }
+                }
+            };    
+        }
+        
 
         return spec;
     }

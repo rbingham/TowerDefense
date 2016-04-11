@@ -33,7 +33,9 @@ Tower.prototype={
         if(drawRange!==undefined){
             MyGame.graphics.drawCircle({
                 center:this.center,
-                radius:this.weapon.range
+                radius:this.weapon.range,
+                fill: "rgba(0,0,0,1)",
+                stroke: "rgba(0,0,0,1)"
             })
         }
         ImageHolder.drawImage(this.src,this);
@@ -45,6 +47,7 @@ Tower.prototype={
     update(elapsed){
         this.weapon.rotation+=elapsed/10000;
         this.weapon.rotation%=2*Math.PI;
+        //this.weapon.spriteinfo.update(elapsed,true);
     }
 }
 
@@ -52,7 +55,13 @@ function Weapon(spec){
     this.src=spec.src;
     this.rotation=0;
     this.range=spec.range;
-
+    /*this.spriteinfo=MyGame.graphics.genSpriteInfo({
+        sprite:0,
+        spriteCount:3,
+        spriteTime:[1000,200,100],
+        height:40,
+        width:40,
+    });*/
 }
 //Weapon funtions go here
 
@@ -64,28 +73,94 @@ Weapon.prototype={
 
 
 
+
+function validPathExists(grid,start,exits){
+    var queue=[];
+    var by=[];
+    var toReset=[];
+    queue.push(start);
+    by.push('foobar');
+    var found=false;
+    while(!found&&queue.length!==0){
+        var i=queue.shift();
+        if(grid[i.x][i.y].hit||grid[i.x][i.y].taken){
+            continue;
+        }
+        grid[i.x][i.y].hit=true;
+        toReset.push(i);
+
+        //set found to true if any match, thats what the or is for
+        for(var j=0;j<exits.length;j++){
+            if((exits[j].x===i.x&&exits[j].y===i.y)){
+                found=true;
+            }
+        }
+
+
+        for(var j=0;j<grid[i.x][i.y].adjacent.length;j++){
+            queue.push(grid[i.x][i.y].adjacent[j]);
+        }
+    }
+    /*console.log(start);
+    var t="";
+    for(var j=0;j<grid.length;j++){
+        for(var k=0;k<grid[j].length;k++){
+            t+=grid[j][k].hit?"X":"_";
+        }
+        t+='\n'
+    }
+    console.log(t);*/
+
+
+    for(var j=0;j<toReset.length;j++){
+        grid[toReset[j].x][toReset[j].y].hit=false;
+    }
+    return found;
+
+}
+
 MyGame.components=(function(graphics){
     var that={};
     that.towerArray=[];
-    
+
     function doesTowerFit(i,j,params){
-        for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
-            for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
-                if(that.takenGrid[icheck][jcheck]){
+        if(i<=0||j<=0||i>=that.arena.width/that.arena.subGrid||j>=that.arena.height/that.arena.subGrid){
+            return false
+        }
+
+        var toReset=[];
+        for(var icheck=i;(i-icheck)*that.arena.subGrid<params.width;icheck--){
+            for(var jcheck=j;(j-jcheck)*that.arena.subGrid<params.height;jcheck--){
+                if(that.takenGrid[icheck][jcheck].taken){
+                    for(var j=0;j<toReset.length;j++){
+                        that.takenGrid[toReset[j].x][toReset[j].y].hit=false;
+                    }
                     return false;
                 }
-            }   
+                that.takenGrid[icheck][jcheck].hit=true;
+                toReset.push({x:icheck,y:jcheck});
+            }
         }
-        return true;
+
+        //check if any exits are impossible
+        var hit=true;
+        for(var i=0;i<4;i++){
+            hit=hit&&validPathExists(that.takenGrid,that.entrances[(i+2)%4][0],that.entrances[i]);
+        }
+        for(var j=0;j<toReset.length;j++){
+            that.takenGrid[toReset[j].x][toReset[j].y].hit=false;
+        }
+
+        return hit;
     }
     function takeSpots(i,j,params){
-        for(var icheck=i;(icheck-i)*that.arena.subGrid<params.width;icheck++){
-            for(var jcheck=j;(jcheck-j)*that.arena.subGrid<params.height;jcheck++){
-                that.takenGrid[icheck][jcheck]=true;
-            }   
-        }        
+        for(var icheck=i;(i-icheck)*that.arena.subGrid<params.width;icheck--){
+            for(var jcheck=j;(j-jcheck)*that.arena.subGrid<params.height;jcheck--){
+                that.takenGrid[icheck][jcheck].taken=true;
+            }
+        }
     }
-    
+
     that.addTower=function(at,params){
         params.center=roundXY(at);
         coords=roundXY(at)
@@ -99,12 +174,23 @@ MyGame.components=(function(graphics){
         tempTower=undefined;
         return true;
     };
+    that.checkTowerPlacement=function(at,params){
+        params.center=roundXY(at);
+        coords=roundXY(at)
+        lowerRighti=(coords.x-that.arena.center.x+that.arena.width/2)/(that.arena.subGrid);
+        lowerRightj=(coords.y-that.arena.center.y+that.arena.height/2)/(that.arena.subGrid);
+        if(!doesTowerFit(lowerRighti,lowerRightj,params)){
+            return false;
+        }
+        return true;
+    };
+
 
 
     that.arena={
-        center:{x:400,y:400},
-        width:400,
-        height:400,
+        center:{x:300,y:300},
+        width:600,
+        height:600,
         subGrid:20,
 		fill : 'rgba(0, 150, 250, 1)',
 		stroke : 'rgba(255, 0, 0, 1)',
@@ -116,7 +202,9 @@ MyGame.components=(function(graphics){
                         center:{x:centerx,y:this.center.y},
                         width:1,
                         height:this.height,
-                        rotation:0
+                        rotation:0,
+                        fill: "rgba(0,0,0,1)",
+                        stroke: "rgba(0,0,0,1)"
                     });
                 }
                 for(var centery=this.center.y-this.height/2;centery<=this.center.y+this.height/2;centery+=this.subGrid){
@@ -124,7 +212,9 @@ MyGame.components=(function(graphics){
                         center:{x:this.center.x,y:centery},
                         width:this.width,
                         height:1,
-                        rotation:0
+                        rotation:0,
+                        fill: "rgba(0,0,0,1)",
+                        stroke: "rgba(0,0,0,1)"
                     });
                 }
             }else{
@@ -132,16 +222,46 @@ MyGame.components=(function(graphics){
             }
         }
     };
-    
+
+
     that.takenGrid=[];
+    //should allow us to add diagnals in the future
     for(var i=0;i<that.arena.width/that.arena.subGrid;i++){
         that.takenGrid[i]=[];
         for(var j=0;j<that.arena.height/that.arena.subGrid;j++){
-            that.takenGrid[i][j]=false;
+            that.takenGrid[i][j]={taken:false,hit:false,adjacent:[]};
+        }
+    }
+    for(var i=0;i<that.takenGrid.length;i++){
+        for(var j=0;j<that.takenGrid[i].length;j++){
+            if(i-1>=0){
+                that.takenGrid[i][j].adjacent.push({x:i-1,y:j});
+            }
+            if(i+1<that.takenGrid.length){
+                that.takenGrid[i][j].adjacent.push({x:i+1,y:j});
+            }
+            if(j-1>=0){
+                that.takenGrid[i][j].adjacent.push({x:i,y:j-1});
+            }
+            if(j+1<that.takenGrid[i].length){
+                that.takenGrid[i][j].adjacent.push({x:i,y:j+1});
+            }
         }
     }
 
-    
+
+
+    that.entrances=[[],[],[],[]]
+    for(var i=0;i<4;i++){
+        that.entrances[0].push({x:that.takenGrid.length-1,y:(that.takenGrid.length/2-2)+i});
+        that.entrances[2].push({x:0,y:(that.takenGrid.length/2-2)+i});
+        that.entrances[1].push({x:(that.takenGrid.length/2-2)+i,y:0});
+        that.entrances[3].push({x:(that.takenGrid.length/2-2)+i,y:that.takenGrid[0].length-1});
+    }
+
+
+
+
     var tempTower;
     function roundXY(at){
         return {
@@ -155,7 +275,34 @@ MyGame.components=(function(graphics){
             y:at.y-at.y%that.arena.subGrid
         };
     }
-    
+
+    that.xy2ij = function(xy){
+        var xy = roundXY(xy);
+        var lowerRighti=(xy.x-that.arena.center.x+that.arena.width/2)/(that.arena.subGrid);
+        var lowerRightj=(xy.y-that.arena.center.y+that.arena.height/2)/(that.arena.subGrid);
+        return {
+            i:lowerRightj,
+            j:lowerRightj
+        }
+    }
+
+    that.ij2xy = function(ij){
+        var centerX=(that.arena.center.x-that.arena.width/2)+(ij.i*that.arena.subGrid)+(that.arena.subGrid/2);
+        var centerY=(that.arena.center.y-that.arena.height/2)+(ij.j*that.arena.subGrid)+(that.arena.subGrid/2);
+        return {
+            x:centerX,
+            y:centerY
+        }
+    }
+
+    that.isValidIJ = function(ij){
+        var startX = that.arena.center.x-that.arena.width/2;
+        var endX = startX + that.arena.width;
+        var startY = that.arena.center.y-that.arena.height/2;
+        var endY = startX + that.arena.height;
+        var xy = ij2xy(ij);
+        return startX<xy.x && xy.x<endX && startY<xy.y && xy.y < endY;
+    }
 
     that.placingOver=function(at,params){
         params.center=roundXY(at);
@@ -192,34 +339,7 @@ MyGame.components=(function(graphics){
 
     //may want an update in future
 
-    that.sampleWeaponSpec={
-        src:"./images/weapon.png",
-        rotation:0,
-        range:40,
-    }
-    that.otherSampleWeaponSpec={
-        src:"./images/weapon2.png",
-        rotation:0,
-        range:40,
-    }
 
-    that.sampleTowerSpec={
-        center:{x:0,y:0},
-        weaponSpec:that.sampleWeaponSpec,
-        src:"./images/tower.png",
-        rotation:0,
-        height:40,
-        width:40,
-    }
-
-    that.otherSampleTowerSpec={
-        center:{x:0,y:0},
-        weaponSpec:that.otherSampleWeaponSpec,
-        src:"./images/tower2.png",
-        rotation:0,
-        height:40,
-        width:40,
-    }
 
     return that;
 }(MyGame.graphics));
