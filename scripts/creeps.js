@@ -153,12 +153,13 @@ MyGame.components.creeps = (function(){
 		var distanceFromEndGoalMatrix = (function(){
 			var i;
 
-
+			//initialize the matrix
 			var matrix = [];
 			for(i=0; i<spec.arena.rowCount; i++){
 				arena[i]=[];
 			}
 
+			//add all final goals to work array with a distance of zero
 			var endIndex=0;
 			var workQueue = [];
 			for(i=0; i<spec.goals.length; i++){
@@ -166,14 +167,17 @@ MyGame.components.creeps = (function(){
 				endIndex++;
 			}
 
+			//use workQueue to perform a breadth first search
+			//the goal is to update every location of the matrix with a distance from goal
 			var work;
 			var x,y;
 			var nextDistance;
-
 			for(i=0; i<endIndex; i++){
 				work = workQueue[i];
 				x=work.location.x;
 				y=work.location.y;
+
+				//if location is valid and better than any current option
 				if(
 					//arena @ x,y is valid and not occupied
 					&& (
@@ -181,21 +185,24 @@ MyGame.components.creeps = (function(){
 						|| work.distance < matrix[x][y].distance
 					)
 				){
-
+					//set matrix location to be {location, distance}
 					matrix[x][y] = work;
 
+					//add all adjacent matrix locations to workQueue
 					nextDistance = work.distance+1;
 					workQueue.push({location:{x:x+1,y:y}}, distance:nextDistance});
-					workQueue.push({location:{x:x-1,y:y}}, distance:nextDistance});
 					workQueue.push({location:{x:x,y:y+1}}, distance:nextDistance});
+					workQueue.push({location:{x:x-1,y:y}}, distance:nextDistance});
 					workQueue.push({location:{x:x,y:y-1}}, distance:nextDistance});
 
+					//add all diagonal matrix locations to workQueue
 					nextDistance = work.distance+Math.sqrt(2);
 					workQueue.push({location:{x:x+1,y:y+1}}, distance:nextDistance});
 					workQueue.push({location:{x:x-1,y:y+1}}, distance:nextDistance});
 					workQueue.push({location:{x:x+1,y:y-1}}, distance:nextDistance});
 					workQueue.push({location:{x:x-1,y:y-1}}, distance:nextDistance});
 
+					//take note that 8 new locations have been added
 					endIndex+=8;
 				}
 				delete workQueue[i];
@@ -204,12 +211,43 @@ MyGame.components.creeps = (function(){
 			return matrix;
 		}());
 
-		/**********************************************************
-			given a location return the location of an unobstructed goal
-		**********************************************************/
+		function getNextGoal(location){
+			var goals = getNextGoals(location);
+			var index = MyGame.random.nextRange(0,goals.length-1);
+			return goals[index];
+		}
+
+		function addGoalToBestGoals(goal, goals){
+			if(typeof goal !== undefined){
+				if(goals.length===0 || goal.distance===goals[0].distance){
+					goals.push(goal);
+				}else if(goal.distance<goals[0].distance){
+					goals = [];
+					goals.push(goal);
+				}
+			}
+
+			return goals;
+		}
+
 		function getNextGoals(location){
-			//lookup all adjacent and diagonal location in the matrix
-			//return all locations that have the lowest distance from endGoal
+			var goals = [];
+			var x = location.x;
+			var y = location.y;
+
+			//add adjacents
+			goals = addGoalToBestGoals(matrix[x+1][y], goals);
+			goals = addGoalToBestGoals(matrix[x][y+1], goals);
+			goals = addGoalToBestGoals(matrix[x-1][y], goals);
+			goals = addGoalToBestGoals(matrix[x][y-1], goals);
+
+			//addDiagonals
+			goals = addGoalToBestGoals(matrix[x+1][y+1], goals);
+			goals = addGoalToBestGoals(matrix[x-1][y+1], goals);
+			goals = addGoalToBestGoals(matrix[x+1][y-1], goals);
+			goals = addGoalToBestGoals(matrix[x-1][y-1], goals);
+
+			return goals;
 		}
 
 		function getDistanceFromGoal(location){
@@ -217,6 +255,7 @@ MyGame.components.creeps = (function(){
 		}
 
 		return {
+			getNextGoal:getNextGoal,
 			getNextGoals:getNextGoals,
 			getDistanceFromGoal:getDistanceFromGoal;
 		};
