@@ -5,14 +5,14 @@ var TowerTemplate=(function(){
     
     
     that.GroundBombWeapon={
-        src:"./images/weaponsprite.png",
+        src:"./images/turret-3-1.png",
         rotation:0,
         range:40,
     };
     that.GroundBomb={
         center:{x:0,y:0},
         weaponSpec:that.GroundBombWeapon,
-        src:"./images/tower.png",
+        src:"./images/turret-base.png",
         rotation:0,
         height:40,
         width:40,
@@ -20,14 +20,14 @@ var TowerTemplate=(function(){
     
     
     that.GroundFreezeWeapon={
-        src:"./images/weaponsprite.png",
+        src:"./images/turret-4-1.png",
         rotation:0,
         range:40,
     };
     that.GroundFreeze={
         center:{x:0,y:0},
         weaponSpec:that.GroundFreezeWeapon,
-        src:"./images/tower2.png",
+        src:"./images/turret-base.png",
         rotation:0,
         height:40,
         width:40,
@@ -35,28 +35,28 @@ var TowerTemplate=(function(){
     
     
     that.MixedProjectileWeapon={
-        src:"./images/weaponsprite.png",
+        src:"./images/turret-6-1.png",
         rotation:0,
         range:40,
     };
     that.MixedProjectile={
         center:{x:0,y:0},
         weaponSpec:that.MixedProjectileWeapon,
-        src:"./images/tower2.png",
+        src:"./images/turret-base.png",
         rotation:0,
         height:40,
         width:40,
     };
     
-    that.MixedProjectileWeapon={
-        src:"./images/weaponsprite.png",
+    that.AirMissileWeapon={
+        src:"./images/turret-7-1.png",
         rotation:0,
         range:40,
     };
-    that.MixedProjectile={
+    that.AirMissile={
         center:{x:0,y:0},
-        weaponSpec:that.MixedProjectileWeapon,
-        src:"./images/tower2.png",
+        weaponSpec:that.AirMissileWeapon,
+        src:"./images/turret-base.png",
         rotation:0,
         height:40,
         width:40,

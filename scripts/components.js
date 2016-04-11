@@ -41,7 +41,7 @@ Tower.prototype={
         ImageHolder.drawImage(this.src,this);
         var tempR=this.rotation;
         this.rotation=this.weapon.rotation;
-        ImageHolder.drawSprite(this.weapon.src,this,this.weapon.spriteinfo);
+        ImageHolder.drawImage(this.weapon.src,this);
         this.rotation=tempR;
     },
     update(elapsed){
@@ -55,13 +55,13 @@ function Weapon(spec){
     this.src=spec.src;
     this.rotation=0;
     this.range=spec.range;
-    this.spriteinfo=MyGame.graphics.genSpriteInfo({
+    /*this.spriteinfo=MyGame.graphics.genSpriteInfo({
         sprite:0,
         spriteCount:3,
         spriteTime:[1000,200,100],
         height:40,
         width:40,
-    });
+    });*/
 }
 //Weapon funtions go here
 

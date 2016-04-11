@@ -39,13 +39,16 @@ MyGame.GameView = function(model, input){
         model.placeButtonPressed(TowerTemplate.GroundFreeze);
     }});
     MixedProjectile.addButtonListener("logStuff", {onClick:function(){
-        model.placeButtonPressed(TowerTemplate.GroundFreeze);
+        model.placeButtonPressed(TowerTemplate.MixedProjectile);
     }});
-    
+    AirMissile.addButtonListener("logStuff", {onClick:function(){
+        model.placeButtonPressed(TowerTemplate.AirMissile);
+    }});
     
     buttonGrid.addButton(GroundBomb);
     buttonGrid.addButton(GroundFreeze);
     buttonGrid.addButton(MixedProjectile);
+    buttonGrid.addButton(AirMissile);
 
 
     function update(elapsedTime){
