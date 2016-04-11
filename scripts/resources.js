@@ -9,6 +9,7 @@ MyGame.resources = (function(graphics){
 		spec.spriteCount = 8;
 		spec.spriteTime = [100, 100, 100, 100, 100, 100, 100, 100,];
 		spec.movementSprite = true;
+		spec.sprite = 0;
 
 		return graphics.genSpriteInfo(spec);
 	}

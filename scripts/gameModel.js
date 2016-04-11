@@ -31,8 +31,8 @@ MyGame.gameModel=(function(graphics,components,input){
         //creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
         var creepSpec = {
             locationGoalIndex:0,
-            // drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
-            drawable:MyGame.graphics.genericDrawables.greenRect,
+            drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
+            // drawable:MyGame.graphics.genericDrawables.greenRect,
             initialHP:100,
             creepSpeed:100
         };
