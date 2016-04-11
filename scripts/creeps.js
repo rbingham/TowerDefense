@@ -10,45 +10,110 @@ MyGame.components.creeps = (function(){
 			Knows about all the creeps
 			Creates creeps
 
-		spec:{arena, initialLocations[][], goals[][]}
+		spec:{arena, initialLocations[][], goals[][], creepListener}
 	**********************************************************/
 	var CreepManager = function(spec){
 		var that = {};
+		var startCreepId = 0;
 		var nextCreepId = 0;
-		var creeps = {};
+		var creeps = [];
 
-		var shortestPaths = (function(){
-			var sp = [];
+		function buildShortestPaths(){
+			var shortestPaths = [];
 			for(let i=0; i<spec.endGoals.length; i++){
-				sp[i] = SortestPath({arena:arena, goals:goals[i]});
+				shortestPaths[i] = SortestPath({arena:arena, goals:spec.goals[i]});
 			}
-			return sp;
-		}());
+			return shortestPaths;
+		}
 
-		//maybe keep track of creeps by endGoal
+		var shortestPaths = buildShortestPaths();
+
+		that.rebuildShortestPaths = function(){
+			shortestPaths = buildShortestPaths();
+
+			for(let i=startCreepId; i<nextCreepId; i++){
+				if(typeof creeps[i] !== undefined){
+					creeps[i].shortestPath = shortestPaths[creep[i].locationGoalIndex];
+				}
+			}
+		}
+
+		that.isArenaStateGood = function(){
+			var potentialShortestPaths = buildShortestPaths();
+			var potentialShortestPath;
+			var distanceFromEndGoal;
+
+			for(let i=startCreepId; i<nextCreepId; i++){
+				if(typeof creeps[i] !== undefined){
+					potentialShortestPath = potentialShortestPaths[creep[i].locationGoalIndex];
+					distanceFromEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
+					if(typeof distanceFromEndGoal === undefined) return false;
+				}
+			}
+
+			return true;
+		}
 
 		/**********************************************************
 			Creep Creator
 			spec:{creepSpec[], counts[], intervals[]}
+			creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
 		**********************************************************/
-		that.create = function(spec){
-			spec.id = nextCreepId
+		that.create = function(creepSpec){
+			creepSpec.id = nextCreepId++;
+			var initialLocationIndex = MyGame.random.nextRange(0, spec.initialLocations[creepSpec.locationGoalIndex].length-1);
+			creepSpec.initialLocation = spec.initialLocations[creepSpec.locationGoalIndex][initialLocationIndex];
+			creepSpec.shortestPath = shortestPaths[creepSpec.locationGoalIndex];
+			creepSpec.creepListener = that;
+
+			var creep = Creep(creepSpec);
+
+			creeps[creepSpec.id] = creep;
 		}
 
-		that.testPotentialArena(){
-
+		function cleenUpCreeps(){
+			let done = false;
+			for(let i=startCreepId; i<nextCreepId && !done; i++){
+				if(typeof creeps[i] === undefined){
+					startCreepId = i+1;
+				}else{
+					done = true;
+				}
+			}
 		}
 
-		//could also just reset shortests paths if arena is not a new instance
-		that.setCurrentArena(){
+		that.update = function(elapsedTime){
+			for(let i=startCreepId; i<nextCreepId; i++){
+				if(typeof creeps[i] !== undefined){
+					creeps[i].update(elapsedTime);
+				}
+			}
 
+			cleenUpCreeps();
 		}
 
-		that.update(elapsedTime){
-
+		that.render = function(elapsedTime){
+			for(let i=startCreepId; i<nextCreepId; i++){
+				if(typeof creeps[i] !== undefined){
+					creeps[i].render(elapsedTime);
+				}
+			}
 		}
 
-		that.render
+		//creep listener functions
+		that.creepKilled = function(creep){
+			if(typeof spec.creepListener !== undefined){
+				spec.creepListener.creepKilled(creep);
+			}
+			delete creeps[creep.id];
+		}
+
+		that.creepReachedGoal = function(creep){
+			if(typeof spec.creepListener !== undefined){
+				spec.creepListener.creepReachedGoal(creep);
+			}
+			delete creeps[creep.id];
+		}
 
 		return that;
 	}
@@ -67,7 +132,7 @@ MyGame.components.creeps = (function(){
 				creepKilled(id)
 				creepReachedGoal(id)
 
-		spec:{id, arena, drawable, initialLocation, initialHP, creepSpeed, shortestPath, creepListener}
+		spec:{id, locationGoalIndex, initialLocation, shortestPath, drawable, initialHP, creepSpeed, creepListener}
 	**********************************************************/
 	var Creep = function(spec){
 		var that = {};
@@ -75,8 +140,21 @@ MyGame.components.creeps = (function(){
 		var hp = spec.initialHP;
 
 		var shortestPath = spec.shortestPath;
-		var currentGoal = {};
+		var currentGoal;
 		var currentLocation = spec.initialLocation;
+
+		(function(){
+			//convert currentLocation x,y to i,j
+			//and add to currentLocation
+
+			currentGoal = spec.shortestPath.getNextGoal(currentLocation);
+		}());
+
+
+
+		that.getLocationGoalIndex(){
+			return spec.locationGoalIndex;
+		}
 
 		that.getHP(){
 			return hp;
@@ -109,8 +187,7 @@ MyGame.components.creeps = (function(){
 				shortestPathToTest = spec.shortestPath;
 			}
 
-			//get current rounded x,y
-			//get distance from rounded currentXY
+			return shortestPathToTest.getDistanceFromEndGoal(location);
 		}
 
 
@@ -121,21 +198,30 @@ MyGame.components.creeps = (function(){
 		that.update = function(elapsedTime){
 			//while there is elapsedTime left
 				//given current location and next goal
-					//move as close to it as elapsedTime will allow
-				//update current location
-				//decrement the elapsedTime used
+				//move as close to it as elapsedTime will allow
+				//update currentPosition xy & ij
+				//if goal reached
+					//update currentGoal xy & ij
+				//decrement elapsedTime
+
 
 			//if final goal is reached call creepListener.creepReachedGoal(spec.id)
-
-			//update position
 		}
 
 		/**********************************************************
 		* render creep
 		**********************************************************/
 		that.draw = function(elapsedTime){
-			//update sprite?
-			//call draw on sprite
+			var dims = {};
+			dims.center = location;
+			dims.rotation = 0;//get rotation from direction
+
+			//update sprite
+			if(spec.drawable.hasOwnProperty("update")){
+				drawable.update(elapsedTime);
+			}
+
+			drawable.draw(dims);
 		}
 
 		return that;
@@ -150,8 +236,10 @@ MyGame.components.creeps = (function(){
 	**********************************************************/
 	var ShortestPath = function(spec){
 		//[][] {location,distance}
+		var that = {};
+
 		var distanceFromEndGoalMatrix = (function(){
-			var i;
+			var i,j;
 
 			//initialize the matrix
 			var matrix = [];
@@ -162,63 +250,73 @@ MyGame.components.creeps = (function(){
 			//add all final goals to work array with a distance of zero
 			var endIndex=0;
 			var workQueue = [];
-			for(i=0; i<spec.goals.length; i++){
-				workQueue.push({location:spec.goals[i], distance:0});
+			for(let workIndex=0; i<spec.goals.length; workIndex++){
+				workQueue.push({location:spec.goals[workIndex], distance:0});
 				endIndex++;
 			}
 
 			//use workQueue to perform a breadth first search
 			//the goal is to update every location of the matrix with a distance from goal
 			var work;
-			var x,y;
 			var nextDistance;
-			for(i=0; i<endIndex; i++){
-				work = workQueue[i];
-				x=work.location.x;
-				y=work.location.y;
+			for(let workIndex=0; workIndex<endIndex; i++){
+				work = workQueue[workIndex];
+				i=work.location.i;
+				j=work.location.j;
 
 				//if location is valid and better than any current option
 				if(
-					//arena @ x,y is valid and not occupied
+					//arena @ i,j is valid and not occupied
 					&& (
-						typeof matrix[x][y] === undefined
-						|| work.distance < matrix[x][y].distance
+						typeof matrix[i][j] === undefined
+						|| work.distance < matrix[i][j].distance
 					)
 				){
 					//set matrix location to be {location, distance}
-					matrix[x][y] = work;
+					matrix[i][j] = work;
 
 					//add all adjacent matrix locations to workQueue
 					nextDistance = work.distance+1;
-					workQueue.push({location:{x:x+1,y:y}}, distance:nextDistance});
-					workQueue.push({location:{x:x,y:y+1}}, distance:nextDistance});
-					workQueue.push({location:{x:x-1,y:y}}, distance:nextDistance});
-					workQueue.push({location:{x:x,y:y-1}}, distance:nextDistance});
+					workQueue.push({location:{i:i+1,j:j}}, distance:nextDistance});
+					workQueue.push({location:{i:i,j:j+1}}, distance:nextDistance});
+					workQueue.push({location:{i:i-1,j:j}}, distance:nextDistance});
+					workQueue.push({location:{i:i,j:j-1}}, distance:nextDistance});
 
 					//add all diagonal matrix locations to workQueue
 					nextDistance = work.distance+Math.sqrt(2);
-					workQueue.push({location:{x:x+1,y:y+1}}, distance:nextDistance});
-					workQueue.push({location:{x:x-1,y:y+1}}, distance:nextDistance});
-					workQueue.push({location:{x:x+1,y:y-1}}, distance:nextDistance});
-					workQueue.push({location:{x:x-1,y:y-1}}, distance:nextDistance});
+					workQueue.push({location:{i:i+1,j:j+1}}, distance:nextDistance});
+					workQueue.push({location:{i:i-1,j:j+1}}, distance:nextDistance});
+					workQueue.push({location:{i:i+1,j:j-1}}, distance:nextDistance});
+					workQueue.push({location:{i:i-1,j:j-1}}, distance:nextDistance});
 
 					//take note that 8 new locations have been added
 					endIndex+=8;
 				}
-				delete workQueue[i];
+				delete workQueue[workIndex];
 			}
 
 			return matrix;
 		}());
 
-		function getNextGoal(location){
+		that.getDistanceFromEndGoal = function(location){
+			if(typeof distanceFromEndGoalMatrix[location.i]===undefined){
+				return undefined;
+			}
+
+			return distanceFromEndGoalMatrix[location.i][location.j]
+		}
+
+		that.getNextGoal = function(location){
 			var goals = getNextGoals(location);
+
+			if(goals.length===0) return undefined;
+
 			var index = MyGame.random.nextRange(0,goals.length-1);
 			return goals[index];
 		}
 
-		function addGoalToBestGoals(goal, goals){
-			if(typeof goal !== undefined){
+		function addGoalToBestGoals(i, j, goals){
+			if(typeof matrix[i]!==undefined && typeof matrix[i][j]!==undefined){
 				if(goals.length===0 || goal.distance===goals[0].distance){
 					goals.push(goal);
 				}else if(goal.distance<goals[0].distance){
@@ -232,33 +330,25 @@ MyGame.components.creeps = (function(){
 
 		function getNextGoals(location){
 			var goals = [];
-			var x = location.x;
-			var y = location.y;
+			var i = location.i;
+			var y = location.j;
 
 			//add adjacents
-			goals = addGoalToBestGoals(matrix[x+1][y], goals);
-			goals = addGoalToBestGoals(matrix[x][y+1], goals);
-			goals = addGoalToBestGoals(matrix[x-1][y], goals);
-			goals = addGoalToBestGoals(matrix[x][y-1], goals);
+			goals = addGoalToBestGoals(i+1, j,   goals);
+			goals = addGoalToBestGoals(i,   j+1, goals);
+			goals = addGoalToBestGoals(i-1, j,   goals);
+			goals = addGoalToBestGoals(i,   j-1, goals);
 
 			//addDiagonals
-			goals = addGoalToBestGoals(matrix[x+1][y+1], goals);
-			goals = addGoalToBestGoals(matrix[x-1][y+1], goals);
-			goals = addGoalToBestGoals(matrix[x+1][y-1], goals);
-			goals = addGoalToBestGoals(matrix[x-1][y-1], goals);
+			goals = addGoalToBestGoals(i+1, j+1, goals);
+			goals = addGoalToBestGoals(i-1, j+1, goals);
+			goals = addGoalToBestGoals(i+1, j-1, goals);
+			goals = addGoalToBestGoals(i-1, j-1, goals);
 
 			return goals;
 		}
 
-		function getDistanceFromGoal(location){
-			return distanceFromEndGoalMatrix[location.x][location.y];
-		}
-
-		return {
-			getNextGoal:getNextGoal,
-			getNextGoals:getNextGoals,
-			getDistanceFromGoal:getDistanceFromGoal;
-		};
+		return that;
 	}
 
 	return {
