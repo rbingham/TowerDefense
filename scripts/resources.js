@@ -20,6 +20,7 @@ MyGame.resources = (function(graphics){
 		}
 
 		function draw(dims){
+			dims.width = dims.height*scottPilgrimSpriteInfo.width/scottPilgrimSpriteInfo.height;
 			that.scottPilgrimSprite.draw(dims, scottPilgrimSpriteInfo);
 		}
 

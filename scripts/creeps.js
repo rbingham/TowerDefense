@@ -46,6 +46,30 @@ MyGame.components.creeps = (function(){
 
 
 
+
+
+		that.whatIf = function(additionalTaken){
+			var potentialShortestPaths = buildShortestPaths(additionalTaken);
+			var potentialShortestPath;
+			var distanceToEndGoal;
+
+			for(let i=0; i<spec.initialLocations.length; i++){
+				for(let j=0; j<spec.initialLocations[i].length; j++){
+					distanceToEndGoal = potentialShortestPaths[i].getDistanceFromEndGoal({i:spec.initialLocations[i][j].i, j:spec.initialLocations[i][j].j})
+					if(distanceToEndGoal === undefined) return false;
+				}
+			}
+
+			for(let i=startCreepId; i<nextCreepId; i++){
+				if(creeps[i] !== undefined){
+					potentialShortestPath = potentialShortestPaths[creeps[i].getLocationGoalIndex()];
+					distanceToEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
+					if(distanceToEndGoal === undefined) return false;
+				}
+			}
+			return true;
+		}
+
 		that.getCreepCountIJ = function(ij){
 			return creepCountMatrix[ij.i, ij.j];
 		}
@@ -53,21 +77,6 @@ MyGame.components.creeps = (function(){
 		that.getCreepCountXY = function(xy){
 			var ij = MyGame.components.xy2ij(xy);
 			return getCreepCountIJ(ij);
-		}
-
-		that.whatIf = function(additionalTaken){
-			var potentialShortestPaths = buildShortestPaths(additionalTaken);
-			var potentialShortestPath;
-			var distanceToEndGoal;
-
-			for(let i=startCreepId; i<nextCreepId; i++){
-				if(creeps[i] !== undefined){
-					potentialShortestPath = potentialShortestPaths[creep[i].getLocationGoalIndex()];
-					distanceToEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
-					if(distanceToEndGoal === undefined) return false;
-				}
-			}
-			return true;
 		}
 
 		/**********************************************************
@@ -296,11 +305,11 @@ MyGame.components.creeps = (function(){
 		* render creep
 		**********************************************************/
 		var dims = {};
-		dims.height = MyGame.components.arena.subGrid;
+		dims.height = MyGame.components.arena.subGrid*2;
 		dims.width = dims.height;
 		that.draw = function(elapsedTime){
 			dims.center = currentLocation;
-			dims.rotation = velocity.rotation;//get rotation from direction
+			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
 
 			//update sprite
 			if(spec.drawable.hasOwnProperty("update")){
@@ -363,7 +372,8 @@ MyGame.components.creeps = (function(){
 
 				//needs to check for towers, should take into account towers being placed
 				return MyGame.components.isValidIJ({i:i,j:j})
-						&& !MyGame.components.isTaken({i:i,j:j});
+						&& !MyGame.components.isTaken({i:i,j:j})
+						&& !MyGame.components.isHit({i:i,j:j});
 			}
 
 			//use workQueue to perform a breadth first search
