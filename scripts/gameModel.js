@@ -21,6 +21,7 @@ MyGame.gameModel=(function(graphics,components,input){
     var creepManager = (function(){
         var entrances = MyGame.components.entrances;
 
+
         var initialLocations = [entrances[2],entrances[3],entrances[0],entrances[1]];
         var endGoals = [entrances[0],entrances[1],entrances[2],entrances[3]];
 
@@ -111,6 +112,7 @@ MyGame.gameModel=(function(graphics,components,input){
         },components.arena);
         mouse.registerClickCommand(function(at){
             if(components.addTower(at,towerSpecs)){
+                creepManager.rebuildShortestPaths();
                 mouse=input.Mouse();
                 internalRender=WatchGame;
             }

@@ -161,6 +161,10 @@ MyGame.components=(function(graphics){
         }
     }
 
+    that.isTaken = function(at){
+        return that.takenGrid[at.i][at.j].taken;
+    }
+
     that.addTower=function(at,params){
         params.center=roundXY(at);
         coords=roundXY(at)
