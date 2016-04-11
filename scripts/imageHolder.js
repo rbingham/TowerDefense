@@ -12,10 +12,10 @@ ImageHolder=(function(graphics){
         }
     }
     
-    that.drawSpite=function(src,specs,spriteInfo){
+    that.drawSprite=function(src,specs,spriteInfo){
         if(imagehold[src]===undefined){
-            imagehold[src]=graphics.genSprite(src,spriteInfo);
-            imagehold[src].draw(specs,spriteInfo); 
+            imagehold[src]=graphics.genSprite(src);
+            imagehold[src].draw(specs,spriteInfo);
         }
         else{
             imagehold[src].draw(specs,spriteInfo); 

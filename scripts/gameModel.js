@@ -20,12 +20,14 @@ MyGame.gameModel=(function(graphics,components,input){
 
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
-        internalRender=PlaceTowerRender;
+        internalRender=WatchGame;
         internalUpdate=PlaceTowerUpdate;
     };
 
     function WatchGame(){
         components.arena.draw();
+                components.renderTowers();
+
     }
     function PlaceTowerRender(){
         components.arena.draw("foobar");
@@ -80,12 +82,14 @@ MyGame.gameModel=(function(graphics,components,input){
     
     
     that.placeButtonPressed=function(towerSpecs){
+        internalRender=PlaceTowerRender;
         mouse.registerMoveCommand(function(at){
             components.placingOver(at,towerSpecs);
         },components.arena);
         mouse.registerClickCommand(function(at){
             if(components.addTower(at,towerSpecs)){
                 mouse=input.Mouse();
+                internalRender=WatchGame;
             }
         },components.arena);
     }
