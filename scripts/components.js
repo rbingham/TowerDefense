@@ -123,7 +123,7 @@ MyGame.components=(function(graphics){
     var that={};
     that.towerArray=[];
 
-    function doesTowerFit(i,j,params){
+    function doesTowerFit(i,j,params,creepManager){
         if(i<=0||j<=0||i>=that.arena.width/that.arena.subGrid||j>=that.arena.height/that.arena.subGrid){
             return false
         }
@@ -142,11 +142,14 @@ MyGame.components=(function(graphics){
             }
         }
 
+
+        var hit = creepManager.whatIf();
+
         //check if any exits are impossible
-        var hit=true;
-        for(var i=0;i<4;i++){
-            hit=hit&&validPathExists(that.takenGrid,that.entrances[(i+2)%4][0],that.entrances[i]);
-        }
+        // var hit=true;
+        // for(var i=0;i<4;i++){
+        //     hit=hit&&validPathExists(that.takenGrid,that.entrances[(i+2)%4][0],that.entrances[i]);
+        // }
         for(var j=0;j<toReset.length;j++){
             that.takenGrid[toReset[j].x][toReset[j].y].hit=false;
         }
@@ -165,12 +168,16 @@ MyGame.components=(function(graphics){
         return that.takenGrid[at.i][at.j].taken;
     }
 
-    that.addTower=function(at,params){
+    that.isHit = function(at){
+        return that.takenGrid[at.i][at.j].hit;
+    }
+
+    that.addTower=function(at,params,creepManager){
         params.center=roundXY(at);
         coords=roundXY(at)
         lowerRighti=(coords.x-that.arena.center.x+that.arena.width/2)/(that.arena.subGrid);
         lowerRightj=(coords.y-that.arena.center.y+that.arena.height/2)/(that.arena.subGrid);
-        if(!doesTowerFit(lowerRighti,lowerRightj,params)){
+        if(!doesTowerFit(lowerRighti,lowerRightj,params,creepManager)){
             return false;
         }
         takeSpots(lowerRighti,lowerRightj,params);

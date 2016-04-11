@@ -24,10 +24,10 @@ MyGame.components.creeps = (function(){
 		}());
 
 
-		function buildShortestPaths(){
+		function buildShortestPaths(additionalTaken){
 			var shortestPaths = [];
 			for(let i=0; i<spec.endGoals.length; i++){
-				shortestPaths[i] = ShortestPath({goals:spec.endGoals[i]});
+				shortestPaths[i] = ShortestPath({goals:spec.endGoals[i]}, additionalTaken);
 			}
 			return shortestPaths;
 		}
@@ -39,7 +39,7 @@ MyGame.components.creeps = (function(){
 
 			for(let i=startCreepId; i<nextCreepId; i++){
 				if(creeps[i] !== undefined){
-					creeps[i].shortestPath = shortestPaths[creeps[i].locationGoalIndex];
+					creeps[i].setShortestPath(shortestPaths[creeps[i].getLocationGoalIndex()]);
 				}
 			}
 		}
@@ -55,14 +55,14 @@ MyGame.components.creeps = (function(){
 			return getCreepCountIJ(ij);
 		}
 
-		that.isArenaStateGood = function(){
-			var potentialShortestPaths = buildShortestPaths();
+		that.whatIf = function(additionalTaken){
+			var potentialShortestPaths = buildShortestPaths(additionalTaken);
 			var potentialShortestPath;
 			var distanceToEndGoal;
 
 			for(let i=startCreepId; i<nextCreepId; i++){
 				if(creeps[i] !== undefined){
-					potentialShortestPath = potentialShortestPaths[creep[i].locationGoalIndex];
+					potentialShortestPath = potentialShortestPaths[creep[i].getLocationGoalIndex()];
 					distanceToEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
 					if(distanceToEndGoal === undefined) return false;
 				}
@@ -236,7 +236,10 @@ MyGame.components.creeps = (function(){
 		}
 
 		that.setShortestPath = function(newShortestPath){
-			shortestPath = newShortestPath;
+			spec.shortestPath = newShortestPath;
+			updateCurrentGoal();
+			updateDistanceToGoal();
+			updateVelocity();
 		}
 
 		/**********************************************************
@@ -317,7 +320,7 @@ MyGame.components.creeps = (function(){
 
 		spec:{goals, potentialTowerLocations[][]}
 	**********************************************************/
-	var ShortestPath = function(spec){
+	var ShortestPath = function(spec, additionalTaken){
 		//[][] {location,distance}
 		var that = {};
 		var adjacentDistance = 1;
@@ -341,7 +344,23 @@ MyGame.components.creeps = (function(){
 				endIndex++;
 			}
 
+			var additionalTakenMatrix;
+			if(additionalTaken!==undefined){
+				additionalTakenMatrix=[];
+				for(let takenIndex=0; takenIndex<additionalTaken.length; takenIndex++){
+					additionalTakenMatrix[additionalTaken[takenIndex].i]=[];
+					additionalTakenMatrix[additionalTaken[takenIndex].i][additionalTaken[takenIndex].i]=true;
+				}
+			}
+
 			function arenaLocationIsValidAndUnoccupied(i,j){
+				if(additionalTakenMatrix!==undefined
+					&& additionalTakenMatrix[i]!==undefined
+					&& additionalTakenMatrix[i][j]!==undefined
+					&& additionalTakenMatrix[i][j]===true){
+					return false;
+				}
+
 				//needs to check for towers, should take into account towers being placed
 				return MyGame.components.isValidIJ({i:i,j:j})
 						&& !MyGame.components.isTaken({i:i,j:j});

@@ -111,7 +111,7 @@ MyGame.gameModel=(function(graphics,components,input){
             components.placingOver(at,towerSpecs);
         },components.arena);
         mouse.registerClickCommand(function(at){
-            if(components.addTower(at,towerSpecs)){
+            if(components.addTower(at,towerSpecs,creepManager)){
                 creepManager.rebuildShortestPaths();
                 mouse=input.Mouse();
                 internalRender=WatchGame;
