@@ -7,7 +7,7 @@ var TowerTemplate=(function(){
     that.GroundBombWeapon={
         src:"./images/turret-3-1.png",
         rotation:0,
-        range:40,
+        range:100,
     };
     that.GroundBomb={
         center:{x:0,y:0},
@@ -22,7 +22,7 @@ var TowerTemplate=(function(){
     that.GroundFreezeWeapon={
         src:"./images/turret-4-1.png",
         rotation:0,
-        range:40,
+        range:100,
     };
     that.GroundFreeze={
         center:{x:0,y:0},
@@ -37,7 +37,7 @@ var TowerTemplate=(function(){
     that.MixedProjectileWeapon={
         src:"./images/turret-6-1.png",
         rotation:0,
-        range:40,
+        range:100,
     };
     that.MixedProjectile={
         center:{x:0,y:0},
@@ -51,7 +51,7 @@ var TowerTemplate=(function(){
     that.AirMissileWeapon={
         src:"./images/turret-7-1.png",
         rotation:0,
-        range:40,
+        range:100,
     };
     that.AirMissile={
         center:{x:0,y:0},

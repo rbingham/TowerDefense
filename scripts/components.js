@@ -23,6 +23,7 @@ function Tower(spec){
     this.rotation=0;
     this.height=spec.height;
     this.width=spec.width;
+    this.watchcreep={inRange:false,creep:{}};
 }
 //tower funtions go here
 Tower.prototype={
@@ -44,10 +45,39 @@ Tower.prototype={
         ImageHolder.drawImage(this.weapon.src,this);
         this.rotation=tempR;
     },
-    update(elapsed){
-        this.weapon.rotation+=elapsed/10000;
-        this.weapon.rotation%=2*Math.PI;
+    update:function(elapsed){
+        //this.weapon.rotation+=elapsed/10000;
+        //this.weapon.rotation%=2*Math.PI;
         //this.weapon.spriteinfo.update(elapsed,true);
+        if(this.watchcreep.inRange){
+            var hp=this.watchcreep.creep.getHP();
+            var inrange=Collision.circleRect(this.getCircleSight(),this.watchcreep.creep.getDims());
+            if(hp<=0||!inrange){
+                this.watchcreep.inRange=false;
+                this.watchcreep.creep={};
+            }else{
+                //point at the watched creep
+                normx=this.watchcreep.creep.getDims().center.x-this.center.x;
+                normy=this.watchcreep.creep.getDims().center.y-this.center.y;
+                this.weapon.rotation=Math.atan(normy/normx)+Math.PI/2 + (normx>=0?+Math.PI:0);
+            }
+        }
+        
+        
+    },
+    getCircleSight:function(){
+        that={};
+        that.radius=this.weapon.range;
+        that.center=this.center;
+        return that;
+    },
+    creepNearBy:function(creep){
+        if(!this.watchcreep.inRange){
+            if(Collision.circleRect(this.getCircleSight(),creep.getDims())){
+                this.watchcreep.inRange=true;
+                this.watchcreep.creep=creep;
+            }
+        }
     }
 }
 
@@ -183,6 +213,8 @@ MyGame.components=(function(graphics){
         takeSpots(lowerRighti,lowerRightj,params);
         that.towerArray.push(new Tower(params));
         tempTower=undefined;
+        addTowerListeners(that.towerArray[that.towerArray.length-1]);
+        
         return true;
     };
     that.checkTowerPlacement=function(at,params){
@@ -195,7 +227,26 @@ MyGame.components=(function(graphics){
         }
         return true;
     };
+    
+    
+    function addTowerListeners(tower){
+        for(var i=0;i<that.towerListeners.length;i++){
+            for(var j=0;j<that.towerListeners[i].length;j++){
+                var gridspace={
+                        center:{
+                            x:that.arena.subGrid*i+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2,
+                            y:that.arena.subGrid*j+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2
+                        },
+                        width:that.arena.subGrid,
+                        height:that.arena.subGrid
+                    };
 
+                if(Collision.circleRect(tower.getCircleSight(),gridspace)){
+                    that.towerListeners[i][j].push(tower);
+                }
+            }
+        }
+    }
 
 
     that.arena={
@@ -234,13 +285,15 @@ MyGame.components=(function(graphics){
         }
     };
 
-
+    that.towerListeners=[];
     that.takenGrid=[];
     //should allow us to add diagnals in the future
     for(var i=0;i<that.arena.width/that.arena.subGrid;i++){
         that.takenGrid[i]=[];
+        that.towerListeners[i]=[];
         for(var j=0;j<that.arena.height/that.arena.subGrid;j++){
             that.takenGrid[i][j]={taken:false,hit:false,adjacent:[]};
+            that.towerListeners[i][j]=[];
         }
     }
     for(var i=0;i<that.takenGrid.length;i++){
@@ -348,6 +401,14 @@ MyGame.components=(function(graphics){
             tempTower.draw(true);
         }
     };
+    that.TowerMovementDetector=function(creep,location){
+        for(var i=0;i<that.towerListeners[location.i][location.j].length;i++){
+            that.towerListeners[location.i][location.j][i].creepNearBy(creep);
+        }
+    }
+    
+    
+    
 
     /*
     function designed to render every part of componets

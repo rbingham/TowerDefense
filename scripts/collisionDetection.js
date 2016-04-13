@@ -33,6 +33,27 @@ var Collision={
             return false;
         return true;
     },
+    /*http://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
+        praise the stack
+    */
+    circleRect:function(circle,rect){
+        cdx=Math.abs(circle.center.x-rect.center.x);
+        cdy=Math.abs(circle.center.y-rect.center.y);
+        if(cdx>rect.width/2+circle.radius){
+            return false;
+        }
+        if(cdy>rect.height/2+circle.radius){
+            return false
+        }
+        if(cdx<=rect.width/2){
+            return true;
+        }
+        if(cdy<=rect.height/2){
+            return true;
+        }
+        var cornersq=(cdx-rect.width/2)*(cdx-rect.width/2)+(cdy-rect.height/2)*(cdy-rect.height/2);
+        return (cornersq<=circle.radius*circle.radius);
+    }
     
     
     

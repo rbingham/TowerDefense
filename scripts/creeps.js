@@ -147,6 +147,8 @@ MyGame.components.creeps = (function(){
 		}
 
 		that.creepMoved = function(creep, oldLocation, newLocation){
+            MyGame.components.TowerMovementDetector(creep,newLocation);
+            
 			//update creepCountMatrix
 		}
 
@@ -166,6 +168,7 @@ MyGame.components.creeps = (function(){
 			takes a creepListener which is just any object that has the functions:
 				creepKilled(id)
 				creepReachedGoal(id)
+                creepMoved(creep,old)
 
 		spec:{id, locationGoalIndex, initialLocation, shortestPath, drawable, initialHP, creepSpeed, creepListener}
 	**********************************************************/
@@ -195,7 +198,7 @@ MyGame.components.creeps = (function(){
 			currentLocation.j=ij.j;
 
 			if(oldLocation.i!==currentLocation.i || oldLocation.j!==currentLocation.j){
-				spec.creepListener.creepMoved(that, oldLocation);
+				spec.creepListener.creepMoved(that, oldLocation,currentLocation);
 			}
 		}
 		updateCurrentLocationIJ();
@@ -307,6 +310,13 @@ MyGame.components.creeps = (function(){
 		var dims = {};
 		dims.height = MyGame.components.arena.subGrid*2;
 		dims.width = dims.height;
+        
+        
+        that.getDims=function(){
+            dims.center = currentLocation;
+			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
+            return dims
+        }
 		that.draw = function(elapsedTime){
 			dims.center = currentLocation;
 			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
