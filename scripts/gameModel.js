@@ -28,6 +28,10 @@ MyGame.gameModel=(function(graphics,components,input){
         return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals});
     }());
 
+    var genCreeps = false;
+    that.toggleCreepGen = function(){
+        genCreeps = !genCreeps;
+    }
     that.addCreep = function(){
         //creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
         var creepSpec = {
@@ -35,7 +39,7 @@ MyGame.gameModel=(function(graphics,components,input){
             drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
             // drawable:MyGame.graphics.genericDrawables.greenRect,
             initialHP:100,
-            creepSpeed:100
+            creepSpeed:75
         };
         creepManager.create(creepSpec);
     }
@@ -68,6 +72,9 @@ MyGame.gameModel=(function(graphics,components,input){
         Similar in concept to the game screens;
     */
     that.update=function(elapsed){
+        if(genCreeps){
+            that.addCreep();
+        }
         updateEventQueue(elapsed);
         internalUpdate(elapsed);
         creepManager.update(elapsed);

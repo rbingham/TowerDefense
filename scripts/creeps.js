@@ -44,10 +44,6 @@ MyGame.components.creeps = (function(){
 			}
 		}
 
-
-
-
-
 		that.whatIf = function(additionalTaken){
 			var potentialShortestPaths = buildShortestPaths(additionalTaken);
 			var potentialShortestPath;
@@ -474,8 +470,8 @@ MyGame.components.creeps = (function(){
 			goals = addGoalToBestGoals(i,   j-1, goals, addedDistance);
 
 			//addDiagonals
-			// addedDistance = diagonalDistance;
-			addedDistance = adjacentDistance;
+			addedDistance = diagonalDistance;
+			// addedDistance = adjacentDistance;
 			goals = addGoalToBestGoals(i+1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i-1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i+1, j-1, goals, addedDistance);
