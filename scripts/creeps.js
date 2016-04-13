@@ -24,10 +24,10 @@ MyGame.components.creeps = (function(){
 		}());
 
 
-		function buildShortestPaths(){
+		function buildShortestPaths(additionalTaken){
 			var shortestPaths = [];
 			for(let i=0; i<spec.endGoals.length; i++){
-				shortestPaths[i] = ShortestPath({goals:spec.endGoals[i]});
+				shortestPaths[i] = ShortestPath({goals:spec.endGoals[i]}, additionalTaken);
 			}
 			return shortestPaths;
 		}
@@ -39,12 +39,36 @@ MyGame.components.creeps = (function(){
 
 			for(let i=startCreepId; i<nextCreepId; i++){
 				if(creeps[i] !== undefined){
-					creeps[i].shortestPath = shortestPaths[creeps[i].locationGoalIndex];
+					creeps[i].setShortestPath(shortestPaths[creeps[i].getLocationGoalIndex()]);
 				}
 			}
 		}
 
 
+
+
+
+		that.whatIf = function(additionalTaken){
+			var potentialShortestPaths = buildShortestPaths(additionalTaken);
+			var potentialShortestPath;
+			var distanceToEndGoal;
+
+			for(let i=0; i<spec.initialLocations.length; i++){
+				for(let j=0; j<spec.initialLocations[i].length; j++){
+					distanceToEndGoal = potentialShortestPaths[i].getDistanceFromEndGoal({i:spec.initialLocations[i][j].i, j:spec.initialLocations[i][j].j})
+					if(distanceToEndGoal === undefined) return false;
+				}
+			}
+
+			for(let i=startCreepId; i<nextCreepId; i++){
+				if(creeps[i] !== undefined){
+					potentialShortestPath = potentialShortestPaths[creeps[i].getLocationGoalIndex()];
+					distanceToEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
+					if(distanceToEndGoal === undefined) return false;
+				}
+			}
+			return true;
+		}
 
 		that.getCreepCountIJ = function(ij){
 			return creepCountMatrix[ij.i, ij.j];
@@ -53,21 +77,6 @@ MyGame.components.creeps = (function(){
 		that.getCreepCountXY = function(xy){
 			var ij = MyGame.components.xy2ij(xy);
 			return getCreepCountIJ(ij);
-		}
-
-		that.isArenaStateGood = function(){
-			var potentialShortestPaths = buildShortestPaths();
-			var potentialShortestPath;
-			var distanceToEndGoal;
-
-			for(let i=startCreepId; i<nextCreepId; i++){
-				if(creeps[i] !== undefined){
-					potentialShortestPath = potentialShortestPaths[creep[i].locationGoalIndex];
-					distanceToEndGoal = creeps[i].getDistanceFromEndGoal(potentialShortestPath);
-					if(distanceToEndGoal === undefined) return false;
-				}
-			}
-			return true;
 		}
 
 		/**********************************************************
@@ -236,7 +245,10 @@ MyGame.components.creeps = (function(){
 		}
 
 		that.setShortestPath = function(newShortestPath){
-			shortestPath = newShortestPath;
+			spec.shortestPath = newShortestPath;
+			updateCurrentGoal();
+			updateDistanceToGoal();
+			updateVelocity();
 		}
 
 		/**********************************************************
@@ -293,11 +305,11 @@ MyGame.components.creeps = (function(){
 		* render creep
 		**********************************************************/
 		var dims = {};
-		dims.height = MyGame.components.arena.subGrid;
+		dims.height = MyGame.components.arena.subGrid*2;
 		dims.width = dims.height;
 		that.draw = function(elapsedTime){
 			dims.center = currentLocation;
-			dims.rotation = velocity.rotation;//get rotation from direction
+			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
 
 			//update sprite
 			if(spec.drawable.hasOwnProperty("update")){
@@ -317,7 +329,7 @@ MyGame.components.creeps = (function(){
 
 		spec:{goals, potentialTowerLocations[][]}
 	**********************************************************/
-	var ShortestPath = function(spec){
+	var ShortestPath = function(spec, additionalTaken){
 		//[][] {location,distance}
 		var that = {};
 		var adjacentDistance = 1;
@@ -341,10 +353,27 @@ MyGame.components.creeps = (function(){
 				endIndex++;
 			}
 
+			var additionalTakenMatrix;
+			if(additionalTaken!==undefined){
+				additionalTakenMatrix=[];
+				for(let takenIndex=0; takenIndex<additionalTaken.length; takenIndex++){
+					additionalTakenMatrix[additionalTaken[takenIndex].i]=[];
+					additionalTakenMatrix[additionalTaken[takenIndex].i][additionalTaken[takenIndex].i]=true;
+				}
+			}
+
 			function arenaLocationIsValidAndUnoccupied(i,j){
+				if(additionalTakenMatrix!==undefined
+					&& additionalTakenMatrix[i]!==undefined
+					&& additionalTakenMatrix[i][j]!==undefined
+					&& additionalTakenMatrix[i][j]===true){
+					return false;
+				}
+
 				//needs to check for towers, should take into account towers being placed
 				return MyGame.components.isValidIJ({i:i,j:j})
-						&& !MyGame.components.isTaken({i:i,j:j});
+						&& !MyGame.components.isTaken({i:i,j:j})
+						&& !MyGame.components.isHit({i:i,j:j});
 			}
 
 			//use workQueue to perform a breadth first search
