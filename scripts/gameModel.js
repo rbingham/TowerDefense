@@ -27,6 +27,14 @@ MyGame.gameModel=(function(graphics,components,input){
 
         return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals});
     }());
+    
+    
+    
+    var projectileMangaer = (function(){
+        return MyGame.components.projectiles.ProjectileManager();
+    }());
+    
+
 
     that.addCreep = function(){
         //creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
@@ -36,10 +44,25 @@ MyGame.gameModel=(function(graphics,components,input){
             // drawable:MyGame.graphics.genericDrawables.greenRect,
             initialHP:100,
             creepSpeed:100
-        };
+            };
         creepManager.create(creepSpec);
     }
+    that.addProjectile = function(location,velocity){
+        /*initialLocation,initialTimeRemaining,initialVelocity, drawable,  projectileSpeed,*/
+        var projecSpec = {
+            initialLocation:location,
+            drawable:MyGame.resources.PelletSpriteDrawable(),
+            initialTimeRemaining:2000,
+            projectileSpeed:100,
+            initialVelocity:velocity,
+            radius:5
 
+        };
+        projectileMangaer.create(projecSpec);
+    }
+    
+    
+    
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
         internalRender=WatchGame;
@@ -71,13 +94,14 @@ MyGame.gameModel=(function(graphics,components,input){
         updateEventQueue(elapsed);
         internalUpdate(elapsed);
         creepManager.update(elapsed);
-
+        projectileMangaer.update(elapsed);
     };
 
     that.render=function(elapsed){
         graphics.clear();
         internalRender(elapsed);
         creepManager.render(elapsed);
+        projectileMangaer.render(elapsed);
     };
 
 

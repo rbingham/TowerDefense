@@ -9,9 +9,8 @@ MyGame.components.projectiles = (function(){
 			Knows about all the projectiles
 			Creates projectiles
 
-		spec:{ projectileListener}
 	**********************************************************/
-	var ProjectileManager = function(spec){
+	var ProjectileManager = function(){
 		var that = {};
 		var startProjectileId = 0;
 		var nextProjectileId = 0;
@@ -149,17 +148,16 @@ MyGame.components.projectiles = (function(){
 		/**********************************************************
 		* render projectile
 		**********************************************************/
-		var dims = {};
+		var dims = {radius:spec.radius};
         that.getDims=function(){
             dims.center = currentLocation;
-			dims.radius= spec.radius;//get rotation from direction
             return dims
         }
 		that.draw = function(elapsedTime){
 			dims.center = currentLocation;
             dims.velocity=velocity;
 			//update sprite
-			if(spec.drawable.hasOwnProperty("update")){
+            if(spec.drawable.hasOwnProperty("update")){
 				spec.drawable.update(elapsedTime);
 			}
 			spec.drawable.draw(dims);
@@ -168,8 +166,6 @@ MyGame.components.projectiles = (function(){
 		return that;
 	}
 
-		return that;
-	}
 
 	return {
 		ProjectileManager:ProjectileManager

@@ -24,6 +24,7 @@ function Tower(spec){
     this.height=spec.height;
     this.width=spec.width;
     this.watchcreep={inRange:false,creep:{}};
+    this.fireprev=1000;
 }
 //tower funtions go here
 Tower.prototype={
@@ -60,6 +61,12 @@ Tower.prototype={
                 normx=this.watchcreep.creep.getDims().center.x-this.center.x;
                 normy=this.watchcreep.creep.getDims().center.y-this.center.y;
                 this.weapon.rotation=Math.atan(normy/normx)+Math.PI/2 + (normx>=0?+Math.PI:0);
+                if(this.fireprev<0){
+                    this.fireprev=1000;
+                    MyGame.gameModel.addProjectile({x:this.center.x,y:this.center.y},{x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                }else{
+                    this.fireprev-=elapsed;
+                }
             }
         }
         
