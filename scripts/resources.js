@@ -139,12 +139,8 @@ MyGame.resources = (function(graphics){
 		}
 
 		function draw(dims){
-			dims.center.x+=dims.height/2;
 			maintainAspectRatio(dims, spriteInfo);
-
 			handleUpdsideDown(dims);
-
-			dims.rotation=0;
 
 			that.matthewPatelSprite.draw(dims, spriteInfo);
 		}

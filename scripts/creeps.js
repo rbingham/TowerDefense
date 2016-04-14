@@ -232,7 +232,7 @@ MyGame.components.creeps = (function(){
 
 		that.hit = function(amount){
 			hp-=amount;
-			if(hp<=0) creepListener.creepKilled(that);
+			if(hp<=0) spec.creepListener.creepKilled(that);
 		}
 
 		that.isShortestPathValid = function(potentialShortestPath){
@@ -269,6 +269,7 @@ MyGame.components.creeps = (function(){
 		* update creep
 		**********************************************************/
 		that.update = function(elapsedTime){
+			that.hit(0.1);
 			var localElapsedTime = elapsedTime/1000;
 			//while there is elapsedTime left
 			while(0<localElapsedTime){
@@ -301,18 +302,41 @@ MyGame.components.creeps = (function(){
 		* render creep
 		**********************************************************/
 		var dims = {};
+		var healthBarDims = {};
 		that.draw = function(elapsedTime){
+
 			dims.height = MyGame.components.arena.subGrid*2;
 			dims.width = dims.height;
 			dims.center = {x:currentLocation.x,y:currentLocation.y};
 			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
+
+			if(spec.isAir){
+				dims.center.y-=MyGame.components.arena.subGrid;
+				// dims.rotation=0;
+			}
 
 			//update sprite
 			if(spec.drawable.hasOwnProperty("update")){
 				spec.drawable.update(elapsedTime);
 			}
 
+
 			spec.drawable.draw(dims);
+
+			drawHealthBar();
+		}
+
+		function drawHealthBar(){
+			healthBarDims.height = MyGame.components.arena.subGrid/5;
+			healthBarDims.width = MyGame.components.arena.subGrid*2 * hp/spec.initialHP;
+			healthBarDims.center = {x:currentLocation.x,y:currentLocation.y-MyGame.components.arena.subGrid*6/5};
+			if(spec.isAir){
+				healthBarDims.center.y-=MyGame.components.arena.subGrid;
+			}
+
+			//healthBarDims.rotation = Math.PI/2-velocity.rotation;
+			MyGame.graphics.genericDrawables.greenRect.draw(healthBarDims);
+
 		}
 
 		return that;

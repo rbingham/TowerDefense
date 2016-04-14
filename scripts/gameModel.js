@@ -30,8 +30,8 @@ MyGame.gameModel=(function(graphics,components,input){
 
     var genCreeps = false;
     that.toggleCreepGen = function(){
-        genCreeps = !genCreeps;
-        // that.addCreep();
+        // genCreeps = !genCreeps;
+        that.addCreep();
     }
     that.addCreep = function(){
         var creepSpec;
