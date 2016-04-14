@@ -31,16 +31,21 @@ MyGame.gameModel=(function(graphics,components,input){
     var genCreeps = false;
     that.toggleCreepGen = function(){
         genCreeps = !genCreeps;
+        // that.addCreep();
     }
     that.addCreep = function(){
-        //creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
-        var creepSpec = {
-            locationGoalIndex:MyGame.random.nextRange(0,3),
-            drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
-            // drawable:MyGame.graphics.genericDrawables.greenRect,
-            initialHP:100,
-            creepSpeed:75
-        };
+        var creepSpec;
+        switch(MyGame.random.nextRange(0,2)){
+            case 0:
+                creepSpec = MyGame.components.creeps.ScottCreepSpec();
+                break;
+            case 1:
+                creepSpec = MyGame.components.creeps.RamonaCreepSpec();
+                break;
+            case 2:
+                creepSpec = MyGame.components.creeps.DemonCreepSpec();
+                break;
+        }
         creepManager.create(creepSpec);
     }
 

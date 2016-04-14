@@ -77,7 +77,7 @@ MyGame.components.creeps = (function(){
 
 		/**********************************************************
 			Creep Creator
-			creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
+			creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed, isAir}
 		**********************************************************/
 		that.create = function(creepSpec){
 			creepSpec.id = nextCreepId++;
@@ -163,7 +163,7 @@ MyGame.components.creeps = (function(){
 				creepKilled(id)
 				creepReachedGoal(id)
 
-		spec:{id, locationGoalIndex, initialLocation, shortestPath, drawable, initialHP, creepSpeed, creepListener}
+		spec:{id, locationGoalIndex, initialLocation, shortestPath, isAir, drawable, initialHP, creepSpeed, creepListener}
 	**********************************************************/
 	var Creep = function(spec){
 		var that = {};
@@ -197,7 +197,7 @@ MyGame.components.creeps = (function(){
 		updateCurrentLocationIJ();
 
 		function updateCurrentGoal(){
-			currentGoal = spec.shortestPath.getNextGoal(currentLocation);
+			currentGoal = spec.shortestPath.getNextGoal(currentLocation, spec.isAir);
 			var xy = MyGame.components.ij2xy(currentGoal.location);
 			currentGoal.location.x=xy.x;
 			currentGoal.location.y=xy.y;
@@ -301,10 +301,10 @@ MyGame.components.creeps = (function(){
 		* render creep
 		**********************************************************/
 		var dims = {};
-		dims.height = MyGame.components.arena.subGrid*2;
-		dims.width = dims.height;
 		that.draw = function(elapsedTime){
-			dims.center = currentLocation;
+			dims.height = MyGame.components.arena.subGrid*2;
+			dims.width = dims.height;
+			dims.center = {x:currentLocation.x,y:currentLocation.y};
 			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
 
 			//update sprite
@@ -330,6 +330,7 @@ MyGame.components.creeps = (function(){
 		var that = {};
 		var adjacentDistance = 1;
 		var diagonalDistance = Math.sqrt(2);
+		var endGoals = [];
 
 		var distanceToEndGoalMatrix = (function(){
 			var i,j;
@@ -343,9 +344,12 @@ MyGame.components.creeps = (function(){
 
 			//add all final goals to work array with a distance of zero
 			var endIndex=0;
+			var work;
 			var workQueue = [];
 			for(let workIndex=0; workIndex<spec.goals.length; workIndex++){
-				workQueue.push({location:{i:spec.goals[workIndex].i, j:spec.goals[workIndex].j}, distance:0});
+				work = {location:{i:spec.goals[workIndex].i, j:spec.goals[workIndex].j}, distance:0};
+				workQueue.push(work);
+				endGoals.push(work);
 				endIndex++;
 			}
 
@@ -374,7 +378,6 @@ MyGame.components.creeps = (function(){
 
 			//use workQueue to perform a breadth first search
 			//the goal is to update every location of the matrix with a distance from goal
-			var work;
 			var nextDistance;
 			for(let workIndex=0; workIndex<endIndex; workIndex++){
 				work = workQueue[workIndex];
@@ -415,7 +418,28 @@ MyGame.components.creeps = (function(){
 			return matrix;
 		}());
 
-		that.getDistanceFromEndGoal = function(location){
+		function getAirGoalInfo(location){
+			let endGoal;// = endGoals[0];
+			let distance;// = Math.sqrt(Math.pow(endGoal.location.i-location.i,2)+Math.pow(endGoal.location.j-location.j,2));
+			let bestEndGoal;// = endGoal;
+			let bestDistance = Number.POSITIVE_INFINITY; //distance;
+			for(let goalIndex=0; goalIndex<endGoals.length; goalIndex++){
+				endGoal = endGoals[goalIndex];
+				distance = Math.sqrt(Math.pow(endGoal.location.i-location.i,2)+Math.pow(endGoal.location.j-location.j,2));
+				if(distance<bestDistance){
+					bestEndGoal = endGoal;
+					bestDistance = distance;
+				}
+			}
+
+			return {distance:bestDistance, goal:bestEndGoal};
+		}
+
+		that.getDistanceFromEndGoal = function(location, isAir){
+			if(isAir){
+				return getAirGoalInfo(location).distance;
+			}
+
 			if(distanceToEndGoalMatrix[location.i]===undefined
 					|| distanceToEndGoalMatrix[location.i][location.j] === undefined){
 				return undefined;
@@ -424,7 +448,11 @@ MyGame.components.creeps = (function(){
 			return distanceToEndGoalMatrix[location.i][location.j].distance;
 		}
 
-		that.getNextGoal = function(location){
+		that.getNextGoal = function(location, isAir){
+			if(isAir){
+				return getAirGoalInfo(location).goal;
+			}
+
 			var goals = getNextGoals(location);
 
 			if(goals.length===0) return undefined;
@@ -470,8 +498,8 @@ MyGame.components.creeps = (function(){
 			goals = addGoalToBestGoals(i,   j-1, goals, addedDistance);
 
 			//addDiagonals
-			addedDistance = diagonalDistance;
-			// addedDistance = adjacentDistance;
+			addedDistance = adjacentDistance;
+			// addedDistance = diagonalDistance;
 			goals = addGoalToBestGoals(i+1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i-1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i+1, j-1, goals, addedDistance);
@@ -483,7 +511,40 @@ MyGame.components.creeps = (function(){
 		return that;
 	}
 
+	function ScottCreepSpec(){
+		return {
+            locationGoalIndex:MyGame.random.nextRange(0,3),
+            drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
+            initialHP:100,
+            creepSpeed:75,
+            isAir:false
+        };
+	}
+
+	function RamonaCreepSpec(){
+		return {
+            locationGoalIndex:MyGame.random.nextRange(0,3),
+            drawable:MyGame.resources.RamonaFlowersSpriteDrawable(),
+            initialHP:100,
+            creepSpeed:125,
+            isAir:false
+        };
+	}
+
+	function DemonCreepSpec(){
+		return {
+            locationGoalIndex:MyGame.random.nextRange(0,3),
+            drawable:MyGame.resources.DemonSpriteDrawable(),
+            initialHP:100,
+            creepSpeed:50,
+            isAir:true
+        };
+	}
+
 	return {
-		CreepManager:CreepManager
+		CreepManager:CreepManager,
+		ScottCreepSpec,
+		RamonaCreepSpec,
+		DemonCreepSpec,
 	};
 }());
