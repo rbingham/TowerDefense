@@ -44,6 +44,10 @@ MyGame.components.creeps = (function(){
 			}
 		}
 
+
+
+
+
 		that.whatIf = function(additionalTaken){
 			var potentialShortestPaths = buildShortestPaths(additionalTaken);
 			var potentialShortestPath;
@@ -143,6 +147,8 @@ MyGame.components.creeps = (function(){
 		}
 
 		that.creepMoved = function(creep, oldLocation, newLocation){
+            MyGame.components.TowerMovementDetector(creep,newLocation);
+
 			//update creepCountMatrix
 		}
 
@@ -162,6 +168,7 @@ MyGame.components.creeps = (function(){
 			takes a creepListener which is just any object that has the functions:
 				creepKilled(id)
 				creepReachedGoal(id)
+                creepMoved(creep,old)
 
 		spec:{id, locationGoalIndex, initialLocation, shortestPath, isAir, drawable, initialHP, creepSpeed, creepListener}
 	**********************************************************/
@@ -191,7 +198,7 @@ MyGame.components.creeps = (function(){
 			currentLocation.j=ij.j;
 
 			if(oldLocation.i!==currentLocation.i || oldLocation.j!==currentLocation.j){
-				spec.creepListener.creepMoved(that, oldLocation);
+				spec.creepListener.creepMoved(that, oldLocation,currentLocation);
 			}
 		}
 		updateCurrentLocationIJ();
@@ -220,6 +227,20 @@ MyGame.components.creeps = (function(){
 
 		that.getID = function(){
 			return spec.id;
+		}
+
+		that.getDims = function(){
+			dims.height = MyGame.components.arena.subGrid*2;
+			dims.width = dims.height;
+			dims.center = {x:currentLocation.x,y:currentLocation.y};
+			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
+
+			if(spec.isAir){
+				dims.center.y-=MyGame.components.arena.subGrid;
+				// dims.rotation=0;
+			}
+
+			return dims;
 		}
 
 		that.getLocationGoalIndex = function(){
@@ -269,7 +290,6 @@ MyGame.components.creeps = (function(){
 		* update creep
 		**********************************************************/
 		that.update = function(elapsedTime){
-			that.hit(0.1);
 			var localElapsedTime = elapsedTime/1000;
 			//while there is elapsedTime left
 			while(0<localElapsedTime){
@@ -319,7 +339,6 @@ MyGame.components.creeps = (function(){
 			if(spec.drawable.hasOwnProperty("update")){
 				spec.drawable.update(elapsedTime);
 			}
-
 
 			spec.drawable.draw(dims);
 
@@ -522,8 +541,8 @@ MyGame.components.creeps = (function(){
 			goals = addGoalToBestGoals(i,   j-1, goals, addedDistance);
 
 			//addDiagonals
-			addedDistance = adjacentDistance;
 			// addedDistance = diagonalDistance;
+			addedDistance = adjacentDistance;
 			goals = addGoalToBestGoals(i+1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i-1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i+1, j-1, goals, addedDistance);

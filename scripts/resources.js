@@ -149,5 +149,37 @@ MyGame.resources = (function(graphics){
 	}
 
 
+	that.PelletSprite = graphics.genSprite("./images/tower.png");
+	that.PelletSpriteInfo = function(){
+		var spec = {}
+		var time = 1000;
+		spec.height = 10;
+		spec.width = 10;
+		spec.spriteCount = 1;
+		spec.spriteTime = [time];
+		spec.movementSprite = true;
+		spec.sprite = 0;
+
+		return graphics.genSpriteInfo(spec);
+	}
+	that.PelletSpriteDrawable = function(){
+		var pelletSpriteInfo = that.PelletSpriteInfo();
+		function update(elapsedTime){
+            pelletSpriteInfo.update(elapsedTime, true, true);
+		}
+
+		function draw(dims){
+            dims.width = dims.radius*2;
+            dims.height = dims.radius*2;
+            normx=dims.center.x;
+            normy=dims.center.y;
+            dims.rotation=Math.atan(normy/normx)+Math.PI/2 + (normx>=0?+Math.PI:0);
+            pelletSpriteInfo.row = 0;
+			that.PelletSprite.draw(dims, pelletSpriteInfo);
+		}
+
+		return {draw:draw, update:update}
+	}
+
 	return that;
 }(MyGame.graphics))
