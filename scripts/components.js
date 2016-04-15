@@ -25,6 +25,8 @@ function Tower(spec){
     this.width=spec.width;
     this.watchcreep={inRange:false,creep:{}};
     this.fireprev=1000;
+    this.maxLevel=3;
+    this.level=1;
     this.rotationspeed=50;
 }
 //tower funtions go here
@@ -33,7 +35,7 @@ Tower.prototype={
 
     },
     draw:function(drawRange){
-        if(drawRange!==undefined){
+        if(drawRange!==undefined&&drawRange===true){
             MyGame.graphics.drawCircle({
                 center:this.center,
                 radius:this.weapon.range,
@@ -103,6 +105,16 @@ Tower.prototype={
                 this.watchcreep.inRange=true;
                 this.watchcreep.creep=creep;
             }
+        }
+    },
+    upgrade:function(){
+        this.level++;
+        if(this.level>this.maxLevel){
+            this.level=this.maxLevel;
+        }else{
+            this.weapon.range+=100;
+            
+            
         }
     }
 }
@@ -421,7 +433,7 @@ MyGame.components=(function(graphics){
 
     that.renderTowers=function(elapsed){
         for(var i=0;i<that.towerArray.length;i++){
-            that.towerArray[i].draw();
+            that.towerArray[i].draw(i==prevSelected.index);
         }
         if(tempTower!==undefined){
             tempTower.draw(true);
@@ -434,7 +446,7 @@ MyGame.components=(function(graphics){
     }
     
     
-    var prevSelected={onSelected:false,is:{}};
+    var prevSelected={onSelected:false,is:{},index:-1};
     //must be passed as xytoij takes them as it will call that function
     that.selectATower=function(coords){
         var ij=that.xy2ij(coords);
@@ -458,10 +470,8 @@ MyGame.components=(function(graphics){
         else{
             prevSelected.onSelected=false;
             prevSelected.is={};
+            prevSelected.index=-1;
         }
-        
-        
-        that.removeTower();
     }
     
     //Selected tower must be called before this function
@@ -499,6 +509,7 @@ MyGame.components=(function(graphics){
         that.towerArray.splice(prevSelected.index,1);
         prevSelected.onSelected=false;
         prevSelected.is={};
+        prevSelected.index=-1;
     }
     
     //Selected tower must be called before this function
@@ -511,28 +522,30 @@ MyGame.components=(function(graphics){
         //triple loop to add the listeners for expanded range, upgrade does not move towers so we are good
         for(var i=0;i<that.towerListeners.length;i++){
             for(var j=0;j<that.towerListeners[i].length;j++){
+                var alreadyexists=false;
                 for(var k=that.towerListeners[i][j].length-1;k>=0;k--){
                     if(that.towerListeners[i][j][k].center.x===that.towerArray[prevSelected.index].center.x
                         &&that.towerListeners[i][j][k].center.y===that.towerArray[prevSelected.index].center.y){
                             
-                        var gridspace={
-                                center:{
-                                    x:that.arena.subGrid*i+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2,
-                                    y:that.arena.subGrid*j+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2
-                                },
-                                width:that.arena.subGrid,
-                                height:that.arena.subGrid
-                            };
+                        alreadyexists=true;
 
-                        if(Collision.circleRect(that.towerArray[prevSelected.index].getCircleSight(),gridspace)){
-                            that.towerListeners[i][j].push(that.towerArray[prevSelected.index]);
-                        }
+
                     }
+                }
+                var gridspace={
+                    center:{
+                        x:that.arena.subGrid*i+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2,
+                        y:that.arena.subGrid*j+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2
+                    },
+                    width:that.arena.subGrid,
+                    height:that.arena.subGrid
+                };
+                if(!alreadyexists&&Collision.circleRect(that.towerArray[prevSelected.index].getCircleSight(),gridspace)){
+                    that.towerListeners[i][j].push(that.towerArray[prevSelected.index]);
                 }
             }
         }
-        prevSelected.onSelected=false;
-        prevSelected.is={};
+
     }
     
     
