@@ -127,9 +127,15 @@ MyGame.gameModel=(function(graphics,components,input){
             }
         }
     }
+    function beginListeneingtoTowers(){
+        mouse.registerClickCommand(function(at){
+            components.selectATower(at);
+        },components.arena);
+    }
 
 
     that.placeButtonPressed=function(towerSpecs){
+        mouse=input.Mouse();
         internalRender=PlaceTowerRender;
         mouse.registerMoveCommand(function(at){
             components.placingOver(at,towerSpecs);

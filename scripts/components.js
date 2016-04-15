@@ -25,6 +25,7 @@ function Tower(spec){
     this.width=spec.width;
     this.watchcreep={inRange:false,creep:{}};
     this.fireprev=1000;
+    this.rotationspeed=20;
 }
 //tower funtions go here
 Tower.prototype={
@@ -60,7 +61,23 @@ Tower.prototype={
                 //point at the watched creep
                 normx=this.watchcreep.creep.getDims().center.x-this.center.x;
                 normy=this.watchcreep.creep.getDims().center.y-this.center.y;
-                this.weapon.rotation=Math.atan(normy/normx)+Math.PI/2 + (normx>=0?+Math.PI:0);
+                var destang=Math.atan(normy/normx)+Math.PI/2 + (normx>=0?+Math.PI:0);
+                destang-=this.weapon.rotation;
+                if(destang<0){
+                    destang+=Math.PI*2;
+                }
+                if(destang>Math.PI){
+                    this.weapon.rotation-=this.rotationspeed*elapsed/10000;
+                }else{
+                    this.weapon.rotation+=this.rotationspeed*elapsed/10000;
+                }
+                if(this.weapon.rotation>=Math.PI*2){
+                    this.weapon.rotation-=Math.PI*2;
+                }
+                
+                if(this.weapon.rotation<0){
+                    this.weapon.rotation+=Math.PI*2;
+                }
                 if(this.fireprev<0){
                     this.fireprev=1000;
                     MyGame.gameModel.addProjectile({x:this.center.x,y:this.center.y},{x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
@@ -413,6 +430,102 @@ MyGame.components=(function(graphics){
             that.towerListeners[location.i][location.j][i].creepNearBy(creep);
         }
     }
+    
+    
+    var prevSelected={onSelected:false,is:{}};
+    //must be passed as xytoij takes them as it will call that function
+    that.selectATower=function(coords){
+        var ij=that.xy2ij(coords);
+        
+        if(takenGrid[ij.i][ij.j].taken){
+            prevSelected.onSelected=true;
+            
+        
+            for(var i=0;i<that.towerArray.length;i++){
+                
+                var disx=that.towerArray[i].center.x-(prevSelected.is.i*that.arena.subGrid+that.arena.center.x-that.arena.width/2);
+                var disy=that.towerArray[i].center.y-(prevSelected.is.j*that.arena.subGrid+that.arena.center.y-that.arena.height/2);
+                
+                var dis2=disx*disx+disy*disy;
+                if(dis2<=that.arena.subGrid*that.arena.subGrid*2){  
+                    prevSelected.index=i;
+                }
+            }
+            prevSelected.is=that.xy2ij(that.towerArray[i].center);
+        }
+        else{
+            prevSelected.onSelected=false;
+            prevSelected.is={};
+        }
+        
+        
+        
+    }
+    
+    //Selected tower must be called before this function
+    that.removeTower=function(){
+        if(!prevSelected.onSelected){
+            return;
+        }
+        //remove from taken and from the tower arrray
+        //remove all its tower listeners        
+        for(var i=prevSelected.is.i;i<prevSelected.is.i+that.towerArray[prevSelected.index].width/that.arena.subGrid;i++){
+            for(var j=prevSelected.is.j;i<prevSelected.is.j+that.towerArray[prevSelected.index].height/that.arena.subGrid;j++){
+                that.takenGrid[icheck][jcheck].taken=false;
+            }
+        }
+        //triple loop to look for the listeners
+        for(var i=0;i<that.towerListeners.length;i++){
+            for(var j=0;j<that.towerListeners[i].length;j++){
+                for(var k=that.towerListeners[i][j].length-1;k>=0;k--){
+                    if(that.towerListeners[i][j][k].center.x===that.towerArray[prevSelected.index].center.x
+                        &&that.towerListeners[i][j][k].center.y===that.towerArray[prevSelected.index].center.y){
+                        that.towerListeners[i][j].splice(k,1);
+                    }
+                }
+            }
+        }
+        that.towerArray.splice(prevSelected.index,1);
+        prevSelected.onSelected=false;
+        prevSelected.is={};
+    }
+    
+    //Selected tower must be called before this function
+    that.upgradeTower=function(){
+        if(!prevSelected.onSelected){
+            return;
+        }
+        //increeaes range
+        that.towerArray[prevSelected.index].upgrade();
+        //triple loop to add the listeners for expanded range, upgrade does not move towers so we are good
+        for(var i=0;i<that.towerListeners.length;i++){
+            for(var j=0;j<that.towerListeners[i].length;j++){
+                for(var k=that.towerListeners[i][j].length-1;k>=0;k--){
+                    if(that.towerListeners[i][j][k].center.x===that.towerArray[prevSelected.index].center.x
+                        &&that.towerListeners[i][j][k].center.y===that.towerArray[prevSelected.index].center.y){
+                            
+                        var gridspace={
+                                center:{
+                                    x:that.arena.subGrid*i+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2,
+                                    y:that.arena.subGrid*j+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2
+                                },
+                                width:that.arena.subGrid,
+                                height:that.arena.subGrid
+                            };
+
+                        if(Collision.circleRect(that.towerArray[prevSelected.index].getCircleSight(),gridspace)){
+                            that.towerListeners[i][j].push(that.towerArray[prevSelected.index]);
+                        }
+                    }
+                }
+            }
+        }
+        prevSelected.onSelected=false;
+        prevSelected.is={};
+    }
+    
+    
+    
     
     
     
