@@ -294,6 +294,10 @@ MyGame.components.creeps = (function(){
 			return dims;
 		}
 
+		that.isAir = function(){
+			return spec.isAir;
+		}
+
 		that.getLocationGoalIndex = function(){
 			return spec.locationGoalIndex;
 		}
