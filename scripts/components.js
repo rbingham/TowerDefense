@@ -83,7 +83,10 @@ Tower.prototype={
                 if(this.fireprev<0){
                     if(destang<1||destang>Math.Pi*2-1){
                         this.fireprev=1000;
-                        MyGame.gameModel.addProjectile({x:this.center.x,y:this.center.y},{x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                        MyGame.gameModel.addProjectile(
+                            {x:this.center.x,y:this.center.y},
+                            {x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,
+                            y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
                     }
                 }else{
                     this.fireprev-=elapsed;
