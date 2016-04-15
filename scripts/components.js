@@ -113,16 +113,17 @@ Tower.prototype={
             this.level=this.maxLevel;
         }else{
             this.weapon.range+=100;
-            
+            this.weapon.src=this.weapon.srcbase+this.level+".png";
             
         }
     }
 }
 
 function Weapon(spec){
-    this.src=spec.src;
+    this.srcbase=spec.src;
     this.rotation=0;
     this.range=spec.range;
+    this.src=this.srcbase+1+".png";
     /*this.spriteinfo=MyGame.graphics.genSpriteInfo({
         sprite:0,
         spriteCount:3,
