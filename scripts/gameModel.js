@@ -145,6 +145,7 @@ MyGame.gameModel=(function(graphics,components,input){
                 creepManager.rebuildShortestPaths();
                 mouse=input.Mouse();
                 internalRender=WatchGame;
+                beginListeneingtoTowers();
             }
         },components.arena);
     }

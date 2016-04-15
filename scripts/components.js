@@ -54,7 +54,7 @@ Tower.prototype={
         if(this.watchcreep.inRange){
             var hp=this.watchcreep.creep.getHP();
             var inrange=Collision.circleRect(this.getCircleSight(),this.watchcreep.creep.getDims());
-            if(hp<=0||!inrange){
+            if(hp<=0||!inrange||this.watchcreep.creep.getDistanceFromEndGoal()==0){
                 this.watchcreep.inRange=false;
                 this.watchcreep.creep={};
             }else{
@@ -439,21 +439,21 @@ MyGame.components=(function(graphics){
     that.selectATower=function(coords){
         var ij=that.xy2ij(coords);
         
-        if(takenGrid[ij.i][ij.j].taken){
+        if(that.takenGrid[ij.i][ij.j].taken){
             prevSelected.onSelected=true;
             
-        
-            for(var i=0;i<that.towerArray.length;i++){
+            var i=0;
+            for(i=0;i<that.towerArray.length;i++){
                 
-                var disx=that.towerArray[i].center.x-(prevSelected.is.i*that.arena.subGrid+that.arena.center.x-that.arena.width/2);
-                var disy=that.towerArray[i].center.y-(prevSelected.is.j*that.arena.subGrid+that.arena.center.y-that.arena.height/2);
+                var disx=that.towerArray[i].center.x-(coords.x);
+                var disy=that.towerArray[i].center.y-(coords.y);
                 
                 var dis2=disx*disx+disy*disy;
                 if(dis2<=that.arena.subGrid*that.arena.subGrid*2){  
                     prevSelected.index=i;
                 }
             }
-            prevSelected.is=that.xy2ij(that.towerArray[i].center);
+            prevSelected.is=that.xy2ij(that.towerArray[prevSelected.index].center);
         }
         else{
             prevSelected.onSelected=false;
@@ -461,7 +461,7 @@ MyGame.components=(function(graphics){
         }
         
         
-        
+        that.removeTower();
     }
     
     //Selected tower must be called before this function
@@ -471,11 +471,20 @@ MyGame.components=(function(graphics){
         }
         //remove from taken and from the tower arrray
         //remove all its tower listeners        
-        for(var i=prevSelected.is.i;i<prevSelected.is.i+that.towerArray[prevSelected.index].width/that.arena.subGrid;i++){
-            for(var j=prevSelected.is.j;i<prevSelected.is.j+that.towerArray[prevSelected.index].height/that.arena.subGrid;j++){
-                that.takenGrid[icheck][jcheck].taken=false;
+        var t=that.towerArray[prevSelected.index].width;
+        for(var i=prevSelected.is.i;i>=prevSelected.is.i-that.towerArray[prevSelected.index].width/that.arena.subGrid;i--){
+            for(var j=prevSelected.is.j;j>=prevSelected.is.j-that.towerArray[prevSelected.index].height/that.arena.subGrid;j--){
+                that.takenGrid[i][j].taken=false;
             }
         }
+        var t="";
+        for(var j=0;j<that.takenGrid.length;j++){
+            for(var k=0;k<that.takenGrid[i].length;k++){
+                t+=that.takenGrid[j][k].taken?"X":"_";
+            }
+            t+='\n'
+        }
+        console.log(t);
         //triple loop to look for the listeners
         for(var i=0;i<that.towerListeners.length;i++){
             for(var j=0;j<that.towerListeners[i].length;j++){
