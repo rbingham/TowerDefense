@@ -25,7 +25,7 @@ function Tower(spec){
     this.width=spec.width;
     this.watchcreep={inRange:false,creep:{}};
     this.fireprev=1000;
-    this.rotationspeed=20;
+    this.rotationspeed=50;
     this.targetAir=spec.targetAir;
     this.targetGround=spec.targetGround;
 }
@@ -76,20 +76,22 @@ Tower.prototype={
                 if(this.weapon.rotation>=Math.PI*2){
                     this.weapon.rotation-=Math.PI*2;
                 }
-
+                
                 if(this.weapon.rotation<0){
                     this.weapon.rotation+=Math.PI*2;
                 }
                 if(this.fireprev<0){
-                    this.fireprev=1000;
-                    MyGame.gameModel.addProjectile({x:this.center.x,y:this.center.y},{x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                    if(destang<1||destang>Math.Pi*2-1){
+                        this.fireprev=1000;
+                        MyGame.gameModel.addProjectile({x:this.center.x,y:this.center.y},{x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                    }
                 }else{
                     this.fireprev-=elapsed;
                 }
             }
         }
-
-
+        
+        
     },
     getCircleSight:function(){
         that={};
@@ -244,7 +246,7 @@ MyGame.components=(function(graphics){
         that.towerArray.push(new Tower(params));
         tempTower=undefined;
         addTowerListeners(that.towerArray[that.towerArray.length-1]);
-
+        
         return true;
     };
     that.checkTowerPlacement=function(at,params){
@@ -257,8 +259,8 @@ MyGame.components=(function(graphics){
         }
         return true;
     };
-
-
+    
+    
     function addTowerListeners(tower){
         for(var i=0;i<that.towerListeners.length;i++){
             for(var j=0;j<that.towerListeners[i].length;j++){
@@ -436,24 +438,24 @@ MyGame.components=(function(graphics){
             that.towerListeners[location.i][location.j][i].creepNearBy(creep);
         }
     }
-
-
+    
+    
     var prevSelected={onSelected:false,is:{}};
     //must be passed as xytoij takes them as it will call that function
     that.selectATower=function(coords){
         var ij=that.xy2ij(coords);
-
+        
         if(takenGrid[ij.i][ij.j].taken){
             prevSelected.onSelected=true;
-
-
+            
+        
             for(var i=0;i<that.towerArray.length;i++){
-
+                
                 var disx=that.towerArray[i].center.x-(prevSelected.is.i*that.arena.subGrid+that.arena.center.x-that.arena.width/2);
                 var disy=that.towerArray[i].center.y-(prevSelected.is.j*that.arena.subGrid+that.arena.center.y-that.arena.height/2);
-
+                
                 var dis2=disx*disx+disy*disy;
-                if(dis2<=that.arena.subGrid*that.arena.subGrid*2){
+                if(dis2<=that.arena.subGrid*that.arena.subGrid*2){  
                     prevSelected.index=i;
                 }
             }
@@ -463,18 +465,18 @@ MyGame.components=(function(graphics){
             prevSelected.onSelected=false;
             prevSelected.is={};
         }
-
-
-
+        
+        
+        
     }
-
+    
     //Selected tower must be called before this function
     that.removeTower=function(){
         if(!prevSelected.onSelected){
             return;
         }
         //remove from taken and from the tower arrray
-        //remove all its tower listeners
+        //remove all its tower listeners        
         for(var i=prevSelected.is.i;i<prevSelected.is.i+that.towerArray[prevSelected.index].width/that.arena.subGrid;i++){
             for(var j=prevSelected.is.j;i<prevSelected.is.j+that.towerArray[prevSelected.index].height/that.arena.subGrid;j++){
                 that.takenGrid[icheck][jcheck].taken=false;
@@ -495,7 +497,7 @@ MyGame.components=(function(graphics){
         prevSelected.onSelected=false;
         prevSelected.is={};
     }
-
+    
     //Selected tower must be called before this function
     that.upgradeTower=function(){
         if(!prevSelected.onSelected){
@@ -509,7 +511,7 @@ MyGame.components=(function(graphics){
                 for(var k=that.towerListeners[i][j].length-1;k>=0;k--){
                     if(that.towerListeners[i][j][k].center.x===that.towerArray[prevSelected.index].center.x
                         &&that.towerListeners[i][j][k].center.y===that.towerArray[prevSelected.index].center.y){
-
+                            
                         var gridspace={
                                 center:{
                                     x:that.arena.subGrid*i+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2,
@@ -529,12 +531,12 @@ MyGame.components=(function(graphics){
         prevSelected.onSelected=false;
         prevSelected.is={};
     }
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
 
     /*
     function designed to render every part of componets
