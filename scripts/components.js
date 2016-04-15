@@ -25,7 +25,7 @@ function Tower(spec){
     this.width=spec.width;
     this.watchcreep={inRange:false,creep:{}};
     this.fireprev=1000;
-    this.rotationspeed=20;
+    this.rotationspeed=50;
 }
 //tower funtions go here
 Tower.prototype={
@@ -79,8 +79,10 @@ Tower.prototype={
                     this.weapon.rotation+=Math.PI*2;
                 }
                 if(this.fireprev<0){
-                    this.fireprev=1000;
-                    MyGame.gameModel.addProjectile({x:this.center.x,y:this.center.y},{x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                    if(destang<1||destang>Math.Pi*2-1){
+                        this.fireprev=1000;
+                        MyGame.gameModel.addProjectile({x:this.center.x,y:this.center.y},{x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                    }
                 }else{
                     this.fireprev-=elapsed;
                 }
