@@ -28,6 +28,8 @@ function Tower(spec){
     this.maxLevel=3;
     this.level=1;
     this.rotationspeed=50;
+    this.targetAir=spec.targetAir;
+    this.targetGround=spec.targetGround;
 }
 //tower funtions go here
 Tower.prototype={
@@ -104,7 +106,11 @@ Tower.prototype={
     },
     creepNearBy:function(creep){
         if(!this.watchcreep.inRange){
-            if(Collision.circleRect(this.getCircleSight(),creep.getDims())){
+            if(creep.isAir()){
+
+            }
+            if(((creep.isAir()&&this.targetAir)||(!creep.isAir()&&this.targetGround))
+                &&Collision.circleRect(this.getCircleSight(),creep.getDims())){
                 this.watchcreep.inRange=true;
                 this.watchcreep.creep=creep;
             }

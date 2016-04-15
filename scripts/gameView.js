@@ -62,7 +62,7 @@ MyGame.GameView = function(model, input){
         model.placeButtonPressed(TowerTemplate.AirMissile);
     }});
     creep.addButtonListener("logStuff", {onClick:function(){
-        model.addCreep();
+        model.toggleCreepGen();
     }});
     Upgrade.addButtonListener("logStuff", {onClick:function(){
        MyGame.components.upgradeTower();

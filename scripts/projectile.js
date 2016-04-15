@@ -2,7 +2,7 @@
 	projectile components including:
 		projectile constructors
 **********************************************************/
-MyGame.components.projectiles = (function(){
+MyGame.components.projectiles = (function(spec){
 	"use strict"
 	/**********************************************************
 		The Projectile Manager
@@ -20,6 +20,14 @@ MyGame.components.projectiles = (function(){
 			//initialize all matrix values at 0
 			return [];
 		}());
+
+		that.forEach = function(func){
+			for(let i=startProjectileId; i<nextProjectileId; i++){
+				if(projectiles[i] !== undefined){
+					func(projectiles[i]);//.update(elapsedTime);
+				}
+			}
+		}
 
 		that.getProjectileCountIJ = function(ij){
 			return projectileCountMatrix[ij.i, ij.j];
@@ -80,7 +88,7 @@ MyGame.components.projectiles = (function(){
 			delete projectiles[projectile.getID()];
 		}
 
-		that.projectileMoved = function(projectile, oldLocation, newLocation){            
+		that.projectileMoved = function(projectile, oldLocation, newLocation){
 			//update projectileCountMatrix
 		}
 
@@ -126,6 +134,9 @@ MyGame.components.projectiles = (function(){
 		}
 		updateCurrentLocationIJ();
 
+		that.getLocation = function (){
+			return currentLocation;
+		}
 
 		that.getID = function(){
 			return spec.id;
@@ -139,11 +150,11 @@ MyGame.components.projectiles = (function(){
             currentLocation.y += velocity.y*elapsedTime/1000;
             timeRemaining-=elapsedTime
             if(timeRemaining<=0){
-                spec.projectileListener.projectileKilled(that);       
+                spec.projectileListener.projectileKilled(that);
             };
             updateCurrentLocationIJ();
         }
-		
+
 
 		/**********************************************************
 		* render projectile
