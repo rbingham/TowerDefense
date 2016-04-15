@@ -27,13 +27,47 @@ MyGame.gameModel=(function(graphics,components,input){
 
         return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals});
     }());
-    
-    
-    
+
+
+
     var projectileMangaer = (function(){
         return MyGame.components.projectiles.ProjectileManager();
     }());
-    
+
+    var projectileCollitionDetector = (function(){
+        function generateLocations(projectile){
+            var location = projectile.getLocation();
+            var locations=[];
+            locations.push({i:location.i, j:location.j});
+            locations.push({i:location.i+1, j:location.j});
+            locations.push({i:location.i+1, j:location.j+1});
+            locations.push({i:location.i, j:location.j+1});
+            locations.push({i:location.i-1, j:location.j+1});
+            locations.push({i:location.i-1, j:location.j});
+            locations.push({i:location.i-1, j:location.j-1});
+            locations.push({i:location.i, j:location.j-1});
+            locations.push({i:location.i+1, j:location.j-1});
+            return locations;
+        }
+
+        function handleProjectile(projectile){
+            var locations = generateLocations(projectile);
+            var creepList = creepManager.getCreepListIJArray(locations);
+            for(let i=0;i<creepList.length;i++){
+                creepList[i].hit(25);
+            }
+            if(creepList.length!==0){
+                projectileMangaer.projectileKilled(projectile);
+            }
+        }
+
+        function update(){
+            projectileMangaer.forEach(handleProjectile);
+        }
+
+        return {update};
+    }());
+
 
     var genCreeps = false;
     that.toggleCreepGen = function(){
@@ -68,9 +102,9 @@ MyGame.gameModel=(function(graphics,components,input){
         };
         projectileMangaer.create(projecSpec);
     }
-    
-    
-    
+
+
+
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
         internalRender=WatchGame;
@@ -103,6 +137,7 @@ MyGame.gameModel=(function(graphics,components,input){
         internalUpdate(elapsed);
         creepManager.update(elapsed);
         projectileMangaer.update(elapsed);
+        projectileCollitionDetector.update();
     };
 
     that.render=function(elapsed){
