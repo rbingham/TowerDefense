@@ -28,17 +28,82 @@ MyGame.gameModel=(function(graphics,components,input){
         return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals});
     }());
 
+
+
+    var projectileMangaer = (function(){
+        return MyGame.components.projectiles.ProjectileManager();
+    }());
+
+    var projectileCollitionDetector = (function(){
+        function generateLocations(projectile){
+            var location = projectile.getLocation();
+            var locations=[];
+            locations.push({i:location.i, j:location.j});
+            locations.push({i:location.i+1, j:location.j});
+            locations.push({i:location.i+1, j:location.j+1});
+            locations.push({i:location.i, j:location.j+1});
+            locations.push({i:location.i-1, j:location.j+1});
+            locations.push({i:location.i-1, j:location.j});
+            locations.push({i:location.i-1, j:location.j-1});
+            locations.push({i:location.i, j:location.j-1});
+            locations.push({i:location.i+1, j:location.j-1});
+            return locations;
+        }
+
+        function handleProjectile(projectile){
+            var locations = generateLocations(projectile);
+            var creepList = creepManager.getCreepListIJArray(locations);
+            for(let i=0;i<creepList.length;i++){
+                creepList[i].hit(25);
+            }
+            if(creepList.length!==0){
+                projectileMangaer.projectileKilled(projectile);
+            }
+        }
+
+        function update(){
+            projectileMangaer.forEach(handleProjectile);
+        }
+
+        return {update};
+    }());
+
+
+    var genCreeps = false;
+    that.toggleCreepGen = function(){
+        // genCreeps = !genCreeps;
+        that.addCreep();
+    }
     that.addCreep = function(){
-        //creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
-        var creepSpec = {
-            locationGoalIndex:MyGame.random.nextRange(0,3),
-            drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
-            // drawable:MyGame.graphics.genericDrawables.greenRect,
-            initialHP:100,
-            creepSpeed:100
-        };
+        var creepSpec;
+        switch(MyGame.random.nextRange(0,2)){
+            case 0:
+                creepSpec = MyGame.components.creeps.ScottCreepSpec();
+                break;
+            case 1:
+                creepSpec = MyGame.components.creeps.RamonaCreepSpec();
+                break;
+            case 2:
+                creepSpec = MyGame.components.creeps.DemonCreepSpec();
+                break;
+        }
         creepManager.create(creepSpec);
     }
+    that.addProjectile = function(location,velocity){
+        /*initialLocation,initialTimeRemaining,initialVelocity, drawable,  projectileSpeed,*/
+        var projecSpec = {
+            initialLocation:location,
+            drawable:MyGame.resources.PelletSpriteDrawable(),
+            initialTimeRemaining:2000,
+            projectileSpeed:100,
+            initialVelocity:velocity,
+            radius:5
+
+        };
+        projectileMangaer.create(projecSpec);
+    }
+
+
 
     that.initialize=function(){
         document.getElementById('Overlay_Menu').style.display='none';
@@ -71,13 +136,15 @@ MyGame.gameModel=(function(graphics,components,input){
         updateEventQueue(elapsed);
         internalUpdate(elapsed);
         creepManager.update(elapsed);
-
+        projectileMangaer.update(elapsed);
+        projectileCollitionDetector.update();
     };
 
     that.render=function(elapsed){
         graphics.clear();
         internalRender(elapsed);
         creepManager.render(elapsed);
+        projectileMangaer.render(elapsed);
     };
 
 
@@ -103,9 +170,15 @@ MyGame.gameModel=(function(graphics,components,input){
             }
         }
     }
+    function beginListeneingtoTowers(){
+        mouse.registerClickCommand(function(at){
+            components.selectATower(at);
+        },components.arena);
+    }
 
 
     that.placeButtonPressed=function(towerSpecs){
+        mouse=input.Mouse();
         internalRender=PlaceTowerRender;
         mouse.registerMoveCommand(function(at){
             components.placingOver(at,towerSpecs);
@@ -115,6 +188,7 @@ MyGame.gameModel=(function(graphics,components,input){
                 creepManager.rebuildShortestPaths();
                 mouse=input.Mouse();
                 internalRender=WatchGame;
+                beginListeneingtoTowers();
             }
         },components.arena);
     }

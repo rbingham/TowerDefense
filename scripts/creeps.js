@@ -18,7 +18,7 @@ MyGame.components.creeps = (function(){
 		var nextCreepId = 0;
 		var creeps = [];
 
-		var creepCountMatrix = (function(){
+		var creepMatrix = (function(){
 			//initialize all matrix values at 0
 			return [];
 		}());
@@ -44,10 +44,6 @@ MyGame.components.creeps = (function(){
 			}
 		}
 
-
-
-
-
 		that.whatIf = function(additionalTaken){
 			var potentialShortestPaths = buildShortestPaths(additionalTaken);
 			var potentialShortestPath;
@@ -70,18 +66,45 @@ MyGame.components.creeps = (function(){
 			return true;
 		}
 
+		that.getCreepListIJArray = function(ijArray){
+			var creepList = [];
+			for(let index=0; index<ijArray.length; index++){
+				let subList = that.getCreepListIJ(ijArray[index]);
+				if(subList!==undefined){
+					for(let creepIndex=0; creepIndex<subList.length; creepIndex++){
+						creepList.push(subList[creepIndex]);
+					}
+				}
+			}
+			return creepList;
+		}
+
+		that.getCreepListIJ = function(ij){
+			var i=ij.i;
+			var j=ij.j;
+			if(creepMatrix[i]===undefined || creepMatrix[i][j]===undefined) return undefined;
+			return creepMatrix[i][j];
+		}
+
+		that.getCreepListXY = function(xy){
+			var ij = MyGame.components.xy2ij(xy);
+			return that.getCreepListIJ(ij);
+		}
+
 		that.getCreepCountIJ = function(ij){
-			return creepCountMatrix[ij.i, ij.j];
+			var creepList = that.getCreepListIJ(ij);
+			if(creepList === undefined) return 0;
+			return creepList.length;
 		}
 
 		that.getCreepCountXY = function(xy){
 			var ij = MyGame.components.xy2ij(xy);
-			return getCreepCountIJ(ij);
+			return that.getCreepCountIJ(ij);
 		}
 
 		/**********************************************************
 			Creep Creator
-			creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed}
+			creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed, isAir}
 		**********************************************************/
 		that.create = function(creepSpec){
 			creepSpec.id = nextCreepId++;
@@ -93,7 +116,7 @@ MyGame.components.creeps = (function(){
 			var creep = Creep(creepSpec);
 
 			creeps[creepSpec.id] = creep;
-			//increment creepCountMatrix
+			addCreepToMatrix(creep, creep.getLocation());
 		}
 
 		function cleenUpCreeps(){
@@ -125,13 +148,36 @@ MyGame.components.creeps = (function(){
 			}
 		}
 
+		function removeCreepFromMatrix(creep, location){
+			var creepList = that.getCreepListIJ(location);
+			//if(creepList===undefined) shouldn't ever happen
+			var indexOfCreep;
+			for(let searchIndex=0; searchIndex<creepList.length-1 && indexOfCreep===undefined; searchIndex++){
+				if(creep.getID()===creepList[searchIndex].getID()){
+					indexOfCreep=searchIndex;
+				}
+			}
+
+			creepList.splice(indexOfCreep,1);
+		}
+
+		function addCreepToMatrix(creep, location){
+			var i = location.i;
+			var j = location.j;
+
+			if(creepMatrix[i]===undefined) creepMatrix[i]=[];
+			if(creepMatrix[i][j]===undefined) creepMatrix[i][j]=[];
+			var creepList = creepMatrix[i][j];
+			creepList.push(creep);
+		}
+
 		//creep listener functions
 		that.creepKilled = function(creep){
 			if(spec.creepListener !== undefined){
 				spec.creepListener.creepKilled(creep);
 			}
 
-			//decrement creepCountMatrix
+			removeCreepFromMatrix(creep, creep.getLocation());
 
 			delete creeps[creep.getID()];
 		}
@@ -141,14 +187,17 @@ MyGame.components.creeps = (function(){
 				spec.creepListener.creepReachedGoal(creep);
 			}
 
-			//decrement creepCountMatrix
+			removeCreepFromMatrix(creep, creep.getLocation());
 
 			delete creeps[creep.getID()];
 		}
 
 		that.creepMoved = function(creep, oldLocation, newLocation){
-			//update creepCountMatrix
+			removeCreepFromMatrix(creep, oldLocation);
+			addCreepToMatrix(creep,newLocation);
+			MyGame.components.TowerMovementDetector(creep,newLocation);
 		}
+
 
 		return that;
 	}
@@ -166,8 +215,9 @@ MyGame.components.creeps = (function(){
 			takes a creepListener which is just any object that has the functions:
 				creepKilled(id)
 				creepReachedGoal(id)
+                creepMoved(creep,old)
 
-		spec:{id, locationGoalIndex, initialLocation, shortestPath, drawable, initialHP, creepSpeed, creepListener}
+		spec:{id, locationGoalIndex, initialLocation, shortestPath, isAir, drawable, initialHP, creepSpeed, creepListener}
 	**********************************************************/
 	var Creep = function(spec){
 		var that = {};
@@ -195,13 +245,13 @@ MyGame.components.creeps = (function(){
 			currentLocation.j=ij.j;
 
 			if(oldLocation.i!==currentLocation.i || oldLocation.j!==currentLocation.j){
-				spec.creepListener.creepMoved(that, oldLocation);
+				spec.creepListener.creepMoved(that, oldLocation,currentLocation);
 			}
 		}
 		updateCurrentLocationIJ();
 
 		function updateCurrentGoal(){
-			currentGoal = spec.shortestPath.getNextGoal(currentLocation);
+			currentGoal = spec.shortestPath.getNextGoal(currentLocation, spec.isAir);
 			var xy = MyGame.components.ij2xy(currentGoal.location);
 			currentGoal.location.x=xy.x;
 			currentGoal.location.y=xy.y;
@@ -226,6 +276,28 @@ MyGame.components.creeps = (function(){
 			return spec.id;
 		}
 
+		that.getLocation = function (){
+			return currentLocation;
+		}
+
+		that.getDims = function(){
+			dims.height = MyGame.components.arena.subGrid*2;
+			dims.width = dims.height;
+			dims.center = {x:currentLocation.x,y:currentLocation.y};
+			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
+
+			if(spec.isAir){
+				dims.center.y-=MyGame.components.arena.subGrid;
+				// dims.rotation=0;
+			}
+
+			return dims;
+		}
+
+		that.isAir = function(){
+			return spec.isAir;
+		}
+
 		that.getLocationGoalIndex = function(){
 			return spec.locationGoalIndex;
 		}
@@ -236,7 +308,7 @@ MyGame.components.creeps = (function(){
 
 		that.hit = function(amount){
 			hp-=amount;
-			if(hp<=0) creepListener.creepKilled(that);
+			if(hp<=0) spec.creepListener.creepKilled(that);
 		}
 
 		that.isShortestPathValid = function(potentialShortestPath){
@@ -305,11 +377,18 @@ MyGame.components.creeps = (function(){
 		* render creep
 		**********************************************************/
 		var dims = {};
-		dims.height = MyGame.components.arena.subGrid*2;
-		dims.width = dims.height;
+		var healthBarDims = {};
 		that.draw = function(elapsedTime){
-			dims.center = currentLocation;
+
+			dims.height = MyGame.components.arena.subGrid*2;
+			dims.width = dims.height;
+			dims.center = {x:currentLocation.x,y:currentLocation.y};
 			dims.rotation = Math.PI/2-velocity.rotation;//get rotation from direction
+
+			if(spec.isAir){
+				dims.center.y-=MyGame.components.arena.subGrid;
+				// dims.rotation=0;
+			}
 
 			//update sprite
 			if(spec.drawable.hasOwnProperty("update")){
@@ -317,6 +396,21 @@ MyGame.components.creeps = (function(){
 			}
 
 			spec.drawable.draw(dims);
+
+			drawHealthBar();
+		}
+
+		function drawHealthBar(){
+			healthBarDims.height = MyGame.components.arena.subGrid/5;
+			healthBarDims.width = MyGame.components.arena.subGrid*2 * hp/spec.initialHP;
+			healthBarDims.center = {x:currentLocation.x,y:currentLocation.y-MyGame.components.arena.subGrid*6/5};
+			if(spec.isAir){
+				healthBarDims.center.y-=MyGame.components.arena.subGrid;
+			}
+
+			//healthBarDims.rotation = Math.PI/2-velocity.rotation;
+			MyGame.graphics.genericDrawables.greenRect.draw(healthBarDims);
+
 		}
 
 		return that;
@@ -334,6 +428,7 @@ MyGame.components.creeps = (function(){
 		var that = {};
 		var adjacentDistance = 1;
 		var diagonalDistance = Math.sqrt(2);
+		var endGoals = [];
 
 		var distanceToEndGoalMatrix = (function(){
 			var i,j;
@@ -347,9 +442,12 @@ MyGame.components.creeps = (function(){
 
 			//add all final goals to work array with a distance of zero
 			var endIndex=0;
+			var work;
 			var workQueue = [];
 			for(let workIndex=0; workIndex<spec.goals.length; workIndex++){
-				workQueue.push({location:{i:spec.goals[workIndex].i, j:spec.goals[workIndex].j}, distance:0});
+				work = {location:{i:spec.goals[workIndex].i, j:spec.goals[workIndex].j}, distance:0};
+				workQueue.push(work);
+				endGoals.push(work);
 				endIndex++;
 			}
 
@@ -378,7 +476,6 @@ MyGame.components.creeps = (function(){
 
 			//use workQueue to perform a breadth first search
 			//the goal is to update every location of the matrix with a distance from goal
-			var work;
 			var nextDistance;
 			for(let workIndex=0; workIndex<endIndex; workIndex++){
 				work = workQueue[workIndex];
@@ -419,7 +516,28 @@ MyGame.components.creeps = (function(){
 			return matrix;
 		}());
 
-		that.getDistanceFromEndGoal = function(location){
+		function getAirGoalInfo(location){
+			let endGoal;// = endGoals[0];
+			let distance;// = Math.sqrt(Math.pow(endGoal.location.i-location.i,2)+Math.pow(endGoal.location.j-location.j,2));
+			let bestEndGoal;// = endGoal;
+			let bestDistance = Number.POSITIVE_INFINITY; //distance;
+			for(let goalIndex=0; goalIndex<endGoals.length; goalIndex++){
+				endGoal = endGoals[goalIndex];
+				distance = Math.sqrt(Math.pow(endGoal.location.i-location.i,2)+Math.pow(endGoal.location.j-location.j,2));
+				if(distance<bestDistance){
+					bestEndGoal = endGoal;
+					bestDistance = distance;
+				}
+			}
+
+			return {distance:bestDistance, goal:bestEndGoal};
+		}
+
+		that.getDistanceFromEndGoal = function(location, isAir){
+			if(isAir){
+				return getAirGoalInfo(location).distance;
+			}
+
 			if(distanceToEndGoalMatrix[location.i]===undefined
 					|| distanceToEndGoalMatrix[location.i][location.j] === undefined){
 				return undefined;
@@ -428,7 +546,11 @@ MyGame.components.creeps = (function(){
 			return distanceToEndGoalMatrix[location.i][location.j].distance;
 		}
 
-		that.getNextGoal = function(location){
+		that.getNextGoal = function(location, isAir){
+			if(isAir){
+				return getAirGoalInfo(location).goal;
+			}
+
 			var goals = getNextGoals(location);
 
 			if(goals.length===0) return undefined;
@@ -474,8 +596,8 @@ MyGame.components.creeps = (function(){
 			goals = addGoalToBestGoals(i,   j-1, goals, addedDistance);
 
 			//addDiagonals
-			// addedDistance = diagonalDistance;
-			addedDistance = adjacentDistance;
+			addedDistance = diagonalDistance;
+			// addedDistance = adjacentDistance;
 			goals = addGoalToBestGoals(i+1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i-1, j+1, goals, addedDistance);
 			goals = addGoalToBestGoals(i+1, j-1, goals, addedDistance);
@@ -487,7 +609,40 @@ MyGame.components.creeps = (function(){
 		return that;
 	}
 
+	function ScottCreepSpec(){
+		return {
+            locationGoalIndex:MyGame.random.nextRange(0,3),
+            drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
+            initialHP:100,
+            creepSpeed:75,
+            isAir:false
+        };
+	}
+
+	function RamonaCreepSpec(){
+		return {
+            locationGoalIndex:MyGame.random.nextRange(0,3),
+            drawable:MyGame.resources.RamonaFlowersSpriteDrawable(),
+            initialHP:75,
+            creepSpeed:125,
+            isAir:false
+        };
+	}
+
+	function DemonCreepSpec(){
+		return {
+            locationGoalIndex:MyGame.random.nextRange(0,3),
+            drawable:MyGame.resources.DemonSpriteDrawable(),
+            initialHP:125,
+            creepSpeed:50,
+            isAir:true
+        };
+	}
+
 	return {
-		CreepManager:CreepManager
+		CreepManager:CreepManager,
+		ScottCreepSpec,
+		RamonaCreepSpec,
+		DemonCreepSpec,
 	};
 }());

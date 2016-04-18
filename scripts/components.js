@@ -23,6 +23,13 @@ function Tower(spec){
     this.rotation=0;
     this.height=spec.height;
     this.width=spec.width;
+    this.watchcreep={inRange:false,creep:{}};
+    this.fireprev=1000;
+    this.maxLevel=3;
+    this.level=1;
+    this.rotationspeed=50;
+    this.targetAir=spec.targetAir;
+    this.targetGround=spec.targetGround;
 }
 //tower funtions go here
 Tower.prototype={
@@ -30,7 +37,7 @@ Tower.prototype={
 
     },
     draw:function(drawRange){
-        if(drawRange!==undefined){
+        if(drawRange!==undefined&&drawRange===true){
             MyGame.graphics.drawCircle({
                 center:this.center,
                 radius:this.weapon.range,
@@ -44,17 +51,88 @@ Tower.prototype={
         ImageHolder.drawImage(this.weapon.src,this);
         this.rotation=tempR;
     },
-    update(elapsed){
-        this.weapon.rotation+=elapsed/10000;
-        this.weapon.rotation%=2*Math.PI;
+    update:function(elapsed){
+        //this.weapon.rotation+=elapsed/10000;
+        //this.weapon.rotation%=2*Math.PI;
         //this.weapon.spriteinfo.update(elapsed,true);
+        if(this.watchcreep.inRange){
+            var hp=this.watchcreep.creep.getHP();
+            var inrange=Collision.circleRect(this.getCircleSight(),this.watchcreep.creep.getDims());
+            if(hp<=0||!inrange||this.watchcreep.creep.getDistanceFromEndGoal()==0){
+                this.watchcreep.inRange=false;
+                this.watchcreep.creep={};
+            }else{
+                //point at the watched creep
+                normx=this.watchcreep.creep.getDims().center.x-this.center.x;
+                normy=this.watchcreep.creep.getDims().center.y-this.center.y;
+                var destang=Math.atan(normy/normx)+Math.PI/2 + (normx>=0?+Math.PI:0);
+                destang-=this.weapon.rotation;
+                if(destang<0){
+                    destang+=Math.PI*2;
+                }
+                if(destang>Math.PI){
+                    this.weapon.rotation-=this.rotationspeed*elapsed/10000;
+                }else{
+                    this.weapon.rotation+=this.rotationspeed*elapsed/10000;
+                }
+                if(this.weapon.rotation>=Math.PI*2){
+                    this.weapon.rotation-=Math.PI*2;
+                }
+                
+                if(this.weapon.rotation<0){
+                    this.weapon.rotation+=Math.PI*2;
+                }
+                if(this.fireprev<0){
+                    if(destang<1||destang>Math.Pi*2-1){
+                        this.fireprev=1000;
+                        MyGame.gameModel.addProjectile(
+                            {x:this.center.x,y:this.center.y},
+                            {x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,
+                            y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                    }
+                }else{
+                    this.fireprev-=elapsed;
+                }
+            }
+        }
+        
+        
+    },
+    getCircleSight:function(){
+        that={};
+        that.radius=this.weapon.range;
+        that.center=this.center;
+        return that;
+    },
+    creepNearBy:function(creep){
+        if(!this.watchcreep.inRange){
+            if(creep.isAir()){
+
+            }
+            if(((creep.isAir()&&this.targetAir)||(!creep.isAir()&&this.targetGround))
+                &&Collision.circleRect(this.getCircleSight(),creep.getDims())){
+                this.watchcreep.inRange=true;
+                this.watchcreep.creep=creep;
+            }
+        }
+    },
+    upgrade:function(){
+        this.level++;
+        if(this.level>this.maxLevel){
+            this.level=this.maxLevel;
+        }else{
+            this.weapon.range+=100;
+            this.weapon.src=this.weapon.srcbase+this.level+".png";
+            
+        }
     }
 }
 
 function Weapon(spec){
-    this.src=spec.src;
+    this.srcbase=spec.src;
     this.rotation=0;
     this.range=spec.range;
+    this.src=this.srcbase+1+".png";
     /*this.spriteinfo=MyGame.graphics.genSpriteInfo({
         sprite:0,
         spriteCount:3,
@@ -183,6 +261,8 @@ MyGame.components=(function(graphics){
         takeSpots(lowerRighti,lowerRightj,params);
         that.towerArray.push(new Tower(params));
         tempTower=undefined;
+        addTowerListeners(that.towerArray[that.towerArray.length-1]);
+        
         return true;
     };
     that.checkTowerPlacement=function(at,params){
@@ -195,7 +275,26 @@ MyGame.components=(function(graphics){
         }
         return true;
     };
+    
+    
+    function addTowerListeners(tower){
+        for(var i=0;i<that.towerListeners.length;i++){
+            for(var j=0;j<that.towerListeners[i].length;j++){
+                var gridspace={
+                        center:{
+                            x:that.arena.subGrid*i+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2,
+                            y:that.arena.subGrid*j+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2
+                        },
+                        width:that.arena.subGrid,
+                        height:that.arena.subGrid
+                    };
 
+                if(Collision.circleRect(tower.getCircleSight(),gridspace)){
+                    that.towerListeners[i][j].push(tower);
+                }
+            }
+        }
+    }
 
 
     that.arena={
@@ -234,13 +333,15 @@ MyGame.components=(function(graphics){
         }
     };
 
-
+    that.towerListeners=[];
     that.takenGrid=[];
     //should allow us to add diagnals in the future
     for(var i=0;i<that.arena.width/that.arena.subGrid;i++){
         that.takenGrid[i]=[];
+        that.towerListeners[i]=[];
         for(var j=0;j<that.arena.height/that.arena.subGrid;j++){
             that.takenGrid[i][j]={taken:false,hit:false,adjacent:[]};
+            that.towerListeners[i][j]=[];
         }
     }
     for(var i=0;i<that.takenGrid.length;i++){
@@ -342,12 +443,126 @@ MyGame.components=(function(graphics){
 
     that.renderTowers=function(elapsed){
         for(var i=0;i<that.towerArray.length;i++){
-            that.towerArray[i].draw();
+            that.towerArray[i].draw(i==prevSelected.index);
         }
         if(tempTower!==undefined){
             tempTower.draw(true);
         }
     };
+    that.TowerMovementDetector=function(creep,location){
+        for(var i=0;i<that.towerListeners[location.i][location.j].length;i++){
+            that.towerListeners[location.i][location.j][i].creepNearBy(creep);
+        }
+    }
+    
+    
+    var prevSelected={onSelected:false,is:{},index:-1};
+    //must be passed as xytoij takes them as it will call that function
+    that.selectATower=function(coords){
+        var ij=that.xy2ij(coords);
+        
+        if(that.takenGrid[ij.i][ij.j].taken){
+            prevSelected.onSelected=true;
+            
+            var i=0;
+            for(i=0;i<that.towerArray.length;i++){
+                
+                var disx=that.towerArray[i].center.x-(coords.x);
+                var disy=that.towerArray[i].center.y-(coords.y);
+                
+                var dis2=disx*disx+disy*disy;
+                if(dis2<=that.arena.subGrid*that.arena.subGrid*2){  
+                    prevSelected.index=i;
+                }
+            }
+            prevSelected.is=that.xy2ij(that.towerArray[prevSelected.index].center);
+        }
+        else{
+            prevSelected.onSelected=false;
+            prevSelected.is={};
+            prevSelected.index=-1;
+        }
+    }
+    
+    //Selected tower must be called before this function
+    that.removeTower=function(){
+        if(!prevSelected.onSelected){
+            return;
+        }
+        //remove from taken and from the tower arrray
+        //remove all its tower listeners        
+        var t=that.towerArray[prevSelected.index].width;
+        for(var i=prevSelected.is.i;i>=prevSelected.is.i-that.towerArray[prevSelected.index].width/that.arena.subGrid;i--){
+            for(var j=prevSelected.is.j;j>=prevSelected.is.j-that.towerArray[prevSelected.index].height/that.arena.subGrid;j--){
+                that.takenGrid[i][j].taken=false;
+            }
+        }
+        var t="";
+        for(var j=0;j<that.takenGrid.length;j++){
+            for(var k=0;k<that.takenGrid[i].length;k++){
+                t+=that.takenGrid[j][k].taken?"X":"_";
+            }
+            t+='\n'
+        }
+        console.log(t);
+        //triple loop to look for the listeners
+        for(var i=0;i<that.towerListeners.length;i++){
+            for(var j=0;j<that.towerListeners[i].length;j++){
+                for(var k=that.towerListeners[i][j].length-1;k>=0;k--){
+                    if(that.towerListeners[i][j][k].center.x===that.towerArray[prevSelected.index].center.x
+                        &&that.towerListeners[i][j][k].center.y===that.towerArray[prevSelected.index].center.y){
+                        that.towerListeners[i][j].splice(k,1);
+                    }
+                }
+            }
+        }
+        that.towerArray.splice(prevSelected.index,1);
+        prevSelected.onSelected=false;
+        prevSelected.is={};
+        prevSelected.index=-1;
+    }
+    
+    //Selected tower must be called before this function
+    that.upgradeTower=function(){
+        if(!prevSelected.onSelected){
+            return;
+        }
+        //increeaes range
+        that.towerArray[prevSelected.index].upgrade();
+        //triple loop to add the listeners for expanded range, upgrade does not move towers so we are good
+        for(var i=0;i<that.towerListeners.length;i++){
+            for(var j=0;j<that.towerListeners[i].length;j++){
+                var alreadyexists=false;
+                for(var k=that.towerListeners[i][j].length-1;k>=0;k--){
+                    if(that.towerListeners[i][j][k].center.x===that.towerArray[prevSelected.index].center.x
+                        &&that.towerListeners[i][j][k].center.y===that.towerArray[prevSelected.index].center.y){
+                            
+                        alreadyexists=true;
+
+
+                    }
+                }
+                var gridspace={
+                    center:{
+                        x:that.arena.subGrid*i+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2,
+                        y:that.arena.subGrid*j+that.arena.subGrid/2+that.arena.center.x-that.arena.width/2
+                    },
+                    width:that.arena.subGrid,
+                    height:that.arena.subGrid
+                };
+                if(!alreadyexists&&Collision.circleRect(that.towerArray[prevSelected.index].getCircleSight(),gridspace)){
+                    that.towerListeners[i][j].push(that.towerArray[prevSelected.index]);
+                }
+            }
+        }
+
+    }
+    
+    
+    
+    
+    
+    
 
     /*
     function designed to render every part of componets

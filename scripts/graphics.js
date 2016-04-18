@@ -104,22 +104,40 @@ MyGame.graphics=(function(){
            that.draw = function (spec,spriteinfo){
                 context.save();
 
-				context.translate(spec.center.x, spec.center.y);
+                context.translate(spec.center.x, spec.center.y);
 				context.rotate(spec.rotation);
-				context.translate(-spec.center.x, -spec.center.y);
+				//context.translate(-spec.center.x, -spec.center.y);
+
+                if(spec.flip){
+                    context.scale(-1,1);
+                }
 
                 // if(spriteinfo.row === undefined){
                 //     spriteinfo.row=0;
                 // }
 
-                context.drawImage(
-                    image,
-                    spriteinfo.width * spriteinfo.sprite, spriteinfo.height*spriteinfo.row,	// Which sprite to pick out
-                    spriteinfo.width, spriteinfo.height,		// The size of the sprite
-                    spec.center.x - spec.width/2,	// Where to draw the sprite
-                    spec.center.y - spec.height/2,
-                    spec.width, spec.height
-                );
+                if(spriteinfo.spriteLocations !== undefined){
+                    let location = spriteinfo.spriteLocations[spriteinfo.sprite];
+                    context.drawImage(
+                        image,
+                        location.x1, location.y1,	// Which sprite to pick out
+                        location.width, location.height,		// The size of the sprite
+                        0 - spec.width/2,	// Where to draw the sprite
+                        0 - spec.height/2,
+                        spec.width, spec.height
+                    );
+                }else{
+                    context.drawImage(
+                        image,
+                        spriteinfo.width * spriteinfo.sprite, spriteinfo.height*spriteinfo.row,	// Which sprite to pick out
+                        spriteinfo.width, spriteinfo.height,		// The size of the sprite
+                        0 - spec.width/2,	// Where to draw the sprite
+                        0 - spec.height/2,
+                        spec.width, spec.height
+                    );
+                }
+
+
                 context.restore();
 
             }

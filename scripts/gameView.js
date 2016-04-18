@@ -35,6 +35,18 @@ MyGame.GameView = function(model, input){
         dims:{center:{x:700,y:600}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
     });
+    
+    
+    var Upgrade = MyGame.uiComponents.CanvasButton({
+        dims:{center:{x:100,y:800}, height:25, width:75, rotate:0},
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"Green"})
+    });
+
+    var Sell = MyGame.uiComponents.CanvasButton({
+        dims:{center:{x:200,y:800}, height:25, width:75, rotate:0},
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"})
+    });
+    
 
     //for each button register event using model
     GroundBomb.addButtonListener("logStuff", {onClick:function(){
@@ -50,14 +62,25 @@ MyGame.GameView = function(model, input){
         model.placeButtonPressed(TowerTemplate.AirMissile);
     }});
     creep.addButtonListener("logStuff", {onClick:function(){
-        model.addCreep();
+        model.toggleCreepGen();
+    }});
+    Upgrade.addButtonListener("logStuff", {onClick:function(){
+       MyGame.components.upgradeTower();
+    }});
+    Sell.addButtonListener("logStuff", {onClick:function(){
+        MyGame.components.removeTower();
     }});
 
+    
+    
+    
     buttonGrid.addButton(GroundBomb);
     buttonGrid.addButton(GroundFreeze);
     buttonGrid.addButton(MixedProjectile);
     buttonGrid.addButton(AirMissile);
     buttonGrid.addButton(creep);
+    buttonGrid.addButton(Upgrade);
+    buttonGrid.addButton(Sell);
 
     function update(elapsedTime){
         mouse.update(elapsedTime);
