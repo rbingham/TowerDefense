@@ -54,7 +54,7 @@ MyGame.gameModel=(function(graphics,components,input){
             var locations = generateLocations(projectile);
             var creepList = creepManager.getCreepListIJArray(locations);
             for(let i=0;i<creepList.length;i++){
-                creepList[i].hit(25,(projectile.type===PROJECTILETYPE.FREEZE?100:0));
+                creepList[i].hit(25,(projectile.type===PROJECTILETYPE.FREEZE?1000:0));
             }
             if(creepList.length!==0){
                 projectileMangaer.projectileKilled(projectile);

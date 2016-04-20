@@ -350,9 +350,10 @@ MyGame.components.creeps = (function(){
 		that.update = function(elapsedTime){
 			var localElapsedTime = elapsedTime/1000;
 			//while there is elapsedTime left
+            frozentime=frozentime-elapsedTime;
 			while(0<localElapsedTime){
 				//if there is time to reach the next goal, reach it and decrement elapsedTime
-                frozentime-=localElapsedTime;
+                
 				if(distanceToGoal.time<=localElapsedTime){
 					currentLocation.x = currentGoal.location.x;
 					currentLocation.y = currentGoal.location.y;
@@ -368,8 +369,12 @@ MyGame.components.creeps = (function(){
 					updateDistanceToGoal();
 					updateVelocity();
 				}else{
-					currentLocation.x += velocity.x*localElapsedTime*(frozentime>0?0.5:1);
-					currentLocation.y += velocity.y*localElapsedTime*(frozentime>0?0.5:1);
+                    var mult=1;
+                    if(frozentime>0){
+                        mult=.5;
+                    }
+					currentLocation.x += velocity.x*localElapsedTime*mult;
+					currentLocation.y += velocity.y*localElapsedTime*mult;
 					localElapsedTime=0;
 					updateCurrentLocationIJ();
 					updateDistanceToGoal();
@@ -617,7 +622,7 @@ MyGame.components.creeps = (function(){
 		return {
             locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
-            initialHP:100,
+            initialHP:1000,
             creepSpeed:75,
             isAir:false
         };
@@ -627,7 +632,7 @@ MyGame.components.creeps = (function(){
 		return {
             locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.RamonaFlowersSpriteDrawable(),
-            initialHP:75,
+            initialHP:1000,
             creepSpeed:125,
             isAir:false
         };
@@ -637,8 +642,8 @@ MyGame.components.creeps = (function(){
 		return {
             locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.DemonSpriteDrawable(),
-            initialHP:125,
-            creepSpeed:50,
+            initialHP:1250,
+            creepSpeed:100,
             isAir:true
         };
 	}

@@ -151,11 +151,11 @@ MyGame.components.projectiles = (function(spec){
 		**********************************************************/
 		that.update = function(elapsedTime){
             
-            if(that.type===PROJECTILETYPE.MISSILE&&spec.creep!==undefined){
+            if(that.type===PROJECTILETYPE.MISSILE&&spec.creep!==undefined&&spec.creep.getHP()>0&&spec.creep.getDistanceFromEndGoal()!==0){
                 var normx=spec.creep.getDims().center.x-currentLocation.x;
                 var normy=spec.creep.getDims().center.y-currentLocation.y;
-                var destang=Math.atan(normy/normx)+(normx>=0?+Math.PI:0);
-                var rotation=Math.atan(velocity.y/velocity.x)+ (velocity.x>=0?+Math.PI:0);
+                var destang=Math.atan(normy/normx)+(normx>=0?+Math.PI:0)+Math.PI;
+                /*var rotation=Math.atan(velocity.y/velocity.x)+ (velocity.x>=0?+Math.PI:0);
                 destang-=rotation;
                 if(destang<0){
                     destang+=Math.PI*2;
@@ -164,10 +164,10 @@ MyGame.components.projectiles = (function(spec){
                     rotation-=50*elapsedTime/10000;
                 }else{
                     rotation+=50*elapsedTime/10000;
-                }
+                }*/
                 var dis=Math.sqrt(velocity.x*velocity.x+velocity.y*velocity.y);
-                velocity.x=Math.sin(rotation)*dis;
-                velocity.y=Math.cos(rotation)*dis;
+                velocity.x=Math.cos(destang)*dis;
+                velocity.y=Math.sin(destang)*dis;
             }
             
             currentLocation.x += velocity.x*elapsedTime/1000;
