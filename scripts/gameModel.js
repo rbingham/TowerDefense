@@ -54,7 +54,7 @@ MyGame.gameModel=(function(graphics,components,input){
             var locations = generateLocations(projectile);
             var creepList = creepManager.getCreepListIJArray(locations);
             for(let i=0;i<creepList.length;i++){
-                creepList[i].hit(25);
+                creepList[i].hit(25,(projectile.type===PROJECTILETYPE.FREEZE?100:0));
             }
             if(creepList.length!==0){
                 projectileMangaer.projectileKilled(projectile);
@@ -89,7 +89,7 @@ MyGame.gameModel=(function(graphics,components,input){
         }
         creepManager.create(creepSpec);
     }
-    that.addProjectile = function(location,velocity){
+    that.addProjectile = function(location,velocity,type,toWatchCreep){
         /*initialLocation,initialTimeRemaining,initialVelocity, drawable,  projectileSpeed,*/
         var projecSpec = {
             initialLocation:location,
@@ -97,7 +97,9 @@ MyGame.gameModel=(function(graphics,components,input){
             initialTimeRemaining:2000,
             projectileSpeed:100,
             initialVelocity:velocity,
-            radius:5
+            radius:5,
+            type:type,
+            creep:toWatchCreep
 
         };
         projectileMangaer.create(projecSpec);

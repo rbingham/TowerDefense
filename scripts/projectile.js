@@ -2,6 +2,10 @@
 	projectile components including:
 		projectile constructors
 **********************************************************/
+
+PROJECTILETYPE = Object.freeze({BOMB: "BOMB", FREEZE: "FREEZE", MISSILE:"MISSILE",PELLET:"PELLET"});
+
+
 MyGame.components.projectiles = (function(spec){
 	"use strict"
 	/**********************************************************
@@ -110,7 +114,7 @@ MyGame.components.projectiles = (function(spec){
 	**********************************************************/
 	var Projectile = function(spec){
 		var that = {};
-
+        that.type=spec.type;
 		var currentLocation = (function(){
 			var ij = MyGame.components.xy2ij(spec.initialLocation);
 			return {
@@ -146,6 +150,26 @@ MyGame.components.projectiles = (function(spec){
 		* update projectile
 		**********************************************************/
 		that.update = function(elapsedTime){
+            
+            if(that.type===PROJECTILETYPE.MISSILE&&spec.creep!==undefined){
+                var normx=spec.creep.getDims().center.x-currentLocation.x;
+                var normy=spec.creep.getDims().center.y-currentLocation.y;
+                var destang=Math.atan(normy/normx)+(normx>=0?+Math.PI:0);
+                var rotation=Math.atan(velocity.y/velocity.x)+ (velocity.x>=0?+Math.PI:0);
+                destang-=rotation;
+                if(destang<0){
+                    destang+=Math.PI*2;
+                }
+                if(destang>Math.PI){
+                    rotation-=50*elapsedTime/10000;
+                }else{
+                    rotation+=50*elapsedTime/10000;
+                }
+                var dis=Math.sqrt(velocity.x*velocity.x+velocity.y*velocity.y);
+                velocity.x=Math.sin(rotation)*dis;
+                velocity.y=Math.cos(rotation)*dis;
+            }
+            
             currentLocation.x += velocity.x*elapsedTime/1000;
             currentLocation.y += velocity.y*elapsedTime/1000;
             timeRemaining-=elapsedTime

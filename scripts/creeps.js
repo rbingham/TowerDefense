@@ -112,7 +112,6 @@ MyGame.components.creeps = (function(){
 			creepSpec.initialLocation = spec.initialLocations[creepSpec.locationGoalIndex][initialLocationIndex];
 			creepSpec.shortestPath = shortestPaths[creepSpec.locationGoalIndex];
 			creepSpec.creepListener = that;
-
 			var creep = Creep(creepSpec);
 
 			creeps[creepSpec.id] = creep;
@@ -234,6 +233,7 @@ MyGame.components.creeps = (function(){
 		var currentGoal;
 		var distanceToGoal;
 		var velocity;
+        var frozentime=0;
 
 		function updateCurrentLocationIJ(){
 			var oldLocation = {i:currentLocation.i, j:currentLocation.j};
@@ -306,7 +306,10 @@ MyGame.components.creeps = (function(){
 			return hp;
 		}
 
-		that.hit = function(amount){
+		that.hit = function(amount,freeze){
+            if(freeze!==undefined){
+                frozentime=Math.max(freeze,frozentime);
+            }
 			hp-=amount;
 			if(hp<=0) spec.creepListener.creepKilled(that);
 		}
@@ -349,6 +352,7 @@ MyGame.components.creeps = (function(){
 			//while there is elapsedTime left
 			while(0<localElapsedTime){
 				//if there is time to reach the next goal, reach it and decrement elapsedTime
+                frozentime-=localElapsedTime;
 				if(distanceToGoal.time<=localElapsedTime){
 					currentLocation.x = currentGoal.location.x;
 					currentLocation.y = currentGoal.location.y;
@@ -364,8 +368,8 @@ MyGame.components.creeps = (function(){
 					updateDistanceToGoal();
 					updateVelocity();
 				}else{
-					currentLocation.x += velocity.x*localElapsedTime;
-					currentLocation.y += velocity.y*localElapsedTime;
+					currentLocation.x += velocity.x*localElapsedTime*(frozentime>0?0.5:1);
+					currentLocation.y += velocity.y*localElapsedTime*(frozentime>0?0.5:1);
 					localElapsedTime=0;
 					updateCurrentLocationIJ();
 					updateDistanceToGoal();

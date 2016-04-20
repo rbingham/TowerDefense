@@ -30,6 +30,7 @@ function Tower(spec){
     this.rotationspeed=50;
     this.targetAir=spec.targetAir;
     this.targetGround=spec.targetGround;
+    this.type=spec.type;
 }
 //tower funtions go here
 Tower.prototype={
@@ -88,7 +89,8 @@ Tower.prototype={
                         MyGame.gameModel.addProjectile(
                             {x:this.center.x,y:this.center.y},
                             {x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,
-                            y:-Math.sin(this.weapon.rotation-Math.PI/2)*200});
+                            y:-Math.sin(this.weapon.rotation-Math.PI/2)*200},
+                            this.type,this.watchcreep.creep);
                     }
                 }else{
                     this.fireprev-=elapsed;
