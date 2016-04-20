@@ -499,14 +499,14 @@ MyGame.components=(function(graphics){
                 that.takenGrid[i][j].taken=false;
             }
         }
-        var t="";
+        /*var t="";
         for(var j=0;j<that.takenGrid.length;j++){
             for(var k=0;k<that.takenGrid[i].length;k++){
                 t+=that.takenGrid[j][k].taken?"X":"_";
             }
             t+='\n'
         }
-        console.log(t);
+        console.log(t);*/
         //triple loop to look for the listeners
         for(var i=0;i<that.towerListeners.length;i++){
             for(var j=0;j<that.towerListeners[i].length;j++){

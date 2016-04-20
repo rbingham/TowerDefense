@@ -49,14 +49,43 @@ MyGame.gameModel=(function(graphics,components,input){
             locations.push({i:location.i+1, j:location.j-1});
             return locations;
         }
+        function generateLocationsLarge(projectile){
+            var location = projectile.getLocation();
+            var locations=[];
+            for(var k=-1;k<=1;k++){
+                for(var l=-1;l<=1;l++){
+                    locations.push({i:location.i+k, j:location.j+l});
+                }
+            }
+            return locations;
+        }
+        
 
         function handleProjectile(projectile){
-            var locations = generateLocations(projectile);
+            var locations =[];
+            locations = generateLocations(projectile);
             var creepList = creepManager.getCreepListIJArray(locations);
-            for(let i=0;i<creepList.length;i++){
-                creepList[i].hit(25,(projectile.type===PROJECTILETYPE.FREEZE?1000:0));
+            var projhit=false;
+            for(let i=0;i<creepList.length&&!projhit;i++){
+                if(Collision.circleRect(projectile.getDims(),creepList[i].getDims())){
+                    creepList[i].hit(25,(projectile.type===PROJECTILETYPE.FREEZE?1000:0));
+                    projhit=true;
+                }
             }
-            if(creepList.length!==0){
+            
+            if(projhit){
+                if(projectile.type===PROJECTILETYPE.BOMB){
+                    locations=generateLocationsLarge(projectile);
+                    var creepList = creepManager.getCreepListIJArray(locations);
+                    p=projectile.getDims()
+                    for(let i=0;i<creepList.length&&!projhit;i++){
+                        p.radius+=10;
+                        if(Collision.circleRect(p,creepList[i].getDims())){
+                            creepList[i].hit(25);
+                        }
+                    }
+                }
+
                 projectileMangaer.projectileKilled(projectile);
             }
         }
@@ -148,10 +177,8 @@ MyGame.gameModel=(function(graphics,components,input){
         creepManager.render(elapsed);
         projectileMangaer.render(elapsed);
     };
-
-
-
-
+    
+    
     function removeDoneEvents(){
         for(var i=eventList.length-1; i>=0;i--){
             if(eventList[i].timesRemaining===0){
