@@ -177,7 +177,7 @@ MyGame.components.creeps = (function(){
 			}
 
 			removeCreepFromMatrix(creep, creep.getLocation());
-
+            MyGame.gameModel.creepKilled(creep)
 			delete creeps[creep.getID()];
 		}
 
@@ -421,7 +421,8 @@ MyGame.components.creeps = (function(){
 			MyGame.graphics.genericDrawables.greenRect.draw(healthBarDims);
 
 		}
-
+        that.score=spec.score;
+        that.curr=spec.curr;
 		return that;
 	}
 
@@ -624,7 +625,9 @@ MyGame.components.creeps = (function(){
             drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
             initialHP:25,
             creepSpeed:75,
-            isAir:false
+            isAir:false,
+            score:100,
+            curr: 100
         };
 	}
 
@@ -634,7 +637,9 @@ MyGame.components.creeps = (function(){
             drawable:MyGame.resources.RamonaFlowersSpriteDrawable(),
             initialHP:25,
             creepSpeed:125,
-            isAir:false
+            isAir:false,
+            score:100,
+            curr: 100
         };
 	}
 
@@ -644,7 +649,9 @@ MyGame.components.creeps = (function(){
             drawable:MyGame.resources.DemonSpriteDrawable(),
             initialHP:25,
             creepSpeed:100,
-            isAir:true
+            isAir:true,
+            score:100,
+            curr: 100
         };
 	}
 

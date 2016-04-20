@@ -19,6 +19,20 @@ MyGame.gameModel=(function(graphics,components,input){
         internalUpdate=function(){},
         keyboard=input.Keyboard(),
         mouse=input.Mouse();
+    
+    var score=0;
+    var currency=1000;
+    that.decrementCurrency = function(numA){
+        currency-=numA;
+        //If in place mode, fall out of place mode,
+        internalRender=WatchGame();
+        mouse=input.Mouse();
+        beginListeneingtoTowers();
+    };
+    that.creepKilled=function(creep){
+        currency+=creep.curr;
+        score+=creep.score;
+    }
 
     var creepManager = (function(){
         var entrances = MyGame.components.entrances;
@@ -148,18 +162,25 @@ MyGame.gameModel=(function(graphics,components,input){
 
     function WatchGame(){
         components.arena.draw();
-                components.renderTowers();
-
+        components.renderTowers();
+        renderScoreCurrency();
     }
     function PlaceTowerRender(){
         components.arena.draw("foobar");
         components.renderTowers();
+        renderScoreCurrency();
     }
     function PlaceTowerUpdate(elapsed){
         components.updateTowers(elapsed);
         mouse.update(elapsed);
     }
-
+    
+    function renderScoreCurrency(){
+        graphics.writeSpecificMessage("Score "+score,500,650);
+        graphics.writeSpecificMessage("Curr  "+currency,500,700);
+        
+    }
+    
 
     /*    The concept of the internal update is that if you change states in the game,
         internalUpdate=PauseGameUpdate
@@ -218,6 +239,9 @@ MyGame.gameModel=(function(graphics,components,input){
 
 
     that.placeButtonPressed=function(towerSpecs){
+        if(currency<towerSpecs.cost){
+            return;
+        }
         mouse=input.Mouse();
         internalRender=PlaceTowerRender;
         mouse.registerMoveCommand(function(at){
@@ -227,6 +251,7 @@ MyGame.gameModel=(function(graphics,components,input){
             if(components.addTower(at,towerSpecs,creepManager)){
                 creepManager.rebuildShortestPaths();
                 mouse=input.Mouse();
+                that.decrementCurrency(towerSpecs.cost);
                 internalRender=WatchGame;
                 beginListeneingtoTowers();
             }

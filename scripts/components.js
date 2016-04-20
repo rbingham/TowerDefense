@@ -31,6 +31,8 @@ function Tower(spec){
     this.targetAir=spec.targetAir;
     this.targetGround=spec.targetGround;
     this.type=spec.type;
+    this.cost=spec.cost;
+    this.updgradeTier=spec.updgradeTier;
 }
 //tower funtions go here
 Tower.prototype={
