@@ -8,6 +8,8 @@ function Event(interval,timesRemaining,name,func){
     };
 }
 
+var circleList=[];
+
 MyGame.gameModel=(function(graphics,components,input){
     var eventList=[];
     var that={
@@ -52,8 +54,8 @@ MyGame.gameModel=(function(graphics,components,input){
         function generateLocationsLarge(projectile){
             var location = projectile.getLocation();
             var locations=[];
-            for(var k=-1;k<=1;k++){
-                for(var l=-1;l<=1;l++){
+            for(var k=-2;k<=2;k++){
+                for(var l=-2;l<=2;l++){
                     locations.push({i:location.i+k, j:location.j+l});
                 }
             }
@@ -78,8 +80,10 @@ MyGame.gameModel=(function(graphics,components,input){
                     locations=generateLocationsLarge(projectile);
                     var creepList = creepManager.getCreepListIJArray(locations);
                     p=projectile.getDims()
-                    for(let i=0;i<creepList.length&&!projhit;i++){
-                        p.radius+=10;
+                    p.radius+=50;
+
+                    circleList.push(p);
+                    for(let i=0;i<creepList.length;i++){
                         if(Collision.circleRect(p,creepList[i].getDims())){
                             creepList[i].hit(25);
                         }
@@ -176,6 +180,13 @@ MyGame.gameModel=(function(graphics,components,input){
         internalRender(elapsed);
         creepManager.render(elapsed);
         projectileMangaer.render(elapsed);
+        for(var i=circleList.length-1; i>=0;i--){
+            if(circleList[i].stroke===undefined){
+                circleList[i].stroke="red"
+            }
+            
+            graphics.drawCircle(circleList[i]);
+        }
     };
     
     

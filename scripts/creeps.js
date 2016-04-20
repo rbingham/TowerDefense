@@ -622,7 +622,7 @@ MyGame.components.creeps = (function(){
 		return {
             locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
-            initialHP:100,
+            initialHP:25,
             creepSpeed:75,
             isAir:false
         };
@@ -632,7 +632,7 @@ MyGame.components.creeps = (function(){
 		return {
             locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.RamonaFlowersSpriteDrawable(),
-            initialHP:100,
+            initialHP:25,
             creepSpeed:125,
             isAir:false
         };
@@ -642,7 +642,7 @@ MyGame.components.creeps = (function(){
 		return {
             locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.DemonSpriteDrawable(),
-            initialHP:125,
+            initialHP:25,
             creepSpeed:100,
             isAir:true
         };
