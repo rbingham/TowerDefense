@@ -8,7 +8,7 @@ function Event(interval,timesRemaining,name,func){
     };
 }
 
-MyGame.gameModel=(function(graphics,components,input){
+MyGame.GameModel=function(graphics,components,input, particleSystem){
     var eventList=[];
     var that={
             continueLoop:true,
@@ -25,12 +25,12 @@ MyGame.gameModel=(function(graphics,components,input){
         var initialLocations = [entrances[2],entrances[0],entrances[1],entrances[3]];
         var endGoals = [entrances[0],entrances[2],entrances[3],entrances[1]];
 
-        return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals});
+        return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals, particleSystem:particleSystem});
     }());
 
     var waveManager = MyGame.components.waves.WaveManager({creepManager})
 
-    var projectileMangaer = (function(){
+    var projectileManager = (function(){
         return MyGame.components.projectiles.ProjectileManager();
     }());
 
@@ -57,12 +57,12 @@ MyGame.gameModel=(function(graphics,components,input){
                 creepList[i].hit(25);
             }
             if(creepList.length!==0){
-                projectileMangaer.projectileKilled(projectile);
+                projectileManager.projectileKilled(projectile);
             }
         }
 
         function update(){
-            projectileMangaer.forEach(handleProjectile);
+            projectileManager.forEach(handleProjectile);
         }
 
         return {update};
@@ -101,12 +101,12 @@ MyGame.gameModel=(function(graphics,components,input){
             radius:5
 
         };
-        projectileMangaer.create(projecSpec);
+        projectileManager.create(projecSpec);
     }
 
 
 
-    that.initialize=function(){
+    that.initialize=function(initSpec){
         document.getElementById('Overlay_Menu').style.display='none';
         internalRender=WatchGame;
         internalUpdate=PlaceTowerUpdate;
@@ -138,7 +138,7 @@ MyGame.gameModel=(function(graphics,components,input){
         internalUpdate(elapsed);
         waveManager.update(elapsed);
         creepManager.update(elapsed);
-        projectileMangaer.update(elapsed);
+        projectileManager.update(elapsed);
         projectileCollitionDetector.update();
     };
 
@@ -146,7 +146,7 @@ MyGame.gameModel=(function(graphics,components,input){
         graphics.clear();
         internalRender(elapsed);
         creepManager.render(elapsed);
-        projectileMangaer.render(elapsed);
+        projectileManager.render(elapsed);
         waveManager.render(elapsed);
     };
 
@@ -181,6 +181,7 @@ MyGame.gameModel=(function(graphics,components,input){
 
 
     that.placeButtonPressed=function(towerSpecs){
+        towerSpecs.projectileManager=projectileManager;
         mouse=input.Mouse();
         internalRender=PlaceTowerRender;
         mouse.registerMoveCommand(function(at){
@@ -202,4 +203,4 @@ MyGame.gameModel=(function(graphics,components,input){
     }
 
     return that;
-}(MyGame.graphics,MyGame.components,MyGame.input));
+};

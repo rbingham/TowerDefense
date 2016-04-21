@@ -60,10 +60,10 @@ MyGame.resources = (function(graphics){
 			spriteInfo.update(elapsedTime, true, true);
 		}
 
-		function draw(dims){
+		function draw(dims, shouldHandleUpdsideDown){
 			maintainAspectRatio(dims, spriteInfo);
 
-			handleUpdsideDown(dims);
+			if(shouldHandleUpdsideDown){handleUpdsideDown(dims);}
 
 			that.scottPilgrimSprite.draw(dims, spriteInfo);
 		}
@@ -99,11 +99,11 @@ MyGame.resources = (function(graphics){
 			spriteInfo.update(elapsedTime, true, true);
 		}
 
-		function draw(dims){
+		function draw(dims, shouldHandleUpdsideDown){
 
 			maintainAspectRatio(dims, spriteInfo);
 
-			handleUpdsideDown(dims);
+			if(shouldHandleUpdsideDown){handleUpdsideDown(dims);}
 
 			that.ramonaFlowersSprite.draw(dims, spriteInfo);
 		}
@@ -138,9 +138,9 @@ MyGame.resources = (function(graphics){
 			spriteInfo.update(elapsedTime, true, true);
 		}
 
-		function draw(dims){
+		function draw(dims, shouldHandleUpdsideDown){
 			maintainAspectRatio(dims, spriteInfo);
-			handleUpdsideDown(dims);
+			if(shouldHandleUpdsideDown){handleUpdsideDown(dims);}
 
 			that.matthewPatelSprite.draw(dims, spriteInfo);
 		}

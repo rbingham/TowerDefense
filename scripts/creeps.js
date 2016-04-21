@@ -188,6 +188,8 @@ MyGame.components.creeps = (function(){
 
 			delete creeps[creep.getID()];
 			creepCount--;
+
+			spec.particleSystem.createCreepDeathParticles(creep);
 		}
 
 		that.creepReachedGoal = function(creep){
@@ -390,6 +392,10 @@ MyGame.components.creeps = (function(){
 		/**********************************************************
 		* render creep
 		**********************************************************/
+		that.getDrawable = function(){
+			return spec.drawable;
+		}
+
 		var dims = {};
 		var healthBarDims = {};
 		that.draw = function(elapsedTime){
@@ -409,7 +415,7 @@ MyGame.components.creeps = (function(){
 				spec.drawable.update(elapsedTime);
 			}
 
-			spec.drawable.draw(dims);
+			spec.drawable.draw(dims, true);
 
 			drawHealthBar();
 		}

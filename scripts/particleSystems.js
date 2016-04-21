@@ -18,7 +18,7 @@ MyGame.particleSystems = (function(graphics){
 		'use strict';
 		if(spec===undefined){
 			spec = DefaultParticleSpec();
-			spec.center = {x: 0, y: 0};
+			// spec.center = {x: 0, y: 0};
 		}
 
 
@@ -41,7 +41,7 @@ MyGame.particleSystems = (function(graphics){
 			that.direction = {x: 1, y: 0};
 			that.speed = 10
 			that.rotationalSpeed = 10
-			var rotation = 0;
+			that.rotation = 0;
 			that.lifetime = 1000;
 			var alive = 0;	// How long the particle has been alive, in seconds
 
@@ -62,7 +62,7 @@ MyGame.particleSystems = (function(graphics){
 
 				//
 				// Rotate proportional to its speed
-				rotation += that.rotationalSpeed / 500;
+				that.rotation += that.rotationalSpeed / 500;
 
 				//
 				// alpha proportional to its life
@@ -143,7 +143,7 @@ MyGame.particleSystems = (function(graphics){
 			}
 		};
 
-		that.draw = function(systemDims) {
+		that.draw = function() {
 			//graphics.pushContext();
 
 			// if(systemDims){
@@ -166,9 +166,34 @@ MyGame.particleSystems = (function(graphics){
 		///////////////////////////////////////////////////////////////////
 		// Effects
 
-
-
 		//creep death
+		that.createCreepDeathParticles = function(creep){
+			var p;
+
+			for(let i=0; i<50; i++){
+
+				p = Particle();
+
+				// var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
+				p.drawable = creep.getDrawable();
+				p.center = creep.getDims().center;
+				p.size = MyGame.random.nextGaussian(MyGame.components.arena.subGrid, MyGame.components.arena.subGrid/2);
+				p.direction = MyGame.random.nextCircleVector();
+				p.speed = MyGame.random.nextGaussian(100, 50); // pixels per second
+				p.rotationalSpeed = MyGame.random.nextGaussian(20, 45); // pixels per second
+				p.lifetime = MyGame.random.nextGaussian(.5, .25)*1000;	// How long the particle should live, in seconds
+				p.particlesFade = true;
+				//
+				// Ensure we have a valid size - gaussian numbers can be negative
+				p.size = Math.max(1, p.size);
+
+				//
+				// Same thing with lifetime
+				p.lifetime = Math.max(0.01, p.lifetime);
+
+				addParticle(p);
+			}
+		}
 
 		//bombTrail
 
@@ -189,8 +214,8 @@ MyGame.particleSystems = (function(graphics){
 	***********************************************************/
 	var DefaultParticleSpec = function(){
 		return {
-			drawables:[],
-			center: {x: 300, y: 300},
+			// drawables:[],
+			// center: {x: 300, y: 300},
 			size: {mean: 10, stdev: 40},
 			speed: {mean: 75, stdev: 25},
 			rotationalSpeed: {mean: 10, stdev: 30},
@@ -200,8 +225,8 @@ MyGame.particleSystems = (function(graphics){
 
 	var TinyDefaultParticleSpec = function(){
 		return {
-			drawables:[],
-			center: {x: 300, y: 300},
+			// drawables:[],
+			// center: {x: 300, y: 300},
 			size: {mean: 1, stdev: 4},
 			speed: {mean: 14, stdev: 12},
 			rotationalSpeed: {mean: 10, stdev: 30},

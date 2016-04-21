@@ -1,17 +1,19 @@
 
 
-MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
+MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
     var prevTimestamp=performance.now();
     var eventList=[];
     var gameView;
-
+    var gameModel;
     var particleSystem = MyGame.particleSystems.ParticleSystem(MyGame.particleSystems.DefaultParticleSpec());
 
     var run=function(){
         //add functions to listen to key listners in here
         prevTimestamp=performance.now();
-        model.initialize();
-        if(model.continueLoop){
+        gameModel = MyGame.GameModel(MyGame.graphics,MyGame.components,MyGame.input, particleSystem);
+        gameView = MyGame.GameView(gameModel, input);
+        gameModel.initialize();
+        if(gameModel.continueLoop){
             requestAnimationFrame(gameloop);
         }
     };
@@ -19,7 +21,6 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
     var initialize=function(){
 
-        gameView = MyGame.GameView(model, input);
     };
 
     /*
@@ -33,19 +34,19 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 //        for(var i=0;i<4;i++)
             update(elapsed);
         render(elapsed);
-        if(model.continueLoop){
+        if(gameModel.continueLoop){
             requestAnimationFrame(gameloop);
         }
     }
 
 
     function processInput(elapsed){
-        model.keyUpdate(elapsed);
+        gameModel.keyUpdate(elapsed);
         gameView.update(elapsed);
     }
 
     function render(elapsed){
-        model.render(elapsed);
+        gameModel.render(elapsed);
         gameView.draw(elapsed);
         particleSystem.draw();
     }
@@ -53,8 +54,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
 
 
     function update(elapsed){
-        particleSystem.createParticleWithDefaultEffect();
-        model.update(elapsed);
+        gameModel.update(elapsed);
         particleSystem.update(elapsed);
     }
 
@@ -64,4 +64,4 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring,model){
         initialize:initialize
 
     }
-}(MyGame.game,MyGame.graphics,MyGame.input,MyGame.persistantScores,MyGame.gameModel));
+}(MyGame.game,MyGame.graphics,MyGame.input,MyGame.persistantScores));
