@@ -40,13 +40,13 @@ MyGame.gameModel=(function(graphics,components,input){
         var entrances = MyGame.components.entrances;
 
 
-        var initialLocations = [entrances[2],entrances[3],entrances[0],entrances[1]];
-        var endGoals = [entrances[0],entrances[1],entrances[2],entrances[3]];
+        var initialLocations = [entrances[2],entrances[0],entrances[1],entrances[3]];
+        var endGoals = [entrances[0],entrances[2],entrances[3],entrances[1]];
 
         return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals});
     }());
 
-
+    var waveManager = MyGame.components.waves.WaveManager({creepManager})
 
     var projectileMangaer = (function(){
         return MyGame.components.projectiles.ProjectileManager();
@@ -121,7 +121,8 @@ MyGame.gameModel=(function(graphics,components,input){
     var genCreeps = false;
     that.toggleCreepGen = function(){
         // genCreeps = !genCreeps;
-        that.addCreep();
+        //that.addCreep();
+        waveManager.initiateLevel(2);
     }
     that.addCreep = function(){
         var creepSpec;
@@ -193,6 +194,7 @@ MyGame.gameModel=(function(graphics,components,input){
     that.update=function(elapsed){
         updateEventQueue(elapsed);
         internalUpdate(elapsed);
+        waveManager.update(elapsed);
         creepManager.update(elapsed);
         projectileMangaer.update(elapsed);
         projectileCollitionDetector.update();
@@ -210,6 +212,7 @@ MyGame.gameModel=(function(graphics,components,input){
             
             graphics.drawCircle(circleList[i]);
         }
+        waveManager.render(elapsed);
     };
     
     
