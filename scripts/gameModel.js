@@ -22,9 +22,11 @@ MyGame.gameModel=(function(graphics,components,input){
     
     var score=0;
     var currency=1000;
+    that.enoughCurrency=function(numA){
+        return numA>=currency;
+    }
     that.decrementCurrency = function(numA){
         currency-=numA;
-        //If in place mode, fall out of place mode,
         internalRender=WatchGame();
         mouse=input.Mouse();
         beginListeneingtoTowers();

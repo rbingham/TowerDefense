@@ -65,7 +65,9 @@ MyGame.GameView = function(model, input){
         model.toggleCreepGen();
     }});
     Upgrade.addButtonListener("logStuff", {onClick:function(){
-       MyGame.components.upgradeTower();
+        if(MyGame.gameModel.enoughCurrency()){
+            MyGame.components.upgradeTower();
+        }
     }});
     Sell.addButtonListener("logStuff", {onClick:function(){
         MyGame.components.removeTower();
