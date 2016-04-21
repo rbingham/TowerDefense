@@ -319,8 +319,10 @@ MyGame.components.creeps = (function(){
 		}
 
 		that.hit = function(amount){
-			hp-=amount;
-			if(hp<=0) spec.creepListener.creepKilled(that);
+			if(0<hp){
+				hp-=amount;
+				if(hp<=0) spec.creepListener.creepKilled(that);
+			}
 		}
 
 		that.isShortestPathValid = function(potentialShortestPath){
