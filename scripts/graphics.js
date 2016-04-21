@@ -237,6 +237,7 @@ MyGame.graphics=(function(){
         context.translate(dims.center.x, dims.center.y);
 		context.rotate(dims.rotation);
 		context.translate(-dims.center.x, -dims.center.y);
+        
     }
 
     function drawImageWithDims(img, spec){

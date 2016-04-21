@@ -16,6 +16,12 @@ MyGame.particleSystems = (function(graphics){
 	***********************************************************/
 	function ParticleSystem(spec) {
 		'use strict';
+		if(spec===undefined){
+			spec = DefaultParticleSpec();
+			spec.center = {x: 0, y: 0};
+		}
+
+
 		var that = {},
 			nextName = 0,	// unique identifier for the next particle
 			startIndex=0,
@@ -28,80 +34,83 @@ MyGame.particleSystems = (function(graphics){
 		// This creates one new particle
 		//
 		//------------------------------------------------------------------
-		that.create = function(pSpec) {
-			var p = (function(){
-				var that = {}
-				var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
-				that.size = MyGame.random.nextGaussian(spec.size.mean, spec.size.stdev);
-				that.center = {x: 0, y: 0};
-				var direction = MyGame.random.nextCircleVector();
-				var speed = MyGame.random.nextGaussian(spec.speed.mean, spec.speed.stdev); // pixels per second
-				var rotationalSpeed = MyGame.random.nextGaussian(spec.rotationalSpeed.mean, spec.rotationalSpeed.stdev); // pixels per second
-				that.rotation = 0;
-				var lifetime = MyGame.random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev)*1000;	// How long the particle should live, in seconds
-				var alive = 0;	// How long the particle has been alive, in seconds
+		function Particle(pSpec){
+			var that={};
+			that.size = 100;
+			that.center = {x: 0, y: 0};
+			that.direction = {x: 1, y: 0};
+			that.speed = 10
+			that.rotationalSpeed = 10
+			var rotation = 0;
+			that.lifetime = 1000;
+			var alive = 0;	// How long the particle has been alive, in seconds
+
+			that.isAlive = function(){
+				return alive<that.lifetime;
+			}
+
+			that.update = function(elapsedTime){
+				var seconds = elapsedTime/1000;
+				//
+				// Update how long it has been alive
+				alive += elapsedTime;
 
 				//
-				// Ensure we have a valid size - gaussian numbers can be negative
-				that.size = Math.max(1, that.size);
+				// Update its position
+				that.center.x += (seconds * that.speed * that.direction.x);
+				that.center.y += (seconds * that.speed * that.direction.y);
+
+				//
+				// Rotate proportional to its speed
+				rotation += that.rotationalSpeed / 500;
+
+				//
+				// alpha proportional to its life
+				if(that.particlesFade){
+					that.alpha = 1-alive/that.lifetime;
+				}
+
+				if(pSpec && pSpec.hasOwnProperty("update")){
+					pSpec.update(elapsedTime)
+				}
+			}
+
+			that.draw = function(){
 				that.width = that.size;
 				that.height = that.size;
-
-				//
-				// Same thing with lifetime
-				lifetime = Math.max(0.01, lifetime);
-
-				that.isAlive = function(){
-					return alive<lifetime;
+				if(pSpec && pSpec.hasOwnProperty("draw")){
+					pSpec.draw(that);
+				}else if(that.hasOwnProperty("drawable")){
+					that.drawable.draw(that)
 				}
+			}
 
-				that.update = function(elapsedTime){
-					var seconds = elapsedTime/1000;
-					//
-					// Update how long it has been alive
-					alive += elapsedTime;
+			return that;
+		}
 
-					//
-					// Update its position
-					that.center.x += (seconds * speed * direction.x);
-					that.center.y += (seconds * speed * direction.y);
+		that.createParticleWithDefaultEffect = function(){
+			var p = Particle();
 
-					//
-					// Rotate proportional to its speed
-					that.rotation += rotationalSpeed / 500;
-
-					//
-					// alpha proportional to its life
-					if(spec.particlesFade){
-						that.alpha = 1-alive/lifetime;
-					}
-
-					if(pSpec && pSpec.hasOwnProperty("update")){
-						pSpec.update(elapsedTime)
-					}
-				}
-
-				that.draw = function(){
-					if(pSpec && pSpec.hasOwnProperty("draw")){
-						pSpec.draw(that);
-					}else{
-						spec.drawables[drawableIndex].draw(that);
-					}
-				}
-
-				return that;
-			}());
-
-			// //
-			// // Ensure we have a valid size - gaussian numbers can be negative
-			// p.size = Math.max(1, p.size);
-			// p.width = p.size;
-			// p.height = p.size;
-			// //
-			// // Same thing with lifetime
-			// p.lifetime = Math.max(0.01, p.lifetime);
-			// p.alive = 0;
+			// var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
+			p.drawable = MyGame.graphics.genericDrawables.greenRect;
+			p.size = MyGame.random.nextGaussian(spec.size.mean, spec.size.stdev);
+			p.direction = MyGame.random.nextCircleVector();
+			p.speed = MyGame.random.nextGaussian(spec.speed.mean, spec.speed.stdev); // pixels per second
+			p.rotationalSpeed = MyGame.random.nextGaussian(spec.rotationalSpeed.mean, spec.rotationalSpeed.stdev); // pixels per second
+			p.lifetime = MyGame.random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev)*1000;	// How long the particle should live, in seconds
+			p.particlesFade = true;
 			//
+			// Ensure we have a valid size - gaussian numbers can be negative
+			p.size = Math.max(1, p.size);
+
+			//
+			// Same thing with lifetime
+			p.lifetime = Math.max(0.01, p.lifetime);
+
+			addParticle(p);
+		}
+
+		function addParticle(p){
 			// Assign a unique name to each particle
 			particles[nextName] = p;
 			nextName++;
@@ -118,36 +127,11 @@ MyGame.particleSystems = (function(graphics){
 				value,
 				particle;
 
-			//renderKeys = [];
-
-			//
-			// We work with time in seconds, elapsedTime comes in as milliseconds
-			//elapsedTime = elapsedTime / 1000;
-
 			for(let i=startIndex; i<nextName; i++){
 				particle = particles[i];
 
 				if (particle.isAlive()) {
 					particle.update(elapsedTime);
-
-					// //
-					// // Update how long it has been alive
-					// particle.alive += elapsedTime;
-					//
-					// //
-					// // Update its position
-					// particle.center.x += (elapsedTime * particle.speed * particle.direction.x);
-					// particle.center.y += (elapsedTime * particle.speed * particle.direction.y);
-					//
-					// //
-					// // Rotate proportional to its speed
-					// particle.rotation += particle.rotationalSpeed / 500;
-					//
-					// //
-					// // alpha proportional to its life
-					// if(spec.particlesFade){
-					// 	particle.alpha 	= 1-particle.alive/particle.lifetime;
-					// }
 				}
 			}
 
@@ -160,13 +144,13 @@ MyGame.particleSystems = (function(graphics){
 		};
 
 		that.draw = function(systemDims) {
-			graphics.pushContext();
+			//graphics.pushContext();
 
-			if(systemDims){
-				graphics.applyDims(systemDims);
-			}else{
-				graphics.applyDims(spec);
-			}
+			// if(systemDims){
+			// 	graphics.applyDims(systemDims);
+			// }else{
+			// 	graphics.applyDims(spec);
+			// }
 
 			var particle;
 			for (let i = nextName-1; startIndex<=i; i--) {
@@ -176,8 +160,25 @@ MyGame.particleSystems = (function(graphics){
 				}
 			}
 
-			graphics.popContext();
+			// graphics.popContext();
 		};
+
+		///////////////////////////////////////////////////////////////////
+		// Effects
+
+
+
+		//creep death
+
+		//bombTrail
+
+		//bombHit
+
+		//missleTrail
+
+		//towerSold
+
+		/////////////////////////////////////////////////////////////////
 
 		return that;
 	}
