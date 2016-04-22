@@ -111,9 +111,11 @@ MyGame.graphics=(function(){
            that.draw = function (spec,spriteinfo){
                 context.save();
 
-                context.translate(spec.center.x, spec.center.y);
-				context.rotate(spec.rotation);
+                // context.translate(spec.center.x, spec.center.y);
+				// context.rotate(spec.rotation);
 				//context.translate(-spec.center.x, -spec.center.y);
+
+                applyDims(spec);
 
                 if(spec.flip){
                     context.scale(-1,1);
@@ -231,23 +233,31 @@ MyGame.graphics=(function(){
     }
 
 
+    function applyDims(dims){
 
+        if(dims.hasOwnProperty("center")){
+            context.translate(dims.center.x, dims.center.y);
+        }
 
-    function tranRotTran(dims){
-        context.translate(dims.center.x, dims.center.y);
-		context.rotate(dims.rotation);
-		context.translate(-dims.center.x, -dims.center.y);
+        if(dims.hasOwnProperty("rotation")){
+            context.rotate(dims.rotation);
+        }
+
+        if(dims.hasOwnProperty("alpha")){
+            context.globalAlpha *= dims.alpha;
+        }
     }
+
 
     function drawImageWithDims(img, spec){
         context.save();
 
-        tranRotTran(dims);
+        applyDims(dims);
 
 		context.drawImage(
 			img,
-			dims.center.x - dims.width/2,
-			dims.center.y - dims.height/2,
+			-dims.width/2,
+			-dims.height/2,
 			dims.width, dims.height);
 
 		context.restore();
@@ -256,16 +266,16 @@ MyGame.graphics=(function(){
     function drawRectangleWithDims(spec, dims){
         context.save();
 
-        tranRotTran(dims);
+        applyDims(dims);
 
         if (spec.hasOwnProperty("fill")) {
             context.fillStyle = spec.fill;
-            context.fillRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+            context.fillRect(-dims.width/2, -dims.height/2, dims.width, dims.height);
         }
 
         if (spec.hasOwnProperty("stroke")) {
             context.strokeStyle = spec.stroke;
-            context.strokeRect(dims.center.x-dims.width/2, dims.center.y-dims.height/2, dims.width, dims.height);
+            context.strokeRect(-dims.width/2, -dims.height/2, dims.width, dims.height);
         }
 
         context.restore();

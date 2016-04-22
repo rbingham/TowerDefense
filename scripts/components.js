@@ -33,6 +33,20 @@ function Tower(spec){
     this.type=spec.type;
     this.cost=spec.cost;
     this.updgradeTier=spec.updgradeTier;
+    this.addProjectile = function(location,velocity){
+        /*initialLocation,initialTimeRemaining,initialVelocity, drawable,  projectileSpeed,*/
+        var projecSpec = {
+            initialLocation:location,
+            drawable:MyGame.resources.PelletSpriteDrawable(),
+            initialTimeRemaining:2000,
+            projectileSpeed:100,
+            initialVelocity:velocity,
+            radius:5
+
+        };
+        spec.projectileManager.create(projecSpec);
+    }
+
 }
 //tower funtions go here
 Tower.prototype={
@@ -81,14 +95,14 @@ Tower.prototype={
                 if(this.weapon.rotation>=Math.PI*2){
                     this.weapon.rotation-=Math.PI*2;
                 }
-                
+
                 if(this.weapon.rotation<0){
                     this.weapon.rotation+=Math.PI*2;
                 }
                 if(this.fireprev<0){
                     if(destang<1||destang>Math.Pi*2-1){
                         this.fireprev=1000;
-                        MyGame.gameModel.addProjectile(
+                        this.addProjectile(
                             {x:this.center.x,y:this.center.y},
                             {x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,
                             y:-Math.sin(this.weapon.rotation-Math.PI/2)*200},
@@ -99,8 +113,8 @@ Tower.prototype={
                 }
             }
         }
-        
-        
+
+
     },
     getCircleSight:function(){
         that={};
@@ -127,7 +141,7 @@ Tower.prototype={
         }else{
             this.weapon.range+=100;
             this.weapon.src=this.weapon.srcbase+this.level+".png";
-            
+
         }
     }
 }
@@ -266,7 +280,7 @@ MyGame.components=(function(graphics){
         that.towerArray.push(new Tower(params));
         tempTower=undefined;
         addTowerListeners(that.towerArray[that.towerArray.length-1]);
-        
+
         return true;
     };
     that.checkTowerPlacement=function(at,params){
@@ -279,8 +293,8 @@ MyGame.components=(function(graphics){
         }
         return true;
     };
-    
-    
+
+
     function addTowerListeners(tower){
         for(var i=0;i<that.towerListeners.length;i++){
             for(var j=0;j<that.towerListeners[i].length;j++){
@@ -458,24 +472,24 @@ MyGame.components=(function(graphics){
             that.towerListeners[location.i][location.j][i].creepNearBy(creep);
         }
     }
-    
-    
+
+
     var prevSelected={onSelected:false,is:{},index:-1};
     //must be passed as xytoij takes them as it will call that function
     that.selectATower=function(coords){
         var ij=that.xy2ij(coords);
-        
+
         if(that.takenGrid[ij.i][ij.j].taken){
             prevSelected.onSelected=true;
-            
+
             var i=0;
             for(i=0;i<that.towerArray.length;i++){
-                
+
                 var disx=that.towerArray[i].center.x-(coords.x);
                 var disy=that.towerArray[i].center.y-(coords.y);
-                
+
                 var dis2=disx*disx+disy*disy;
-                if(dis2<=that.arena.subGrid*that.arena.subGrid*2){  
+                if(dis2<=that.arena.subGrid*that.arena.subGrid*2){
                     prevSelected.index=i;
                 }
             }
@@ -487,14 +501,14 @@ MyGame.components=(function(graphics){
             prevSelected.index=-1;
         }
     }
-    
+
     //Selected tower must be called before this function
     that.removeTower=function(){
         if(!prevSelected.onSelected){
             return;
         }
         //remove from taken and from the tower arrray
-        //remove all its tower listeners        
+        //remove all its tower listeners
         var t=that.towerArray[prevSelected.index].width;
         for(var i=prevSelected.is.i;i>=prevSelected.is.i-that.towerArray[prevSelected.index].width/that.arena.subGrid;i--){
             for(var j=prevSelected.is.j;j>=prevSelected.is.j-that.towerArray[prevSelected.index].height/that.arena.subGrid;j--){
@@ -525,6 +539,13 @@ MyGame.components=(function(graphics){
         prevSelected.is={};
         prevSelected.index=-1;
     }
+    that.costToUpgrade=function(){
+        if(!prevSelected.onSelected||that.towerArray[prevSelected.index].level>=3){
+            return 0;
+        }
+        var temp=that.towerArray[prevSelected.index].updgradeTier[that.towerArray[prevSelected.index].level+1];
+        return temp;
+    };
     
     //Selected tower must be called before this function
     that.upgradeTower=function(){
@@ -540,7 +561,7 @@ MyGame.components=(function(graphics){
                 for(var k=that.towerListeners[i][j].length-1;k>=0;k--){
                     if(that.towerListeners[i][j][k].center.x===that.towerArray[prevSelected.index].center.x
                         &&that.towerListeners[i][j][k].center.y===that.towerArray[prevSelected.index].center.y){
-                            
+
                         alreadyexists=true;
 
 
@@ -561,12 +582,12 @@ MyGame.components=(function(graphics){
         }
 
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 
     /*
     function designed to render every part of componets

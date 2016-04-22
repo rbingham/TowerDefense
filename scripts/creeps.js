@@ -176,17 +176,26 @@ MyGame.components.creeps = (function(){
 			var creepList = creepMatrix[i][j];
 			creepList.push(creep);
 		}
-
+        
 		//creep listener functions
+        var creepKillExternalListners=[];
+        that.addCreepKillExternalListners=function(func){
+            creepKillExternalListners.push(func);
+        }
+        
 		that.creepKilled = function(creep){
 			if(spec.creepListener !== undefined){
 				spec.creepListener.creepKilled(creep);
 			}
 
 			removeCreepFromMatrix(creep, creep.getLocation());
-            MyGame.gameModel.creepKilled(creep)
+            for(let i=0;i<creepKillExternalListners.length;i++){
+                creepKillExternalListners[i](creep);
+            }
 			delete creeps[creep.getID()];
 			creepCount--;
+
+			spec.particleSystem.createCreepDeathParticles(creep);
 		}
 
 		that.creepReachedGoal = function(creep){
@@ -398,6 +407,10 @@ MyGame.components.creeps = (function(){
 		/**********************************************************
 		* render creep
 		**********************************************************/
+		that.getDrawable = function(){
+			return spec.drawable;
+		}
+
 		var dims = {};
 		var healthBarDims = {};
 		that.draw = function(elapsedTime){
@@ -417,7 +430,7 @@ MyGame.components.creeps = (function(){
 				spec.drawable.update(elapsedTime);
 			}
 
-			spec.drawable.draw(dims);
+			spec.drawable.draw(dims, true);
 
 			drawHealthBar();
 		}
