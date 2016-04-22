@@ -56,7 +56,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
     var waveManager = MyGame.components.waves.WaveManager({creepManager})
 
     var projectileManager = (function(){
-        return MyGame.components.projectiles.ProjectileManager();
+    return MyGame.components.projectiles.ProjectileManager({particleSystem:particleSystem});
     }());
 
     var projectileCollitionDetector = (function(){

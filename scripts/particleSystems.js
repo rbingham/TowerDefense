@@ -196,7 +196,34 @@ MyGame.particleSystems = (function(graphics){
 		}
 
 		//bombTrail
+        that.createBombTrailParticles = function(proj){
 
+			for(let i=0; i<20; i++){
+
+				let p = Particle();
+
+				// var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
+				p.drawable = proj.getDrawable();
+				p.center ={};
+                p.center.x=proj.getDims().center.x;
+                p.center.y=proj.getDims().center.y;
+				p.size = MyGame.random.nextGaussian(MyGame.components.arena.subGrid, MyGame.components.arena.subGrid/2);
+				p.direction = MyGame.random.nextCircleVector();
+				p.speed = MyGame.random.nextGaussian(10,1); // pixels per second
+				p.rotationalSpeed = MyGame.random.nextGaussian(20, 45); // pixels per second
+				p.lifetime = MyGame.random.nextGaussian(2, .25)*1000;	// How long the particle should live, in seconds
+				p.particlesFade = true;
+				//
+				// Ensure we have a valid size - gaussian numbers can be negative
+				p.size = Math.max(1, p.size);
+
+				//
+				// Same thing with lifetime
+				p.lifetime = Math.max(0.01, p.lifetime);
+
+				addParticle(p);
+			}
+		}
 		//bombHit
 
 		//missleTrail

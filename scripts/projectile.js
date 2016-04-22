@@ -14,7 +14,7 @@ MyGame.components.projectiles = (function(spec){
 			Creates projectiles
 
 	**********************************************************/
-	var ProjectileManager = function(){
+	var ProjectileManager = function(spec){
 		var that = {};
 		var startProjectileId = 0;
 		var nextProjectileId = 0;
@@ -70,7 +70,8 @@ MyGame.components.projectiles = (function(spec){
 		that.update = function(elapsedTime){
 			for(let i=startProjectileId; i<nextProjectileId; i++){
 				if(projectiles[i] !== undefined){
-					projectiles[i].update(elapsedTime);
+					spec.particleSystem.createBombTrailParticles(projectiles[i]);
+                    projectiles[i].update(elapsedTime);
 				}
 			}
 
@@ -197,6 +198,10 @@ MyGame.components.projectiles = (function(spec){
 			}
 			spec.drawable.draw(dims);
 		}
+        that.getDrawable = function(){
+			return spec.drawable;
+		}
+        
 
 		return that;
 	}
