@@ -210,7 +210,7 @@ MyGame.gameModel=(function(graphics,components,input){
                 circleList[i].stroke="red"
             }
             
-            graphics.drawCircle(circleList[i]);
+            //graphics.drawCircle(circleList[i]);
         }
         waveManager.render(elapsed);
     };

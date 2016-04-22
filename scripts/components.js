@@ -183,7 +183,7 @@ function validPathExists(grid,start,exits){
             queue.push(grid[i.x][i.y].adjacent[j]);
         }
     }
-    /*console.log(start);
+    console.log(start);
     var t="";
     for(var j=0;j<grid.length;j++){
         for(var k=0;k<grid[j].length;k++){
@@ -191,7 +191,7 @@ function validPathExists(grid,start,exits){
         }
         t+='\n'
     }
-    console.log(t);*/
+    console.log(t);
 
 
     for(var j=0;j<toReset.length;j++){
