@@ -19,9 +19,16 @@ MyGame.graphics=(function(){
     //may want to rewrite
     function writeSpecificMessage(input,x,y){
         context.textAlign="center";
-         context.font="30px Arial";
+        context.font="30px Arial";
         context.fillText(input, x,y);
     }
+    function writeSpecificMessageOfSize(input,x,y,size){
+        context.textAlign="center";
+        context.font=size+"px Arial";
+        context.fillText(input, x,y);
+    }
+
+
     function fillBackground(color){
         if(color===undefined)
             color='#FFFFFF'
@@ -297,6 +304,7 @@ MyGame.graphics=(function(){
         genSprite:genSprite,
         writeMessage:writeMessage,
         writeSpecificMessage:writeSpecificMessage,
+        writeSpecificMessageOfSize:writeSpecificMessageOfSize,
         drawRectangle:drawRectangle,
         drawCircle:drawCircle,
         canvas:canvas

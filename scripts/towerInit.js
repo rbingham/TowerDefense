@@ -1,8 +1,10 @@
 
+
+
+
 /*Tower initialization*/
 var TowerTemplate=(function(){
     var that={};
-
 
     that.GroundBombWeapon={
         src:"./images/turret-3-",
@@ -17,7 +19,10 @@ var TowerTemplate=(function(){
         height:40,
         width:40,
         targetAir:false,
-        targetGround:true
+        targetGround:true,
+        type:PROJECTILETYPE.BOMB,
+        cost:100,
+        updgradeTier:[200,300,400],
     };
 
 
@@ -34,7 +39,10 @@ var TowerTemplate=(function(){
         height:40,
         width:40,
         targetAir:false,
-        targetGround:true
+        targetGround:true,
+        type:PROJECTILETYPE.FREEZE,
+        cost:100,
+        updgradeTier:[200,300,400],
     };
 
 
@@ -51,7 +59,10 @@ var TowerTemplate=(function(){
         height:40,
         width:40,
         targetAir:true,
-        targetGround:true
+        targetGround:true,
+        type:PROJECTILETYPE.PELLET,
+        cost:100,
+        updgradeTier:[200,300,400],
     };
 
     that.AirMissileWeapon={
@@ -67,7 +78,10 @@ var TowerTemplate=(function(){
         height:40,
         width:40,
         targetAir:true,
-        targetGround:false
+        targetGround:false,
+        type:PROJECTILETYPE.MISSILE,
+        cost:100,
+        updgradeTier:[200,300,400],
     };
 
     return that;

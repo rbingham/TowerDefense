@@ -17,6 +17,7 @@ MyGame.components.creeps = (function(){
 		var startCreepId = 0;
 		var nextCreepId = 0;
 		var creeps = [];
+		var creepCount=0;
 
 		var creepMatrix = (function(){
 			//initialize all matrix values at 0
@@ -106,17 +107,22 @@ MyGame.components.creeps = (function(){
 			Creep Creator
 			creepSpec:{locationGoalIndex, drawable, initialHP, creepSpeed, isAir}
 		**********************************************************/
-		that.create = function(creepSpec){
+		that.create = function(creepSpec, maxPossibleEntrance){
+			var upperBound = spec.initialLocations.length-1;
+			if(maxPossibleEntrance!==undefined){
+				upperBound=Math.min(upperBound,maxPossibleEntrance);
+			}
 			creepSpec.id = nextCreepId++;
+			creepSpec.locationGoalIndex = MyGame.random.nextRange(0,upperBound);
 			var initialLocationIndex = MyGame.random.nextRange(0, spec.initialLocations[creepSpec.locationGoalIndex].length-1);
 			creepSpec.initialLocation = spec.initialLocations[creepSpec.locationGoalIndex][initialLocationIndex];
 			creepSpec.shortestPath = shortestPaths[creepSpec.locationGoalIndex];
 			creepSpec.creepListener = that;
-
 			var creep = Creep(creepSpec);
 
 			creeps[creepSpec.id] = creep;
 			addCreepToMatrix(creep, creep.getLocation());
+			creepCount++;
 		}
 
 		function cleenUpCreeps(){
@@ -178,8 +184,9 @@ MyGame.components.creeps = (function(){
 			}
 
 			removeCreepFromMatrix(creep, creep.getLocation());
-
+            MyGame.gameModel.creepKilled(creep)
 			delete creeps[creep.getID()];
+			creepCount--;
 		}
 
 		that.creepReachedGoal = function(creep){
@@ -190,6 +197,7 @@ MyGame.components.creeps = (function(){
 			removeCreepFromMatrix(creep, creep.getLocation());
 
 			delete creeps[creep.getID()];
+			creepCount--;
 		}
 
 		that.creepMoved = function(creep, oldLocation, newLocation){
@@ -198,6 +206,9 @@ MyGame.components.creeps = (function(){
 			MyGame.components.TowerMovementDetector(creep,newLocation);
 		}
 
+		that.getCreepCount = function(){
+			return creepCount;
+		}
 
 		return that;
 	}
@@ -234,6 +245,7 @@ MyGame.components.creeps = (function(){
 		var currentGoal;
 		var distanceToGoal;
 		var velocity;
+        var frozentime=0;
 
 		function updateCurrentLocationIJ(){
 			var oldLocation = {i:currentLocation.i, j:currentLocation.j};
@@ -306,9 +318,13 @@ MyGame.components.creeps = (function(){
 			return hp;
 		}
 
-		that.hit = function(amount){
+		that.hit = function(amount,freeze){
+            if(freeze!==undefined){
+                frozentime=Math.max(freeze,frozentime);
+            }
 			hp-=amount;
 			if(hp<=0) spec.creepListener.creepKilled(that);
+
 		}
 
 		that.isShortestPathValid = function(potentialShortestPath){
@@ -347,8 +363,10 @@ MyGame.components.creeps = (function(){
 		that.update = function(elapsedTime){
 			var localElapsedTime = elapsedTime/1000;
 			//while there is elapsedTime left
+            frozentime=frozentime-elapsedTime;
 			while(0<localElapsedTime){
 				//if there is time to reach the next goal, reach it and decrement elapsedTime
+                
 				if(distanceToGoal.time<=localElapsedTime){
 					currentLocation.x = currentGoal.location.x;
 					currentLocation.y = currentGoal.location.y;
@@ -364,8 +382,12 @@ MyGame.components.creeps = (function(){
 					updateDistanceToGoal();
 					updateVelocity();
 				}else{
-					currentLocation.x += velocity.x*localElapsedTime;
-					currentLocation.y += velocity.y*localElapsedTime;
+                    var mult=1;
+                    if(frozentime>0){
+                        mult=.5;
+                    }
+					currentLocation.x += velocity.x*localElapsedTime*mult;
+					currentLocation.y += velocity.y*localElapsedTime*mult;
 					localElapsedTime=0;
 					updateCurrentLocationIJ();
 					updateDistanceToGoal();
@@ -402,17 +424,20 @@ MyGame.components.creeps = (function(){
 
 		function drawHealthBar(){
 			healthBarDims.height = MyGame.components.arena.subGrid/5;
-			healthBarDims.width = MyGame.components.arena.subGrid*2 * hp/spec.initialHP;
+			healthBarDims.width = MyGame.components.arena.subGrid*2;
 			healthBarDims.center = {x:currentLocation.x,y:currentLocation.y-MyGame.components.arena.subGrid*6/5};
 			if(spec.isAir){
 				healthBarDims.center.y-=MyGame.components.arena.subGrid;
 			}
 
 			//healthBarDims.rotation = Math.PI/2-velocity.rotation;
+			MyGame.graphics.genericDrawables.redRect.draw(healthBarDims);
+			healthBarDims.width *= hp/spec.initialHP;
 			MyGame.graphics.genericDrawables.greenRect.draw(healthBarDims);
 
 		}
-
+        that.score=spec.score;
+        that.curr=spec.curr;
 		return that;
 	}
 
@@ -611,32 +636,49 @@ MyGame.components.creeps = (function(){
 
 	function ScottCreepSpec(){
 		return {
-            locationGoalIndex:MyGame.random.nextRange(0,3),
+            // locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.ScottPilgrimSpriteDrawable(),
             initialHP:100,
             creepSpeed:75,
-            isAir:false
+            isAir:false,
+            score:100,
+            curr: 100
         };
 	}
 
 	function RamonaCreepSpec(){
 		return {
-            locationGoalIndex:MyGame.random.nextRange(0,3),
+            // locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.RamonaFlowersSpriteDrawable(),
             initialHP:75,
             creepSpeed:125,
-            isAir:false
+            isAir:false,
+            score:100,
+            curr: 100
         };
 	}
 
 	function DemonCreepSpec(){
 		return {
-            locationGoalIndex:MyGame.random.nextRange(0,3),
+            // locationGoalIndex:MyGame.random.nextRange(0,3),
             drawable:MyGame.resources.DemonSpriteDrawable(),
             initialHP:125,
             creepSpeed:50,
-            isAir:true
+            isAir:true,
+            score:100,
+            curr: 100
         };
+	}
+
+	function randomCreepSpec(){
+		switch(MyGame.random.nextRange(0,2)){
+            case 0:
+                return ScottCreepSpec();
+            case 1:
+                return RamonaCreepSpec();
+            case 2:
+                return DemonCreepSpec();
+        }
 	}
 
 	return {
@@ -644,5 +686,6 @@ MyGame.components.creeps = (function(){
 		ScottCreepSpec,
 		RamonaCreepSpec,
 		DemonCreepSpec,
+		randomCreepSpec
 	};
 }());
