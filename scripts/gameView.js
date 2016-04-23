@@ -1,4 +1,4 @@
-MyGame.GameView = function(model, input){
+MyGame.GameView = function(model, input,controls){
     //var waveIndicator;
     //initialize waveIndicator
     //add waveIndicator MouseListener
@@ -87,6 +87,22 @@ MyGame.GameView = function(model, input){
     buttonGrid.addButton(Upgrade);
     buttonGrid.addButton(Sell);
 
+    
+    function updateControls(){
+        keyboard=new input.Keyboard();
+        keyboard.registerKeyUp(controls.getKeyCode("upgrade"),function(){
+            Upgrade.onMouseClick();
+        });
+        keyboard.registerKeyUp(controls.getKeyCode("sell"),function(){
+            Upgrade.onMouseClick();
+        });
+        keyboard.registerKeyUp(controls.getKeyCode("next_level"),function(){
+            Upgrade.onMouseClick();
+        });
+        
+    }
+    
+    
     function update(elapsedTime){
         mouse.update(elapsedTime);
         keyboard.update(elapsedTime);

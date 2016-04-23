@@ -111,6 +111,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
                             creepList[i].hit(25);
                         }
                     }
+                    particleSystem.createBombTrailParticles(projectile);
                 }
 
                 projectileManager.projectileKilled(projectile);
