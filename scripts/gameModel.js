@@ -55,6 +55,16 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
 
     var waveManager = MyGame.components.waves.WaveManager({creepManager})
 
+    waveManager.addWaveListener({
+        levelEnd:function(data){
+            score+=components.calculateTowerScores();
+            score+=data.level*100;
+        },
+        waveEnd:function(data){
+            score+=data.wave*10;
+        },
+    });
+    
     var projectileManager = (function(){
     return MyGame.components.projectiles.ProjectileManager({particleSystem:particleSystem});
     }());

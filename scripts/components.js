@@ -589,7 +589,13 @@ MyGame.components=(function(graphics){
 
 
 
-
+    that.calculateTowerScores=function(){
+        total=0;
+        for(var i=0;i<that.towerArray.length;i++){
+            total+=that.towerArray[i].cost/2*that.towerArray[i].level;
+        }
+        return total;
+    }
 
 
 
