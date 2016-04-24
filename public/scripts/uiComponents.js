@@ -62,7 +62,7 @@ MyGame.uiComponents = (function(graphics){
             ) {
                 fireNeedsRedrawn();
             }
-            mouseDown = false;
+            // mouseDown = false;
         }
 
         that.onMouseDown = function(){
@@ -73,11 +73,13 @@ MyGame.uiComponents = (function(graphics){
         }
 
         that.onMouseUp = function(){
-            mouseDown = false
-            if (spec.hasOwnProperty("mouseDownDrawable")) {
-                fireNeedsRedrawn();
+            if(mouseDown){
+                mouseDown = false
+                if (spec.hasOwnProperty("mouseDownDrawable")) {
+                    fireNeedsRedrawn();
+                }
+                buttonListenerMap.onClick();
             }
-            buttonListenerMap.onClick();
         }
 
         that.onMouseClick = function(){
@@ -118,7 +120,9 @@ MyGame.uiComponents = (function(graphics){
 
         function addButton(button){
             buttons.push(button);
-            mouse.registerClickCommand(button.onMouseClick,button.getDims());
+            // mouse.registerClickCommand(button.onMouseClick,button.getDims());
+            mouse.registerMouseUpCommand(button.onMouseUp,button.getDims());
+            mouse.registerMouseDownCommand(button.onMouseDown,button.getDims());
             mouse.registerMoveCommand(function(){},button.getDims(),button.onMouseEnter,button.onMouseExit);
         }
 

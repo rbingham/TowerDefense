@@ -60,8 +60,12 @@ MyGame.input=(function(canvas){
     var Mouse=function (){
         var that={
             clicks:[],
+            mouseDowns:[],
+            mouseUps:[],
             mouseMove:[],
             clickHandlers:[],
+            mouseDownHandlers:[],
+            mouseUpHandlers:[],
             moveHandlers:[],
         };
 
@@ -77,6 +81,12 @@ MyGame.input=(function(canvas){
         function click(evt){
             that.clicks.push(evt);
         }
+        function mousedown(evt){
+            that.mouseDowns.push(evt);
+        }
+        function mouseup(evt){
+            that.mouseUps.push(evt);
+        }
         function move(evt){
             that.mouseMove.push(evt);
         }
@@ -85,6 +95,12 @@ MyGame.input=(function(canvas){
         //theoratically, no matter what happens to the rectangle, it should stay here in the queue;
         that.registerClickCommand=function(handler,boundingRect){
             that.clickHandlers.push({handler:handler,rect:boundingRect});
+        }
+        that.registerMouseUpCommand=function(handler,boundingRect){
+            that.mouseUpHandlers.push({handler:handler,rect:boundingRect});
+        }
+        that.registerMouseDownCommand=function(handler,boundingRect){
+            that.mouseDownHandlers.push({handler:handler,rect:boundingRect});
         }
         that.registerMoveCommand=function(handler,boundingRect,onEnter,onExit){
             if(onExit===undefined){
@@ -117,6 +133,27 @@ MyGame.input=(function(canvas){
                     }
                 }
             }
+            for(var i=0;i<that.mouseDowns.length;i++){
+                for(var handlerNum=0;handlerNum < that.mouseDownHandlers.length;++handlerNum){
+                    if(Collision.pointRect(getMousePos(that.mouseDowns[i]),that.mouseDownHandlers[handlerNum].rect)){
+                        that.mouseDownHandlers[handlerNum].handler(getMousePos(that.mouseDowns[i]));
+            /*                         if(!(toRemove.indexOf(i) > -1)){
+                            toRemove.push(i);
+                        } */
+                    }
+                }
+            }
+            for(var i=0;i<that.mouseUps.length;i++){
+                for(var handlerNum=0;handlerNum < that.mouseUpHandlers.length;++handlerNum){
+                    if(Collision.pointRect(getMousePos(that.mouseUps[i]),that.mouseUpHandlers[handlerNum].rect)){
+                        that.mouseUpHandlers[handlerNum].handler(getMousePos(that.mouseUps[i]));
+/*                         if(!(toRemove.indexOf(i) > -1)){
+                            toRemove.push(i);
+                        } */
+                    }
+                }
+            }
+
             for(var i=that.mouseMove.length-1;i<that.mouseMove.length&&i>0;i++){
                 for(var handlerNum=0;handlerNum < that.moveHandlers.length;++handlerNum){
                     if(Collision.pointRect(getMousePos(that.mouseMove[i]),that.moveHandlers[handlerNum].rect)){
@@ -137,10 +174,14 @@ MyGame.input=(function(canvas){
                 }
             }
 
-            that.clicks.length=[];
-            that.mouseMove.length=[];
+            that.clicks=[];
+            that.mouseUps=[];
+            that.mouseDowns=[];
+            that.mouseMove=[];
         };
         canvas.addEventListener('click',click);
+        canvas.addEventListener('mousedown',mousedown);
+        canvas.addEventListener('mouseup',mouseup);
         canvas.addEventListener('mousemove',move)
         return that;
     }
