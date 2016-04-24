@@ -21,6 +21,10 @@ MyGame.screens['MainMenu']=(function(game){
             'click',
 			function() {game.show('Credits'); }
         );
+        document.getElementById('Configure').addEventListener(
+            'click',
+			function() {game.show('Configurable'); }
+        );
     };
 
 

@@ -27,7 +27,7 @@ MyGame.persistantScores = (function(){
         localStorage['MyGame.highScores'] = JSON.stringify(highScores);
     }
 
-    function getKeyCode(id) {
+    function report() {
         var htmlNode = document.getElementById(id);
         htmlNode.innerHTML = '';
         if(highScores.length==0){

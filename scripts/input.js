@@ -17,6 +17,7 @@ MyGame.input=(function(canvas){
             that.keys[e.keyCode]=e.timeStamp;
         }
         function keyup(e){
+            that.upKeys[e.keyCode]=e.timeStamp;
             delete that.keys[e.keyCode];
         }
 
