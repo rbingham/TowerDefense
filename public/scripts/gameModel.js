@@ -22,7 +22,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
 
     var score=0;
     var currency=1000;
-    var lives = 1;
+    var lives = 5;
 
     that.getScore = function(){
         return score;
@@ -130,6 +130,8 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
                             creepList[i].hit(25);
                         }
                     }
+                    particleSystem.createBombExplosionParticles(projectile);
+                }else if(projectile.type===PROJECTILETYPE.MISSILE){
                     particleSystem.createBombExplosionParticles(projectile);
                 }
                 projectileManager.projectileKilled(projectile);
