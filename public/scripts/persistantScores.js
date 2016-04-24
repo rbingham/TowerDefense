@@ -1,33 +1,47 @@
 MyGame.persistantScores = (function(){
 
-    var highScores = (function(){
-        var previousScores = localStorage.getItem('MyGame.highScores');
-        if (previousScores !== null) {
-            return JSON.parse(previousScores);
-        }else{
-            return [];
+    var highScores = [];
+    function Response(xhttp){
+        return function(){
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                highScores = JSON.parse(xhttp.responseText);
+            }
         }
-    }());
+    }
+
+    function executeGetRequest(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = Response(xhttp);
+        xhttp.open("GET", "scores", true);
+        xhttp.send();
+    }
+    executeGetRequest();
+
+    function executePostRequest(newScore){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = Response(xhttp);
+        xhttp.open("POST", "scores", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("newScore="+newScore);
+    }
 
     function add(score) {
-        highScores.push(score);
-        highScores.sort(function(a,b){return b-a;});
-        localStorage['MyGame.highScores'] = JSON.stringify(highScores);
+        executePostRequest(score);
     }
 
     function remove(index) {
-        if(0<index && index<highScores.length){
-            highScores.splice(index,1);
-            localStorage['MyGame.highScores'] = JSON.stringify(highScores);
-        }
+        // if(0<index && index<highScores.length){
+        //     highScores.splice(index,1);
+        //     localStorage['MyGame.highScores'] = JSON.stringify(highScores);
+        // }
     }
 
     function clear() {
-        highScores = [];
-        localStorage['MyGame.highScores'] = JSON.stringify(highScores);
+        // highScores = [];
+        // localStorage['MyGame.highScores'] = JSON.stringify(highScores);
     }
 
-    function report() {
+    function report(id) {
         var htmlNode = document.getElementById(id);
         htmlNode.innerHTML = '';
         if(highScores.length==0){

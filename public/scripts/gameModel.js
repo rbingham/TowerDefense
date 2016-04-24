@@ -24,6 +24,9 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
     var currency=1000;
     var lives = 1;
 
+    that.getScore = function(){
+        return score;
+    }
     that.enoughCurrency=function(numA){
         return numA<=currency;
     }
@@ -70,7 +73,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
             score+=data.wave*10;
         },
     });
-    
+
     var projectileManager = (function(){
     return MyGame.components.projectiles.ProjectileManager({particleSystem:particleSystem});
     }());

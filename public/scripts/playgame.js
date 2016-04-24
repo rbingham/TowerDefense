@@ -14,13 +14,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         gameModel = MyGame.GameModel(MyGame.graphics,MyGame.components,MyGame.input, particleSystem);
         gameView = MyGame.GameView(gameModel, input,MyGame.configurePersitance);
         gameModel.initialize();
-        if(gameModel.continueLoop){
-            requestAnimationFrame(gameloop);
-        }else{
-            //recordHighScore!!!!
-            //go to mainMenue
-            game.show('MainMenu');
-        }
+        requestAnimationFrame(gameloop);
     };
 
 
@@ -42,7 +36,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         if(gameModel.continueLoop){
             requestAnimationFrame(gameloop);
         }else{
-            //recordHighScore!!!!
+            MyGame.persistantScores.add(gameModel.getScore());
             //go to mainMenue
             game.show('MainMenu');
         }

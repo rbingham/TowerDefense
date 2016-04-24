@@ -1,6 +1,6 @@
 
 MyGame.screens['HighScore']=(function(game,persistantScores){
-    
+
 
     var run=function(){
         persistantScores.report('Highscore_List');
@@ -11,10 +11,10 @@ MyGame.screens['HighScore']=(function(game,persistantScores){
             'click',
 			function() {game.show('MainMenu'); }
         );
-        document.getElementById('ClearButton_HS').addEventListener(
-            'click',
-			function() {persistantScores.clear(); run(); }
-        );
+        // document.getElementById('ClearButton_HS').addEventListener(
+        //     'click',
+		// 	function() {persistantScores.clear(); run(); }
+        // );
     };
 
     return{

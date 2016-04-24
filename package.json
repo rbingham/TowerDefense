@@ -1,11 +1,26 @@
 {
-	"name": "particlesexpress",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"start": "node server.js"
-	},
-	"dependencies": {
-		"express": "4.*"
-	}
+  "name": "towerdefense",
+  "version": "1.0.0",
+  "description": "Tower Defense Game CS5410",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "node-json-db": "^0.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JumpingVermillionSushi/TowerDefense.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JumpingVermillionSushi/TowerDefense/issues"
+  },
+  "homepage": "https://github.com/JumpingVermillionSushi/TowerDefense#readme"
 }
