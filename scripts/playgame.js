@@ -9,6 +9,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
 
     var run=function(){
         //add functions to listen to key listners in here
+        MyGame.components.reset();
         prevTimestamp=performance.now();
         gameModel = MyGame.GameModel(MyGame.graphics,MyGame.components,MyGame.input, particleSystem);
         gameView = MyGame.GameView(gameModel, input,MyGame.configurePersitance);
