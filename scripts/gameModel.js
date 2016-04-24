@@ -111,9 +111,8 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
                             creepList[i].hit(25);
                         }
                     }
-                    particleSystem.createBombTrailParticles(projectile);
+                    particleSystem.createBombExplosionParticles(projectile);
                 }
-
                 projectileManager.projectileKilled(projectile);
             }
         }
@@ -250,7 +249,13 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
             components.selectATower(at);
         },components.arena);
     }
-
+    that.removeTower=function(){
+        x=MyGame.components.getSelectCenter();
+        if(x!==undefined){
+            particleSystem.createTowerSoldParticles(x.center);
+        }
+        MyGame.components.removeTower();
+    }
 
     that.placeButtonPressed=function(towerSpecs){
         if(currency<towerSpecs.cost){

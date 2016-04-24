@@ -183,6 +183,7 @@ MyGame.resources = (function(graphics){
     
     that.smokeDrawable= graphics.genImage("./images/smoke.png");
     that.fireDrawable= graphics.genImage("./images/fire.png");
+    that.coinDrawable= graphics.genImage("./images/coin.png");
     
 
 	return that;

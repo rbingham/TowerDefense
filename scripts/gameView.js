@@ -73,7 +73,7 @@ MyGame.GameView = function(model, input,controls){
         }
     }});
     Sell.addButtonListener("logStuff", {onClick:function(){
-        MyGame.components.removeTower();
+        model.removeTower();
     }});
 
     
