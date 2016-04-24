@@ -63,16 +63,16 @@ MyGame.screens['Configurable']=(function(game){
             }
         );
         var name=MyGame.configurePersitance.getKeyCode("upgrade");
-        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+(name===undefined?"unset":name);
+        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+(name===undefined?"unset":String.fromCharCode(name));
         name=MyGame.configurePersitance.getKeyCode("sell");
-        document.getElementById('SettingSell').innerHTML="Sell Key:"+(name===undefined?"unset":name);
+        document.getElementById('SettingSell').innerHTML="Sell Key:"+(name===undefined?"unset":String.fromCharCode(name));
         name=MyGame.configurePersitance.getKeyCode("next_level");
-        document.getElementById('SettingLevel').innerHTML="Level Key:"+(name===undefined?"unset":name);
+        document.getElementById('SettingLevel').innerHTML="Level Key:"+(name===undefined?"unset":String.fromCharCode(name));
     };
     
    function grabKeyUpgrade(e){
         MyGame.configurePersitance.add("upgrade",e.keyCode);
-        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+e.keyCode;
+        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+String.fromCharCode(e.keyCode);
         window.removeEventListener('keydown',grabKeyUpgrade);
     }
     
@@ -83,7 +83,7 @@ MyGame.screens['Configurable']=(function(game){
 
     
    function grabKeySell(e){
-        document.getElementById('SettingSell').innerHTML="Sell Key:"+e.keyCode;
+        document.getElementById('SettingSell').innerHTML="Sell Key:"+String.fromCharCode(e.keyCode);
         MyGame.configurePersitance.add("sell",e.keyCode);
         window.removeEventListener('keydown',grabKeySell);
     }
@@ -95,7 +95,7 @@ MyGame.screens['Configurable']=(function(game){
     
     
    function grabKeyLevel(e){
-        document.getElementById('SettingLevel').innerHTML="Level Key:"+e.keyCode;
+        document.getElementById('SettingLevel').innerHTML="Level Key:"+String.fromCharCode(e.keyCode);
 
         MyGame.configurePersitance.add("next_level",e.keyCode);
         window.removeEventListener('keydown',grabKeyLevel);
