@@ -42,15 +42,19 @@ MyGame.configurePersitance = (function(){
 
 MyGame.screens['Configurable']=(function(game){
     var run=function(){
-        var name=MyGame.configurePersitance.getKeyCode("upgrade");
+        var name=MyGame.configurePersitance.getKeyCode("Upgrade");
         document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
-        name=MyGame.configurePersitance.getKeyCode("sell");
+        name=MyGame.configurePersitance.getKeyCode("Sell");
         document.getElementById('SettingSell').innerHTML="Sell Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
-        name=MyGame.configurePersitance.getKeyCode("next_level");
+        name=MyGame.configurePersitance.getKeyCode("Level");
         document.getElementById('SettingLevel').innerHTML="Level Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
     };
 
     var initialize=function(){
+        document.getElementById('clear_CC').addEventListener(
+            'click',
+			function() {MyGame.configurePersitance.clear(); }
+        );
         document.getElementById('SettingSell').addEventListener(
             'click',
 			function() {setShortcut("Sell","SettingSell") }
@@ -85,15 +89,17 @@ MyGame.screens['Configurable']=(function(game){
         settingMutex=false;
     }
     var settingMutex=false;
+    var funcname,buttonname;
     
-    var setShortcut=function(funcname,buttonname){
+    var setShortcut=function(funcname_c,buttonname_c){
         if(settingMutex){
             return;
         }
         settingMutex=true;
-        
-        document.getElementById(buttonname).innerHTML="Setting...";
-        window.addEventListener('keydown', grabKey  );
+        funcname=funcname_c;
+        buttonname=buttonname_c;
+        document.getElementById(buttonname_c).innerHTML="Setting...";
+        window.addEventListener('keydown', grabKey);
     };
     
   /*  

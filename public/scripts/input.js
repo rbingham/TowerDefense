@@ -40,31 +40,48 @@ MyGame.input=(function(canvas){
         that.registerKeyUp=function(key,handler){
             that.keyUpHandler.push({key:key,handler:handler});
         }
+        
+        
+        function keyEventsMatch(k1,k2){
+            if(k1.key===k2.key&&k1.alt===k2.alt&&k1.shift===k2.shift&&k1.ctrl===k2.ctrl){
+                return true;
+            }
+            return false;
+        }
 
         that.update=function(elapsed){
             for(var handlerNum=0;handlerNum < that.handlers.length;++handlerNum){
                 //console.log(handlerNum);
-                if(that.keys.find(function (event){
-                    return that.handlers[handlerNum].key===event;
-                })!==undefined){
-                    that.handlers[handlerNum].handler(elapsed);
+                for(var j=0;j<that.keys.length;j++){
+                    if(keyEventsMatch(that.keys[j],that.handlers[handlerNum].key)){
+                        that.handlers[handlerNum].handler(elapsed);
+                        break;
+                    }
                 }
             }
             var toRemove=[];
             for(var handlerNum=0;handlerNum <that.keyUpHandler.length;++handlerNum){
                 //console.log(handlerNum);
-                if(that.upKeys.find(function (event){
-                    return that.handlers[handlerNum].key===event;
-                })!==undefined){
-                    that.keyUpHandler[handlerNum].handler(elapsed);
-                    toRemove.push(that.keyUpHandler[handlerNum].key);
+                                    var x=that.keyUpHandler[handlerNum];
+
+                for(var j=0;j<that.upKeys.length;j++){
+                    var y=that.upKeys[j];
+                    if(keyEventsMatch(y,x.key)){
+                        that.keyUpHandler[handlerNum].handler(elapsed);
+                        break;
+                    }
+                    toRemove.push(j);
                 }
             }
-
+            toRemove.sort(function(a,b){return a-b});
+            var seen={};
             for(var i=0;i <toRemove.length;++i){
-                delete that.upKeys[toRemove[i]];
+                if(seen[toRemove[i]]===undefined){
+                    seen[toRemove[i]]=true;
+                    that.upKeys.splice(toRemove[i],1);
+                }
             }
-
+            seen={};
         };
 
         window.addEventListener('keydown',keydown);

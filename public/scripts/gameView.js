@@ -107,10 +107,10 @@ MyGame.GameView = function(model, input,controls){
             console.log("foobar");
             Upgrade.onMouseClick();
         });
-        keyboard.registerKeyUp(controls.getKeyCode("Sell"),function(){
+        keyboard.registerKeyUp(controls.getKeyCode("Level"),function(){
             creep.onMouseClick();
         });
-        keyboard.registerKeyUp(MyGame.configurePersitance.getKeyCode("Level"),function(){
+        keyboard.registerKeyUp(MyGame.configurePersitance.getKeyCode("Sell"),function(){
             Sell.onMouseClick();
         });
 
