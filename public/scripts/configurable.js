@@ -9,8 +9,13 @@ MyGame.configurePersitance = (function(){
         }
     }());
 
-    function add(string,keyCode) {
-        controls[string]=keyCode;
+    function add(string,e) {
+        controls[string]={
+                key:e.keyCode,
+                alt:e.altKey,
+                ctrl:e.ctrlKey,
+                shift:e.shiftKey
+            };
         localStorage['MyGame.controls'] = JSON.stringify(controls);
         console.log(controls);
     }
@@ -37,39 +42,61 @@ MyGame.configurePersitance = (function(){
 
 MyGame.screens['Configurable']=(function(game){
     var run=function(){
-        
+        var name=MyGame.configurePersitance.getKeyCode("upgrade");
+        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
+        name=MyGame.configurePersitance.getKeyCode("sell");
+        document.getElementById('SettingSell').innerHTML="Sell Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
+        name=MyGame.configurePersitance.getKeyCode("next_level");
+        document.getElementById('SettingLevel').innerHTML="Level Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
     };
 
     var initialize=function(){
         document.getElementById('SettingSell').addEventListener(
             'click',
-			function() {setSell(); }
+			function() {setShortcut("Sell","SettingSell") }
         );
         document.getElementById('SettingUpgrade').addEventListener(
             'click',
-			function() {setUpgrade();}
+			function() {setShortcut("Upgrade","SettingUpgrade")}
         );
         document.getElementById('SettingLevel').addEventListener(
             'click',
-			function() { setLevel();}
+			function() { setShortcut("Level","SettingLevel");}
         );        
         document.getElementById('BackButton_CC').addEventListener(
             'click',
 			function() { 
                 game.show('MainMenu');
-                window.removeEventListener('keydown',grabKeySell);
-                window.removeEventListener('keydown',grabKeySell);
-                window.removeEventListener('keydown',grabKeySell);
+                window.removeEventListener('keydown',grabKey);
+                settingMutex=false;
             }
         );
-        var name=MyGame.configurePersitance.getKeyCode("upgrade");
-        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+(name===undefined?"unset":String.fromCharCode(name));
-        name=MyGame.configurePersitance.getKeyCode("sell");
-        document.getElementById('SettingSell').innerHTML="Sell Key:"+(name===undefined?"unset":String.fromCharCode(name));
-        name=MyGame.configurePersitance.getKeyCode("next_level");
-        document.getElementById('SettingLevel').innerHTML="Level Key:"+(name===undefined?"unset":String.fromCharCode(name));
+
     };
     
+    function grabKey(e){
+        if(e.keyCode===KeyEvent.DOM_VK_CONTROL||e.keyCode===KeyEvent.DOM_VK_ALT||e.keyCode===KeyEvent.DOM_VK_SHIFT){
+            return;
+        }
+        
+        MyGame.configurePersitance.add(funcname,e);
+        document.getElementById(buttonname).innerHTML=funcname+" Key:"+String.fromCharCode(e.keyCode);
+        window.removeEventListener('keydown',grabKey);
+        settingMutex=false;
+    }
+    var settingMutex=false;
+    
+    var setShortcut=function(funcname,buttonname){
+        if(settingMutex){
+            return;
+        }
+        settingMutex=true;
+        
+        document.getElementById(buttonname).innerHTML="Setting...";
+        window.addEventListener('keydown', grabKey  );
+    };
+    
+  /*  
    function grabKeyUpgrade(e){
         MyGame.configurePersitance.add("upgrade",e.keyCode);
         document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+String.fromCharCode(e.keyCode);
@@ -105,7 +132,7 @@ MyGame.screens['Configurable']=(function(game){
         document.getElementById('SettingLevel').innerHTML="Setting";
         window.addEventListener('keydown',grabKeyLevel);
     };
-    
+    */
 
     return{
         run:run,

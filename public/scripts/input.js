@@ -7,17 +7,29 @@
 MyGame.input=(function(canvas){
     var Keyboard=function (){
         var that={
-            keys :{},
+            keys :[], //key event
             handlers:[],
             keyUpHandler:[],
-            upKeys:{}
+            upKeys:[] //key event
         };
 
         function keydown(e){
-            that.keys[e.keyCode]=e.timeStamp;
+            that.keys.push({
+                key:e.keyCode,
+                alt:e.altKey,
+                ctrl:e.ctrlKey,
+                shift:e.shiftKey
+                
+            });
         }
         function keyup(e){
-            that.upKeys[e.keyCode]=e.timeStamp;
+            that.upKeys.push({
+                key:e.keyCode,
+                alt:e.altKey,
+                ctrl:e.ctrlKey,
+                shift:e.shiftKey
+                
+            });
             delete that.keys[e.keyCode];
         }
 
@@ -32,14 +44,18 @@ MyGame.input=(function(canvas){
         that.update=function(elapsed){
             for(var handlerNum=0;handlerNum < that.handlers.length;++handlerNum){
                 //console.log(handlerNum);
-                if(that.keys.hasOwnProperty(that.handlers[handlerNum].key)){
+                if(that.keys.find(function (event){
+                    return that.handlers[handlerNum].key===event;
+                })!==undefined){
                     that.handlers[handlerNum].handler(elapsed);
                 }
             }
             var toRemove=[];
             for(var handlerNum=0;handlerNum <that.keyUpHandler.length;++handlerNum){
                 //console.log(handlerNum);
-                if(that.upKeys.hasOwnProperty(that.keyUpHandler[handlerNum].key)){
+                if(that.upKeys.find(function (event){
+                    return that.handlers[handlerNum].key===event;
+                })!==undefined){
                     that.keyUpHandler[handlerNum].handler(elapsed);
                     toRemove.push(that.keyUpHandler[handlerNum].key);
                 }
