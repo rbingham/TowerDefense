@@ -41,19 +41,29 @@ MyGame.configurePersitance = (function(){
 
 
 MyGame.screens['Configurable']=(function(game){
+    function keyToString(name){
+        var keyChar=(name===undefined?"unset":String.fromCharCode(name.key));
+        var altis=(name===undefined||!name.alt?"":"+alt");
+        var ctrlis=(name===undefined||!name.ctrl?"":"+ctrl");
+        var shiftis=(name===undefined||!name.shift?"":"+shift");
+        return keyChar+altis+ctrlis+shiftis;
+    }
     var run=function(){
-        var name=MyGame.configurePersitance.getKeyCode("Upgrade");
-        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
-        name=MyGame.configurePersitance.getKeyCode("Sell");
-        document.getElementById('SettingSell').innerHTML="Sell Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
-        name=MyGame.configurePersitance.getKeyCode("Level");
-        document.getElementById('SettingLevel').innerHTML="Level Key:"+(name===undefined?"unset":String.fromCharCode(name.key));
+        resetNames();
     };
+    function resetNames(){
+        var name=MyGame.configurePersitance.getKeyCode("Upgrade");
+        document.getElementById('SettingUpgrade').innerHTML="Upgrade:"+keyToString(name);
+        name=MyGame.configurePersitance.getKeyCode("Sell");
+        document.getElementById('SettingSell').innerHTML="Sell:"+keyToString(name);
+        name=MyGame.configurePersitance.getKeyCode("Level");
+        document.getElementById('SettingLevel').innerHTML="Level:"+keyToString(name);
+    }
 
     var initialize=function(){
         document.getElementById('clear_CC').addEventListener(
             'click',
-			function() {MyGame.configurePersitance.clear(); }
+			function() {MyGame.configurePersitance.clear(); resetNames();}
         );
         document.getElementById('SettingSell').addEventListener(
             'click',
@@ -84,7 +94,7 @@ MyGame.screens['Configurable']=(function(game){
         }
         
         MyGame.configurePersitance.add(funcname,e);
-        document.getElementById(buttonname).innerHTML=funcname+" Key:"+String.fromCharCode(e.keyCode);
+        resetNames();
         window.removeEventListener('keydown',grabKey);
         settingMutex=false;
     }
