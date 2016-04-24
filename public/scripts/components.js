@@ -460,11 +460,11 @@ MyGame.components=(function(graphics){
     }
 
 
-    that.renderTowers=function(elapsed){
+    that.renderTowers=function(elapsed,renderTempTower){
         for(var i=0;i<that.towerArray.length;i++){
             that.towerArray[i].draw(i==prevSelected.index);
         }
-        if(tempTower!==undefined){
+        if(tempTower!==undefined&&renderTempTower!==undefined&&renderTempTower){
             tempTower.draw(true);
         }
     };

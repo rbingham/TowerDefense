@@ -189,14 +189,14 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
         internalUpdate=PlaceTowerUpdate;
     };
 
-    function WatchGame(){
+    function WatchGame(elapsed){
         components.arena.draw();
-        components.renderTowers();
+        components.renderTowers(elapsed,false);
         renderScoreCurrency();
     }
-    function PlaceTowerRender(){
+    function PlaceTowerRender(elapsed){
         components.arena.draw("foobar");
-        components.renderTowers();
+        components.renderTowers(elapsed,true);
         renderScoreCurrency();
     }
     function PlaceTowerUpdate(elapsed){
