@@ -19,5 +19,5 @@ app.get('/', function(request, response) {
 //
 // Get the server created and listening for requests
 http.createServer(app).listen(app.get('port'), function() {
-	console.log('Particles server listening on port ' + app.get('port'));
+	console.log('TowerDefense server listening on port ' + app.get('port'));
 });
