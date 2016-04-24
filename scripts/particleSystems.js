@@ -169,7 +169,7 @@ MyGame.particleSystems = (function(graphics){
 		//creep death
 		that.createCreepDeathParticles = function(creep){
 			var p;
-
+            
 			for(let i=0; i<50; i++){
 
 				p = Particle();
@@ -193,6 +193,17 @@ MyGame.particleSystems = (function(graphics){
 
 				addParticle(p);
 			}
+            p=Particle();
+            p.drawable=graphics.wordDrawable({text:""+creep.score});
+            p.center={x:creep.getDims().center.x,y:creep.getDims().center.y};
+            p.size=20;
+            p.direction={x:0,y:-1};
+            p.speed=10;
+            p.rotationalSpeed=0;
+            p.lifetime=1000;
+            p.particlesFade=true;
+            addParticle(p);
+            
 		}
 
 		//bombTrail
