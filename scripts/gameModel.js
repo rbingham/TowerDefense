@@ -19,9 +19,11 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
         internalUpdate=function(){},
         keyboard=input.Keyboard(),
         mouse=input.Mouse();
-    
+
     var score=0;
     var currency=1000;
+    var lives = 1;
+
     that.enoughCurrency=function(numA){
         return numA<=currency;
     }
@@ -31,10 +33,6 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
         mouse=input.Mouse();
         beginListeneingtoTowers();
     };
-    that.creepKilled=function(creep){
-        currency+=creep.curr;
-        score+=creep.score;
-    }
 
     var creepManager = (function(){
         var entrances = MyGame.components.entrances;
@@ -45,13 +43,21 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
 
         return MyGame.components.creeps.CreepManager({initialLocations:initialLocations, endGoals:endGoals, particleSystem:particleSystem});
     }());
-    
-    var creepDied=function(creep){
+
+    var creepListener = {};
+    creepListener.creepKilled=function(creep){
         score+=creep.score;
         currency+=creep.curr;
     }
-    
-    creepManager.addCreepKillExternalListners(creepDied);
+    creepListener.creepReachedGoal=function(creep){
+        lives--;
+        if(lives<=0){gameOver()};
+    }
+    creepManager.addExternalListeners(creepListener);
+
+    function gameOver(){
+        that.continueLoop=false;
+    }
 
     var waveManager = MyGame.components.waves.WaveManager({creepManager})
 
@@ -84,7 +90,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
             }
             return locations;
         }
-        
+
 
         function handleProjectile(projectile){
             var locations =[];
@@ -97,7 +103,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
                     projhit=true;
                 }
             }
-            
+
             if(projhit){
                 if(projectile.type===PROJECTILETYPE.BOMB){
                     locations=generateLocationsLarge(projectile);
@@ -184,13 +190,14 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
         components.updateTowers(elapsed);
         mouse.update(elapsed);
     }
-    
+
     function renderScoreCurrency(){
-        graphics.writeSpecificMessage("Score "+score,500,650);
-        graphics.writeSpecificMessage("Curr  "+currency,500,700);
-        
+        graphics.writeSpecificMessage("Score  "+score,500,650);
+        graphics.writeSpecificMessage("Curr   "+currency,500,700);
+        graphics.writeSpecificMessage("Lives  "+lives,500,750);
+
     }
-    
+
 
     /*    The concept of the internal update is that if you change states in the game,
         internalUpdate=PauseGameUpdate
@@ -215,15 +222,15 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
             if(circleList[i].stroke===undefined){
                 circleList[i].stroke="red"
             }
-            
+
             //graphics.drawCircle(circleList[i]);
         }
 
         projectileManager.render(elapsed);
         waveManager.render(elapsed);
     };
-    
-    
+
+
     function removeDoneEvents(){
         for(var i=eventList.length-1; i>=0;i--){
             if(eventList[i].timesRemaining===0){

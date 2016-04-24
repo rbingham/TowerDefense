@@ -24,6 +24,7 @@ MyGame.components.creeps = (function(){
 			return [];
 		}());
 
+		var externalListeners = [];
 
 		function buildShortestPaths(additionalTaken){
 			var shortestPaths = [];
@@ -176,21 +177,22 @@ MyGame.components.creeps = (function(){
 			var creepList = creepMatrix[i][j];
 			creepList.push(creep);
 		}
-        
+
 		//creep listener functions
-        var creepKillExternalListners=[];
-        that.addCreepKillExternalListners=function(func){
-            creepKillExternalListners.push(func);
+        that.addExternalListeners=function(func){
+            externalListeners.push(func);
         }
-        
+
 		that.creepKilled = function(creep){
 			if(spec.creepListener !== undefined){
 				spec.creepListener.creepKilled(creep);
 			}
 
 			removeCreepFromMatrix(creep, creep.getLocation());
-            for(let i=0;i<creepKillExternalListners.length;i++){
-                creepKillExternalListners[i](creep);
+            for(let i=0;i<externalListeners.length;i++){
+				if(externalListeners[i].hasOwnProperty('creepKilled')){
+					externalListeners[i].creepKilled(creep);
+				}
             }
 			delete creeps[creep.getID()];
 			creepCount--;
@@ -202,6 +204,12 @@ MyGame.components.creeps = (function(){
 			if(spec.creepListener !== undefined){
 				spec.creepListener.creepReachedGoal(creep);
 			}
+
+			for(let i=0;i<externalListeners.length;i++){
+				if(externalListeners[i].hasOwnProperty('creepReachedGoal')){
+					externalListeners[i].creepReachedGoal(creep);
+				}
+            }
 
 			removeCreepFromMatrix(creep, creep.getLocation());
 
@@ -375,7 +383,7 @@ MyGame.components.creeps = (function(){
             frozentime=frozentime-elapsedTime;
 			while(0<localElapsedTime){
 				//if there is time to reach the next goal, reach it and decrement elapsedTime
-                
+
 				if(distanceToGoal.time<=localElapsedTime){
 					currentLocation.x = currentGoal.location.x;
 					currentLocation.y = currentGoal.location.y;

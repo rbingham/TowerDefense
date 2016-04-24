@@ -15,6 +15,10 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         gameModel.initialize();
         if(gameModel.continueLoop){
             requestAnimationFrame(gameloop);
+        }else{
+            //recordHighScore!!!!
+            //go to mainMenue
+            game.show('MainMenu');
         }
     };
 
@@ -36,6 +40,10 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         render(elapsed);
         if(gameModel.continueLoop){
             requestAnimationFrame(gameloop);
+        }else{
+            //recordHighScore!!!!
+            //go to mainMenue
+            game.show('MainMenu');
         }
     }
 
