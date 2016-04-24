@@ -33,7 +33,7 @@ function Tower(spec){
     this.type=spec.type;
     this.cost=spec.cost;
     this.updgradeTier=spec.updgradeTier;
-    this.addProjectile = function(location,velocity){
+    this.addProjectile = function(location,velocity,creep){
         /*initialLocation,initialTimeRemaining,initialVelocity, drawable,  projectileSpeed,*/
         var projecSpec = {
             initialLocation:location,
@@ -41,8 +41,9 @@ function Tower(spec){
             initialTimeRemaining:2000,
             projectileSpeed:100,
             initialVelocity:velocity,
-            radius:5
-
+            radius:5,
+            type:this.type,
+            creep:creep
         };
         spec.projectileManager.create(projecSpec);
     }
@@ -106,7 +107,7 @@ Tower.prototype={
                             {x:this.center.x,y:this.center.y},
                             {x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,
                             y:-Math.sin(this.weapon.rotation-Math.PI/2)*200},
-                            this.type,this.watchcreep.creep);
+                            this.watchcreep.creep);
                     }
                 }else{
                     this.fireprev-=elapsed;
@@ -539,11 +540,14 @@ MyGame.components=(function(graphics){
         prevSelected.is={};
         prevSelected.index=-1;
     }
+    that.getSelectCenter=function(){
+        return that.towerArray[prevSelected.index];
+    }
     that.costToUpgrade=function(){
         if(!prevSelected.onSelected||that.towerArray[prevSelected.index].level>=3){
             return 0;
         }
-        var temp=that.towerArray[prevSelected.index].updgradeTier[that.towerArray[prevSelected.index].level+1];
+        var temp=that.towerArray[prevSelected.index].updgradeTier[that.towerArray[prevSelected.index].level-1];
         return temp;
     };
     
@@ -585,7 +589,13 @@ MyGame.components=(function(graphics){
 
 
 
-
+    that.calculateTowerScores=function(){
+        total=0;
+        for(var i=0;i<that.towerArray.length;i++){
+            total+=that.towerArray[i].cost/2*that.towerArray[i].level;
+        }
+        return total;
+    }
 
 
 

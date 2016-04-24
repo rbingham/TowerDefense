@@ -180,6 +180,11 @@ MyGame.resources = (function(graphics){
 
 		return {draw:draw, update:update}
 	}
+    
+    that.smokeDrawable= graphics.genImage("./images/smoke.png");
+    that.fireDrawable= graphics.genImage("./images/fire.png");
+    that.coinDrawable= graphics.genImage("./images/coin.png");
+    
 
 	return that;
 }(MyGame.graphics))

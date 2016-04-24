@@ -61,6 +61,16 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
 
     var waveManager = MyGame.components.waves.WaveManager({creepManager})
 
+    waveManager.addWaveListener({
+        levelEnd:function(data){
+            score+=components.calculateTowerScores();
+            score+=data.level*100;
+        },
+        waveEnd:function(data){
+            score+=data.wave*10;
+        },
+    });
+    
     var projectileManager = (function(){
     return MyGame.components.projectiles.ProjectileManager({particleSystem:particleSystem});
     }());
@@ -117,8 +127,8 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
                             creepList[i].hit(25);
                         }
                     }
+                    particleSystem.createBombExplosionParticles(projectile);
                 }
-
                 projectileManager.projectileKilled(projectile);
             }
         }
@@ -256,7 +266,13 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
             components.selectATower(at);
         },components.arena);
     }
-
+    that.removeTower=function(){
+        x=MyGame.components.getSelectCenter();
+        if(x!==undefined){
+            particleSystem.createTowerSoldParticles(x.center);
+        }
+        MyGame.components.removeTower();
+    }
 
     that.placeButtonPressed=function(towerSpecs){
         if(currency<towerSpecs.cost){

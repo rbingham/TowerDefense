@@ -11,7 +11,7 @@ MyGame.screens['PlayGame']=(function(game,graphics,input,scoring){
         //add functions to listen to key listners in here
         prevTimestamp=performance.now();
         gameModel = MyGame.GameModel(MyGame.graphics,MyGame.components,MyGame.input, particleSystem);
-        gameView = MyGame.GameView(gameModel, input);
+        gameView = MyGame.GameView(gameModel, input,MyGame.configurePersitance);
         gameModel.initialize();
         if(gameModel.continueLoop){
             requestAnimationFrame(gameloop);

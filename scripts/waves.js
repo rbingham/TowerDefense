@@ -30,8 +30,8 @@ MyGame.components.waves = (function(){
 
 		function forEach(funcName, data){
 			for(let i=0; i<waveListeners.length; i++){
-				if(waveListeners[i]!==undefined && waveListener.hasOwnProperty(funcName)){
-					waveListener[funcName](data);
+				if(waveListeners[i]!==undefined && waveListeners[i].hasOwnProperty(funcName)){
+					waveListeners[i][funcName](data);
 				}
 			}
 		}

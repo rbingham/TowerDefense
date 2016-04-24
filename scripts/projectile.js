@@ -70,7 +70,11 @@ MyGame.components.projectiles = (function(spec){
 		that.update = function(elapsedTime){
 			for(let i=startProjectileId; i<nextProjectileId; i++){
 				if(projectiles[i] !== undefined){
-					spec.particleSystem.createBombTrailParticles(projectiles[i]);
+                    if(that.type===PROJECTILETYPE.BOMB){
+                        spec.particleSystem.createBombTrailParticles(projectiles[i]);
+                    }else if(that.type===PROJECTILETYPE.MISSLE){
+                        spec.particleSystem.createMissleTrailParticles(projectiles[i]);
+                    }
                     projectiles[i].update(elapsedTime);
 				}
 			}

@@ -27,7 +27,13 @@ MyGame.graphics=(function(){
         context.font=size+"px Arial";
         context.fillText(input, x,y);
     }
-
+    function wordDrawable(spec){
+        var that={};
+        that.draw=function(spec2){
+            writeSpecificMessageOfSize(spec.text,spec2.center.x,spec2.center.y,spec2.size);
+        }
+        return that;
+    }
 
     function fillBackground(color){
         if(color===undefined)
@@ -317,7 +323,8 @@ MyGame.graphics=(function(){
         writeSpecificMessageOfSize:writeSpecificMessageOfSize,
         drawRectangle:drawRectangle,
         drawCircle:drawCircle,
-        canvas:canvas
+        canvas:canvas,
+        wordDrawable:wordDrawable
     };
 
 }());

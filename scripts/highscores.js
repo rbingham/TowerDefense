@@ -1,7 +1,6 @@
 
-
 MyGame.screens['HighScore']=(function(game,persistantScores){
-
+    
 
     var run=function(){
         persistantScores.report('Highscore_List');

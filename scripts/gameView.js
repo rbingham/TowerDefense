@@ -1,4 +1,4 @@
-MyGame.GameView = function(model, input){
+MyGame.GameView = function(model, input,controls){
     //var waveIndicator;
     //initialize waveIndicator
     //add waveIndicator MouseListener
@@ -73,7 +73,7 @@ MyGame.GameView = function(model, input){
         }
     }});
     Sell.addButtonListener("logStuff", {onClick:function(){
-        MyGame.components.removeTower();
+        model.removeTower();
     }});
 
     
@@ -87,6 +87,21 @@ MyGame.GameView = function(model, input){
     buttonGrid.addButton(Upgrade);
     buttonGrid.addButton(Sell);
 
+    console.log(controls.getKeyCode("upgrade"));
+        keyboard.registerKeyUp(controls.getKeyCode("upgrade"),function(){
+            console.log("foobar");
+            Upgrade.onMouseClick();
+        });
+        keyboard.registerKeyUp(controls.getKeyCode("sell"),function(){
+            creep.onMouseClick();
+        });
+        keyboard.registerKeyUp(MyGame.configurePersitance.getKeyCode("next_level"),function(){
+            Sell.onMouseClick();
+        });
+        
+    
+    
+    
     function update(elapsedTime){
         mouse.update(elapsedTime);
         keyboard.update(elapsedTime);

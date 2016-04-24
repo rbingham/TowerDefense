@@ -169,7 +169,7 @@ MyGame.particleSystems = (function(graphics){
 		//creep death
 		that.createCreepDeathParticles = function(creep){
 			var p;
-
+            
 			for(let i=0; i<50; i++){
 
 				p = Particle();
@@ -193,25 +193,37 @@ MyGame.particleSystems = (function(graphics){
 
 				addParticle(p);
 			}
+            p=Particle();
+            p.drawable=graphics.wordDrawable({text:""+creep.score});
+            p.center={x:creep.getDims().center.x,y:creep.getDims().center.y};
+            p.size=20;
+            p.direction={x:0,y:-1};
+            p.speed=10;
+            p.rotationalSpeed=0;
+            p.lifetime=1000;
+            p.particlesFade=true;
+            addParticle(p);
+            
 		}
 
 		//bombTrail
         that.createBombTrailParticles = function(proj){
 
-			for(let i=0; i<20; i++){
+			for(let i=0; i<1; i++){
 
 				let p = Particle();
 
 				// var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
-				p.drawable = proj.getDrawable();
+				//p.drawable = proj.getDrawable();
+				p.drawable = MyGame.resources.fireDrawable;
 				p.center ={};
                 p.center.x=proj.getDims().center.x;
                 p.center.y=proj.getDims().center.y;
-				p.size = MyGame.random.nextGaussian(MyGame.components.arena.subGrid, MyGame.components.arena.subGrid/2);
+				p.size = MyGame.random.nextGaussian(MyGame.components.arena.subGrid/2, MyGame.components.arena.subGrid/4);
 				p.direction = MyGame.random.nextCircleVector();
-				p.speed = MyGame.random.nextGaussian(10,1); // pixels per second
+				p.speed = MyGame.random.nextGaussian(20,20); // pixels per second
 				p.rotationalSpeed = MyGame.random.nextGaussian(20, 45); // pixels per second
-				p.lifetime = MyGame.random.nextGaussian(2, .25)*1000;	// How long the particle should live, in seconds
+				p.lifetime = MyGame.random.nextGaussian(.5, .25)*1000;	// How long the particle should live, in seconds
 				p.particlesFade = true;
 				//
 				// Ensure we have a valid size - gaussian numbers can be negative
@@ -225,11 +237,95 @@ MyGame.particleSystems = (function(graphics){
 			}
 		}
 		//bombHit
+        that.createBombExplosionParticles = function(proj){
 
+			for(let i=0; i<50; i++){
+
+				let p = Particle();
+
+				// var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
+				//p.drawable = proj.getDrawable();
+				p.drawable = MyGame.resources.fireDrawable;
+				p.center ={};
+                p.center.x=proj.getDims().center.x;
+                p.center.y=proj.getDims().center.y;
+				p.size = MyGame.random.nextGaussian(MyGame.components.arena.subGrid/2, MyGame.components.arena.subGrid/4);
+				p.direction = MyGame.random.nextCircleVector();
+				p.speed = MyGame.random.nextGaussian(100,50); // pixels per second
+				p.rotationalSpeed = MyGame.random.nextGaussian(20, 45); // pixels per second
+				p.lifetime = MyGame.random.nextGaussian(.5, .25)*1000;	// How long the particle should live, in seconds
+				p.particlesFade = true;
+				//
+				// Ensure we have a valid size - gaussian numbers can be negative
+				p.size = Math.max(1, p.size);
+
+				//
+				// Same thing with lifetime
+				p.lifetime = Math.max(0.01, p.lifetime);
+
+				addParticle(p);
+			}
+		}
 		//missleTrail
+        that.createMissleTrailParticles = function(proj){
 
+			for(let i=0; i<1; i++){
+
+				let p = Particle();
+
+				// var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
+				//p.drawable = proj.getDrawable();
+				p.drawable = MyGame.resources.smokeDrawable;
+				p.center ={};
+                p.center.x=proj.getDims().center.x;
+                p.center.y=proj.getDims().center.y;
+				p.size = MyGame.random.nextGaussian(MyGame.components.arena.subGrid/2, MyGame.components.arena.subGrid/4);
+				p.direction = MyGame.random.nextCircleVector();
+				p.speed = MyGame.random.nextGaussian(20,20); // pixels per second
+				p.rotationalSpeed = MyGame.random.nextGaussian(20, 45); // pixels per second
+				p.lifetime = MyGame.random.nextGaussian(.5, .25)*1000;	// How long the particle should live, in seconds
+				p.particlesFade = true;
+				//
+				// Ensure we have a valid size - gaussian numbers can be negative
+				p.size = Math.max(1, p.size);
+
+				//
+				// Same thing with lifetime
+				p.lifetime = Math.max(0.01, p.lifetime);
+
+				addParticle(p);
+			}
+		}
 		//towerSold
+        that.createTowerSoldParticles = function(tower){
 
+			for(let i=0; i<50; i++){
+
+				let p = Particle();
+
+				// var drawableIndex = MyGame.random.nextRange(0, spec.drawables.length-1);
+				//p.drawable = proj.getDrawable();
+				p.drawable = MyGame.resources.coinDrawable;
+				p.center ={};
+                p.center.x=tower.x;
+                p.center.y=tower.y;
+				p.size = MyGame.random.nextGaussian(MyGame.components.arena.subGrid/2, MyGame.components.arena.subGrid/4);
+				p.direction = MyGame.random.nextCircleVector();
+				p.speed = MyGame.random.nextGaussian(20,20); // pixels per second
+				p.rotationalSpeed = MyGame.random.nextGaussian(20, 45); // pixels per second
+				p.lifetime = MyGame.random.nextGaussian(.5, .25)*1000;	// How long the particle should live, in seconds
+				p.particlesFade = true;
+				//
+				// Ensure we have a valid size - gaussian numbers can be negative
+				p.size = Math.max(1, p.size);
+
+				//
+				// Same thing with lifetime
+				p.lifetime = Math.max(0.01, p.lifetime);
+
+				addParticle(p);
+			}
+		}
 		/////////////////////////////////////////////////////////////////
 
 		return that;
