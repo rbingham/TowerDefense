@@ -62,6 +62,12 @@ MyGame.screens['Configurable']=(function(game){
                 window.removeEventListener('keydown',grabKeySell);
             }
         );
+        var name=MyGame.configurePersitance.getKeyCode("upgrade");
+        document.getElementById('SettingUpgrade').innerHTML="Upgrade Key:"+(name===undefined?"unset":name);
+        name=MyGame.configurePersitance.getKeyCode("sell");
+        document.getElementById('SettingSell').innerHTML="Sell Key:"+(name===undefined?"unset":name);
+        name=MyGame.configurePersitance.getKeyCode("next_level");
+        document.getElementById('SettingLevel').innerHTML="Level Key:"+(name===undefined?"unset":name);
     };
     
    function grabKeyUpgrade(e){
@@ -71,7 +77,7 @@ MyGame.screens['Configurable']=(function(game){
     }
     
     var setUpgrade=function(){
-        console.log("hit");
+        document.getElementById('SettingUpgrade').innerHTML="Setting";
         window.addEventListener('keydown',grabKeyUpgrade);
     };
 
@@ -83,6 +89,7 @@ MyGame.screens['Configurable']=(function(game){
     }
     
     var setSell=function(){
+        document.getElementById('SettingSell').innerHTML="Setting";
         window.addEventListener('keydown',grabKeySell);
     };
     
@@ -95,6 +102,7 @@ MyGame.screens['Configurable']=(function(game){
     }
     
     var setLevel=function(){
+        document.getElementById('SettingLevel').innerHTML="Setting";
         window.addEventListener('keydown',grabKeyLevel);
     };
     
