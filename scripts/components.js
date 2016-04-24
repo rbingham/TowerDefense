@@ -596,6 +596,41 @@ MyGame.components=(function(graphics){
         }
         return total;
     }
+    
+    that.reset=function(){
+        for(var i=that.towerArray.length-1;i>=0;i--){
+            that.towerArray.splice(i,1);
+        }
+        
+        that.towerListeners=[];
+        that.takenGrid=[];
+        //should allow us to add diagnals in the future
+        for(var i=0;i<that.arena.width/that.arena.subGrid;i++){
+            that.takenGrid[i]=[];
+            that.towerListeners[i]=[];
+            for(var j=0;j<that.arena.height/that.arena.subGrid;j++){
+                that.takenGrid[i][j]={taken:false,hit:false,adjacent:[]};
+                that.towerListeners[i][j]=[];
+            }
+        }
+        for(var i=0;i<that.takenGrid.length;i++){
+            for(var j=0;j<that.takenGrid[i].length;j++){
+                if(i-1>=0){
+                    that.takenGrid[i][j].adjacent.push({x:i-1,y:j});
+                }
+                if(i+1<that.takenGrid.length){
+                    that.takenGrid[i][j].adjacent.push({x:i+1,y:j});
+                }
+                if(j-1>=0){
+                    that.takenGrid[i][j].adjacent.push({x:i,y:j-1});
+                }
+                if(j+1<that.takenGrid[i].length){
+                    that.takenGrid[i][j].adjacent.push({x:i,y:j+1});
+                }
+            }
+        }
+        
+    }
 
 
 
