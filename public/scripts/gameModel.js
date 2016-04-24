@@ -196,7 +196,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
     }
     function PlaceTowerRender(elapsed){
         components.arena.draw("foobar");
-        components.renderTowers(elapsed,false);
+        components.renderTowers(elapsed,true);
         renderScoreCurrency();
     }
     function PlaceTowerUpdate(elapsed){
