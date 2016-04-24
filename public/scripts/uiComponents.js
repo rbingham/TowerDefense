@@ -93,7 +93,7 @@ MyGame.uiComponents = (function(graphics){
                     spec.mouseDownDrawable.draw(spec.dims);
                     drawn=true;
                 }else if(spec.hasOwnProperty("mouseEnterDrawable")){
-                    spec.mouseEnterDrawable.draw();
+                    spec.mouseEnterDrawable.draw(spec.dims);
                     drawn=true;
                 }
             }

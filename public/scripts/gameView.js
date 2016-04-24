@@ -13,7 +13,8 @@ MyGame.GameView = function(model, input,controls){
     //initialize each button
     var GroundBomb = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:100}, height:100, width:100, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"}),
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"aqua",fill:"blue"})
     });
 
 
@@ -26,6 +27,7 @@ MyGame.GameView = function(model, input,controls){
         dims:{center:{x:700,y:300}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"Chocolate",fill:"BlueViolet "})
     });
+
     var AirMissile = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:400}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
@@ -35,8 +37,8 @@ MyGame.GameView = function(model, input,controls){
         dims:{center:{x:700,y:600}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
     });
-    
-    
+
+
     var Upgrade = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:100,y:800}, height:25, width:75, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"Green"})
@@ -46,7 +48,7 @@ MyGame.GameView = function(model, input,controls){
         dims:{center:{x:200,y:800}, height:25, width:75, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"})
     });
-    
+
 
     //for each button register event using model
     GroundBomb.addButtonListener("logStuff", {onClick:function(){
@@ -76,9 +78,9 @@ MyGame.GameView = function(model, input,controls){
         model.removeTower();
     }});
 
-    
-    
-    
+
+
+
     buttonGrid.addButton(GroundBomb);
     buttonGrid.addButton(GroundFreeze);
     buttonGrid.addButton(MixedProjectile);
@@ -98,10 +100,10 @@ MyGame.GameView = function(model, input,controls){
         keyboard.registerKeyUp(MyGame.configurePersitance.getKeyCode("next_level"),function(){
             Sell.onMouseClick();
         });
-        
-    
-    
-    
+
+
+
+
     function update(elapsedTime){
         mouse.update(elapsedTime);
         keyboard.update(elapsedTime);
