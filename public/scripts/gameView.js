@@ -14,39 +14,45 @@ MyGame.GameView = function(model, input,controls){
     var GroundBomb = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:100}, height:100, width:100, rotate:0},
         drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"}),
-        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"aqua",fill:"blue"})
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"aqua"})
     });
 
 
     var GroundFreeze = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:200}, height:100, width:100, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"aqua",fill:"blue"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"aqua",fill:"blue"}),
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"aqua"})
     });
 
     var MixedProjectile = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:300}, height:100, width:100, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"Chocolate",fill:"BlueViolet "})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"Chocolate",fill:"BlueViolet "}),
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"aqua"})
     });
 
     var AirMissile = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:400}, height:100, width:100, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"}),
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"aqua"})
     });
 
     var creep = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:700,y:600}, height:100, width:100, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"DarkOrange",fill:"yellow"}),
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"aqua"})
     });
 
 
     var Upgrade = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:100,y:800}, height:25, width:75, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"Green"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"Green"}),
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"aqua"})
     });
 
     var Sell = MyGame.uiComponents.CanvasButton({
         dims:{center:{x:200,y:800}, height:25, width:75, rotate:0},
-        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"})
+        drawable:MyGame.graphics.RectangleDrawable({stroke:"black",fill:"red"}),
+        mouseEnterDrawable:MyGame.graphics.RectangleDrawable({stroke:"blue",fill:"aqua"})
     });
 
 
