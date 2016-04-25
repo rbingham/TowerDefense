@@ -90,7 +90,7 @@ var TowerTemplate=(function(){
         type:PROJECTILETYPE.MISSILE,
         cost:100,
         updgradeTier:[100,200,800],
-        damageLevels:[10,15,20],
+        damageLevels:[20,30,40],
         firerate:1000
 
     };

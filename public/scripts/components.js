@@ -143,7 +143,7 @@ Tower.prototype={
         if(this.level>this.maxLevel){
             this.level=this.maxLevel;
         }else{
-            this.weapon.range+=100;
+            this.weapon.range+=50;
             this.weapon.src=this.weapon.srcbase+this.level+".png";
 
         }
