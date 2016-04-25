@@ -112,7 +112,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
             var projhit=false;
             for(let i=0;i<creepList.length&&!projhit;i++){
                 if(Collision.circleRect(projectile.getDims(),creepList[i].getDims())){
-                    creepList[i].hit(25,(projectile.type===PROJECTILETYPE.FREEZE?1000:0));
+                    creepList[i].hit(projectile.damage,(projectile.type===PROJECTILETYPE.FREEZE?1000:0));
                     projhit=true;
                 }
             }
@@ -127,7 +127,7 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
                     circleList.push(p);
                     for(let i=0;i<creepList.length;i++){
                         if(Collision.circleRect(p,creepList[i].getDims())){
-                            creepList[i].hit(25);
+                            creepList[i].hit(projectile.damage/2);
                         }
                     }
                     particleSystem.createBombExplosionParticles(projectile);

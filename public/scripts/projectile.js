@@ -120,6 +120,7 @@ MyGame.components.projectiles = (function(spec){
 	var Projectile = function(spec){
 		var that = {};
         that.type=spec.type;
+        that.damage=spec.damage;
 		var currentLocation = (function(){
 			var ij = MyGame.components.xy2ij(spec.initialLocation);
 			return {

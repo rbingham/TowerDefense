@@ -33,6 +33,8 @@ function Tower(spec){
     this.type=spec.type;
     this.cost=spec.cost;
     this.updgradeTier=spec.updgradeTier;
+    this.damage=spec.damageLevels;
+    this.firerate=spec.firerate;
     this.addProjectile = function(location,velocity,creep){
         /*initialLocation,initialTimeRemaining,initialVelocity, drawable,  projectileSpeed,*/
         var projecSpec = {
@@ -43,7 +45,8 @@ function Tower(spec){
             initialVelocity:velocity,
             radius:5,
             type:this.type,
-            creep:creep
+            creep:creep,
+            damage:this.damage[this.level-1]
         };
         spec.projectileManager.create(projecSpec);
     }
@@ -102,7 +105,7 @@ Tower.prototype={
                 }
                 if(this.fireprev<0){
                     if(destang<1||destang>Math.Pi*2-1){
-                        this.fireprev=1000;
+                        this.fireprev=this.firerate;
                         this.addProjectile(
                             {x:this.center.x,y:this.center.y},
                             {x:-Math.cos(this.weapon.rotation-Math.PI/2)*200,
