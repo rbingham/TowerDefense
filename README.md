@@ -9,8 +9,12 @@ In console,
 
 $node server.js
 
-if missing express, please 
+if missing any dependcenies, such as express, please 
 
 $npm install express body-parser node-json-db
+
+or 
+
+$npm install
 
 connect localhost:3000 in browser
