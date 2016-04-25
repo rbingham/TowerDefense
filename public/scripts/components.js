@@ -547,7 +547,7 @@ MyGame.components=(function(graphics){
         if(!prevSelected.onSelected||that.towerArray[prevSelected.index].level>=3){
             return 0;
         }
-        var temp=that.towerArray[prevSelected.index].updgradeTier[that.towerArray[prevSelected.index].level-1];
+        var temp=that.towerArray[prevSelected.index].updgradeTier[that.towerArray[prevSelected.index].level];
         return temp;
     };
     

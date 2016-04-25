@@ -150,7 +150,7 @@ MyGame.components.projectiles = (function(spec){
 		that.getID = function(){
 			return spec.id;
 		}
-
+        
 		/**********************************************************
 		* update projectile
 		**********************************************************/
@@ -178,7 +178,7 @@ MyGame.components.projectiles = (function(spec){
             currentLocation.x += velocity.x*elapsedTime/1000;
             currentLocation.y += velocity.y*elapsedTime/1000;
             timeRemaining-=elapsedTime
-            if(timeRemaining<=0){
+            if(timeRemaining<=0||!Collision.circleRect(that.getDims(),MyGame.components.arena)){
                 spec.projectileListener.projectileKilled(that);
             };
             updateCurrentLocationIJ();

@@ -22,7 +22,7 @@ var TowerTemplate=(function(){
         targetGround:true,
         type:PROJECTILETYPE.BOMB,
         cost:100,
-        updgradeTier:[200,300,400],
+        updgradeTier:[100,200,800],
     };
 
 
@@ -42,7 +42,7 @@ var TowerTemplate=(function(){
         targetGround:true,
         type:PROJECTILETYPE.FREEZE,
         cost:100,
-        updgradeTier:[200,300,400],
+        updgradeTier:[100,200,800],
     };
 
 
@@ -62,7 +62,7 @@ var TowerTemplate=(function(){
         targetGround:true,
         type:PROJECTILETYPE.PELLET,
         cost:100,
-        updgradeTier:[200,300,400],
+        updgradeTier:[100,200,800],
     };
 
     that.AirMissileWeapon={
@@ -81,7 +81,7 @@ var TowerTemplate=(function(){
         targetGround:false,
         type:PROJECTILETYPE.MISSILE,
         cost:100,
-        updgradeTier:[200,300,400],
+        updgradeTier:[100,200,800],
     };
 
     return that;

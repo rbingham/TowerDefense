@@ -274,6 +274,9 @@ MyGame.GameModel=function(graphics,components,input, particleSystem){
     that.removeTower=function(){
         x=MyGame.components.getSelectCenter();
         if(x!==undefined){
+            for(var i=0;i<x.updgradeTier.length&&i<=x.level-1;i++){
+                currency+=(x.updgradeTier[i]/2)
+            }
             particleSystem.createTowerSoldParticles(x.center);
         }
         MyGame.components.removeTower();
