@@ -62,15 +62,16 @@ MyGame.input=(function(canvas){
             var toRemove=[];
             for(var handlerNum=0;handlerNum <that.keyUpHandler.length;++handlerNum){
                 //console.log(handlerNum);
-                                    var x=that.keyUpHandler[handlerNum];
+                var x=that.keyUpHandler[handlerNum];
 
                 for(var j=0;j<that.upKeys.length;j++){
                     var y=that.upKeys[j];
+                    toRemove.push(j);
+
                     if(keyEventsMatch(y,x.key)){
                         that.keyUpHandler[handlerNum].handler(elapsed);
                         break;
                     }
-                    toRemove.push(j);
                 }
             }
             toRemove.sort(function(a,b){return a-b});

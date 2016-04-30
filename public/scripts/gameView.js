@@ -103,17 +103,28 @@ MyGame.GameView = function(model, input,controls){
     buttonGrid.addButton(Sell);
 
     console.log(controls.getKeyCode("Upgrade"));
+
+    
+    if(controls.getKeyCode("Upgrade")!==undefined){
         keyboard.registerKeyUp(controls.getKeyCode("Upgrade"),function(){
             console.log("foobar");
             Upgrade.onMouseClick();
         });
+    }
+    if(controls.getKeyCode("Level")!==undefined){
         keyboard.registerKeyUp(controls.getKeyCode("Level"),function(){
+                        console.log("bar");
+
             creep.onMouseClick();
         });
+    }
+    if(controls.getKeyCode("Sell")!==undefined){        
         keyboard.registerKeyUp(MyGame.configurePersitance.getKeyCode("Sell"),function(){
+                        console.log("foo");
+
             Sell.onMouseClick();
         });
-
+    }
 
 
 
